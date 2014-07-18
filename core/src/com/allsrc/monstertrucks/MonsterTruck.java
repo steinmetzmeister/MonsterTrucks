@@ -41,7 +41,7 @@ public class MonsterTruck {
     boolean leftPressed;
     boolean rightPressed;
 
-    float maxForce = 175f;
+    float maxForce = 150f;
     float currentForce = 0f;
     float acceleration = 250f; // force/second
     float maxAngle = 35f;
@@ -85,8 +85,8 @@ public class MonsterTruck {
         Vector3 chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
         Vector3 wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
 
-        Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents)));
-        Planet.INSTANCE.world.addConstructor("wheel", new BulletConstructor(wheelModel, 12.5f, null));
+        Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions()))));
+        Planet.INSTANCE.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
 
         chassis = Planet.INSTANCE.world.add("chassis", 0, 3f, 0);
         wheels[0] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
@@ -165,8 +165,8 @@ public class MonsterTruck {
             currentForce = force;
             vehicle.applyEngineForce(force, 0);
             vehicle.applyEngineForce(force, 1);
-            // vehicle.applyEngineForce(force, 2);
-            // vehicle.applyEngineForce(force, 3);
+            vehicle.applyEngineForce(force, 2);
+            vehicle.applyEngineForce(force, 3);
         }
 
         for (int i = 0; i < wheels.length; i++) {
