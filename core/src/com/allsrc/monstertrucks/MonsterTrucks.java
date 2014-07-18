@@ -41,6 +41,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import com.badlogic.gdx.controllers.Controllers;
+import com.badlogic.gdx.controllers.Controller;
+
 public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
 
@@ -107,6 +110,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.world.add("terrain", 0f, 0f, 0f);
 
 		truck = new MonsterTruck();
+
+		Controllers.addListener(this);
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -189,6 +194,14 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		stage.dispose();
 	}
 
+	public void resetTruck() {
+		truck.chassis.body.setWorldTransform(truck.chassis.transform.setToTranslation(0, 3f, 0));
+		truck.chassis.body.setInterpolationWorldTransform(truck.chassis.transform);
+		((btRigidBody)(truck.chassis.body)).setLinearVelocity(Vector3.Zero);
+		((btRigidBody)(truck.chassis.body)).setAngularVelocity(Vector3.Zero);
+		truck.chassis.body.activate();
+	}
+
 	@Override
 	public boolean keyDown (int keycode) {
 		switch (keycode) {
@@ -227,13 +240,48 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			truck.rightPressed = false;
 			break;
 		case Keys.R:
-			truck.chassis.body.setWorldTransform(truck.chassis.transform.setToTranslation(0, 3f, 0));
-			truck.chassis.body.setInterpolationWorldTransform(truck.chassis.transform);
-			((btRigidBody)(truck.chassis.body)).setLinearVelocity(Vector3.Zero);
-			((btRigidBody)(truck.chassis.body)).setAngularVelocity(Vector3.Zero);
-			truck.chassis.body.activate();
+			resetTruck();
 			break;
 		}
 		return super.keyUp(keycode);
 	}
+
+	@Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        if (axisCode == 0) {
+        	truck.rightPressed = (value > 0.25) ? true : false;
+        	truck.leftPressed = (value < -0.25) ? true : false;
+        }
+
+        // if (axisCode == 1) {
+        // 	truck.upPressed = (value < -0.25) ? true : false;
+        // 	truck.downPressed = (value > 0.25) ? true : false;
+        // }
+        return false;
+    }
+
+    @Override
+    public boolean buttonDown(Controller controller, int buttonCode) {
+    	if (buttonCode == 1)
+    		truck.upPressed = true;
+
+    	if (buttonCode == 0)
+    		truck.downPressed = true;
+
+        return false;
+    }
+
+    @Override
+    public boolean buttonUp(Controller controller, int buttonCode) {
+		if (buttonCode == 3)
+    		resetTruck();
+
+    	if (buttonCode == 1)
+    		truck.upPressed = false;
+
+    	if (buttonCode == 0)
+    		truck.downPressed = false;
+
+        return false;
+    }
 }
