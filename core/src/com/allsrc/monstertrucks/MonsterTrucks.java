@@ -23,6 +23,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
@@ -30,7 +31,6 @@ import com.badlogic.gdx.physics.bullet.linearmath.LinearMath;
 import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawModes;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.math.MathUtils;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -42,6 +42,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.Controller;
+
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
+
+import com.badlogic.gdx.physics.bullet.linearmath.*;
 
 public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
@@ -61,12 +66,18 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public DirectionalLight light;
 
 	public ModelBuilder modelBuilder = new ModelBuilder();
-	
 
 	private Skin skin;
 	private Stage stage;
 
-	public Array<Car> trucks = new Array<Car>();
+	public Array<Car> cars = new Array<Car>();
+	public float[] terrainVerts;
+
+	// rays
+	ClosestRayResultCallback rayTestCB;
+	Vector3 rayFrom = new Vector3();
+	Vector3 rayTo = new Vector3();
+	Vector3 tempV = new Vector3();
 
 	@Override
 	public void create () {
@@ -106,16 +117,22 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		int i = 0;
 		for (Controller controller : Controllers.getControllers())
 		{
-			trucks.add((Car)new MonsterTruck());
-			controller.addListener(trucks.get(i));
+			cars.add((Car)new MonsterTruck());
+			controller.addListener(cars.get(i));
 
 			i++;
 		}
+
+		final Model blockModel = objLoader.loadModel(Gdx.files.internal("data/block.obj"));
+		Planet.INSTANCE.world.addConstructor("block", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(this);
 		inputMultiplexer.addProcessor(stage);
+
+		// rays
+		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
 	}
 
 	@Override
@@ -201,4 +218,24 @@ public class MonsterTrucks extends MonsterTrucksBase {
         	}
         return false;
     }
+
+    @Override
+	public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+		Ray ray = Planet.INSTANCE.camera.getPickRay(screenX, screenY);
+		rayFrom.set(ray.origin);
+		rayTo.set(ray.direction).scl(50f).add(rayFrom);
+
+		rayTestCB.setCollisionObject(null);
+		rayTestCB.setClosestHitFraction(1f);
+		rayTestCB.getRayFromWorld().setValue(rayFrom.x, rayFrom.y, rayFrom.z);
+		rayTestCB.getRayToWorld().setValue(rayTo.x, rayTo.y, rayTo.z);
+
+		Planet.INSTANCE.world.collisionWorld.rayTest(rayFrom, rayTo, rayTestCB);
+
+		if (rayTestCB.hasHit()) {
+			btVector3 p = rayTestCB.getHitPointWorld();
+			Planet.INSTANCE.world.add("block", p.getX(), p.getY(), p.getZ());
+		}
+		return true;
+	}
 }
