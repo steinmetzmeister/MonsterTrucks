@@ -16,7 +16,6 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalShadowLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
@@ -47,10 +46,7 @@ import com.badlogic.gdx.controllers.Controller;
 public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
 
-	MonsterTruck truck;
-
 	boolean initialized;
-	boolean shadows = false;
 	
 	public void init() {
 		if (initialized) return;
@@ -65,10 +61,12 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public DirectionalLight light;
 
 	public ModelBuilder modelBuilder = new ModelBuilder();
-	public Array<Disposable> disposables = new Array<Disposable>();
+	
 
 	private Skin skin;
 	private Stage stage;
+
+	public Array<MonsterTruck> trucks = new Array<MonsterTruck>();
 
 	@Override
 	public void create () {
@@ -83,20 +81,16 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height, 3f);
 
 		Planet.INSTANCE.modelBatch = new ModelBatch();
-		Planet.INSTANCE.shadowBatch = new ModelBatch();
 		Planet.INSTANCE.world = new BulletWorld();
 
 		//
 		environment = new Environment();
 		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1.f));
 		
-		light = shadows ? new DirectionalShadowLight(1024, 1024, 20f, 20f, 1f, 300f) : new DirectionalLight();
+		light = new DirectionalLight();
 		light.set(0.8f, 0.8f, 0.8f, -0.5f, -1f, 0.7f);
 
 		environment.add(light);
-
-		if (shadows) environment.shadowMap = (DirectionalShadowLight)light;
-		Planet.INSTANCE.shadowBatch = new ModelBatch(new DepthShaderProvider());
 		//
 
 		// TERRAIN
@@ -109,9 +103,14 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.world.addConstructor("terrain", new BulletConstructor(model, 0f, new btBvhTriangleMeshShape(model.meshParts)));
 		Planet.INSTANCE.world.add("terrain", 0f, 0f, 0f);
 
-		truck = new MonsterTruck();
+		int i = 0;
+		for (Controller controller : Controllers.getControllers())
+		{
+			trucks.add(new MonsterTruck());
+			controller.addListener(trucks.get(i));
 
-		Controllers.addListener(this);
+			i++;
+		}
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -129,15 +128,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		Planet.INSTANCE.camera.update();
 
-		if (shadows)
-		{
-			((DirectionalShadowLight)light).begin(Vector3.Zero, Planet.INSTANCE.camera.direction);
-			Planet.INSTANCE.shadowBatch.begin(((DirectionalShadowLight)light).getCamera());
-			Planet.INSTANCE.world.render(Planet.INSTANCE.shadowBatch, null);
-			Planet.INSTANCE.shadowBatch.end();
-			((DirectionalShadowLight)light).end();
-		}
-
 		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
 		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
 		Planet.INSTANCE.modelBatch.end();
@@ -148,25 +138,28 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	}
 
 	// context of truck
-	Matrix4 transform = new Matrix4();
-	Vector3 translation1 = new Vector3();
-	Vector3 translation2 = new Vector3();
+	Matrix4 worldTransform = new Matrix4();
+	Vector3 truckPosition = new Vector3();
+	Vector3 cameraPosition = new Vector3();
 
 	public void update () {
 		Planet.INSTANCE.world.update();
 
-		truck.update();
+		for (MonsterTruck truck : trucks)
+		{
+			truck.update();
 
-		truck.chassis.motionState.getWorldTransform(transform);
+			truck.chassis.motionState.getWorldTransform(worldTransform);
 
-		transform.getTranslation(translation1);
-		translation2.set(translation1);
+			worldTransform.getTranslation(truckPosition);
+			cameraPosition.set(truckPosition);
 
-		translation1.set(translation1.x - 5f, translation1.y + 12f, translation1.z - 10f);
+			cameraPosition.set(cameraPosition.x - 5f, cameraPosition.y + 12f, cameraPosition.z - 10f);
 
-		Planet.INSTANCE.camera.position.set(translation1);
-		Planet.INSTANCE.camera.lookAt(translation2);
-        Planet.INSTANCE.camera.up.set(Vector3.Y);
+			Planet.INSTANCE.camera.position.set(cameraPosition);
+			Planet.INSTANCE.camera.lookAt(truckPosition);
+        	Planet.INSTANCE.camera.up.set(Vector3.Y);
+       	}
 	}
 
 	@Override
@@ -174,17 +167,12 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.world.dispose();
 		Planet.INSTANCE.world = null;
 
-		for (Disposable disposable : disposables)
+		for (Disposable disposable : Planet.INSTANCE.disposables)
 			disposable.dispose();
-		disposables.clear();
+		Planet.INSTANCE.disposables.clear();
 
 		Planet.INSTANCE.modelBatch.dispose();
 		Planet.INSTANCE.modelBatch = null;
-
-		Planet.INSTANCE.shadowBatch.dispose();
-		Planet.INSTANCE.shadowBatch = null;
-
-		if (shadows) ((DirectionalShadowLight)light).dispose();
 
 		light = null;
 
@@ -194,94 +182,23 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		stage.dispose();
 	}
 
-	public void resetTruck() {
-		truck.chassis.body.setWorldTransform(truck.chassis.transform.setToTranslation(0, 3f, 0));
-		truck.chassis.body.setInterpolationWorldTransform(truck.chassis.transform);
-		((btRigidBody)(truck.chassis.body)).setLinearVelocity(Vector3.Zero);
-		((btRigidBody)(truck.chassis.body)).setAngularVelocity(Vector3.Zero);
-		truck.chassis.body.activate();
-	}
-
 	@Override
-	public boolean keyDown (int keycode) {
-		switch (keycode) {
-		case Keys.S:
-			truck.downPressed = true;
-			break;
-		case Keys.W:
-			truck.upPressed = true;
-			break;
-		case Keys.A:
-			truck.leftPressed = true;
-			break;
-		case Keys.D:
-			truck.rightPressed = true;
-			break;
-		case Keys.SPACE:
-			// truck.vehicle.getRigidBody().applyCentralImpulse(new Vector3(0, 500f, 0));
-			break;
-		}
-		return super.keyDown(keycode);
-	}
-
-	@Override
-	public boolean keyUp (int keycode) {
-		switch (keycode) {
-		case Keys.S:
-			truck.downPressed = false;
-			break;
-		case Keys.W:
-			truck.upPressed = false;
-			break;
-		case Keys.A:
-			truck.leftPressed = false;
-			break;
-		case Keys.D:
-			truck.rightPressed = false;
-			break;
-		case Keys.R:
-			resetTruck();
-			break;
-		}
-		return super.keyUp(keycode);
-	}
-
-	@Override
-    public boolean axisMoved(Controller controller, int axisCode, float value) {
-        if (axisCode == 0) {
-        	truck.rightPressed = (value > 0.25) ? true : false;
-        	truck.leftPressed = (value < -0.25) ? true : false;
+    public boolean keyDown (int keycode) {
+        switch (keycode) {
+        	case Keys.SPACE:
+            	//
+            	break;
         }
-
-        // if (axisCode == 1) {
-        // 	truck.upPressed = (value < -0.25) ? true : false;
-        // 	truck.downPressed = (value > 0.25) ? true : false;
-        // }
         return false;
     }
 
     @Override
-    public boolean buttonDown(Controller controller, int buttonCode) {
-    	if (buttonCode == 1)
-    		truck.upPressed = true;
-
-    	if (buttonCode == 0)
-    		truck.downPressed = true;
-
-        return false;
-    }
-
-    @Override
-    public boolean buttonUp(Controller controller, int buttonCode) {
-		if (buttonCode == 3)
-    		resetTruck();
-
-    	if (buttonCode == 1)
-    		truck.upPressed = false;
-
-    	if (buttonCode == 0)
-    		truck.downPressed = false;
-
+    public boolean keyUp (int keycode) {
+        switch (keycode) {
+        	case Keys.R:
+            	//
+            	break;
+        	}
         return false;
     }
 }
