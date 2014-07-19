@@ -66,7 +66,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	private Skin skin;
 	private Stage stage;
 
-	public Array<MonsterTruck> trucks = new Array<MonsterTruck>();
+	public Array<Car> trucks = new Array<Car>();
 
 	@Override
 	public void create () {
@@ -106,7 +106,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		int i = 0;
 		for (Controller controller : Controllers.getControllers())
 		{
-			trucks.add(new MonsterTruck());
+			trucks.add((Car)new MonsterTruck());
 			controller.addListener(trucks.get(i));
 
 			i++;
@@ -139,25 +139,25 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 	// context of truck
 	Matrix4 worldTransform = new Matrix4();
-	Vector3 truckPosition = new Vector3();
+	Vector3 carPosition = new Vector3();
 	Vector3 cameraPosition = new Vector3();
 
 	public void update () {
 		Planet.INSTANCE.world.update();
 
-		for (MonsterTruck truck : trucks)
+		for (Car car : cars)
 		{
-			truck.update();
+			car.update();
 
-			truck.chassis.motionState.getWorldTransform(worldTransform);
+			car.chassis.motionState.getWorldTransform(worldTransform);
 
-			worldTransform.getTranslation(truckPosition);
-			cameraPosition.set(truckPosition);
+			worldTransform.getTranslation(carPosition);
+			cameraPosition.set(carPosition);
 
 			cameraPosition.set(cameraPosition.x - 5f, cameraPosition.y + 12f, cameraPosition.z - 10f);
 
 			Planet.INSTANCE.camera.position.set(cameraPosition);
-			Planet.INSTANCE.camera.lookAt(truckPosition);
+			Planet.INSTANCE.camera.lookAt(carPosition);
         	Planet.INSTANCE.camera.up.set(Vector3.Y);
        	}
 	}

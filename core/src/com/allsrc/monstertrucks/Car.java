@@ -61,32 +61,39 @@ public class Car implements ControllerListener {
     protected boolean leftPressed;
     protected boolean rightPressed;
 
+    protected Model chassisModel;
+    protected Model wheelModel;
+
     public Car() {
+        loadModels();
         init();
+    }
+
+    protected void loadModels() {
+        // chassis
+        chassisModel = objLoader.loadModel(Gdx.files.internal("data/car.obj"));
+        Planet.INSTANCE.disposables.add(chassisModel);
+        chassisModel.materials.get(0).clear();
+        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED), ColorAttribute.createSpecular(Color.WHITE));
+
+        // wheel
+        wheelModel = objLoader.loadModel(Gdx.files.internal("data/wheel.obj"));
+        Planet.INSTANCE.disposables.add(wheelModel);
+        wheelModel.materials.get(0).clear();
+        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
+        // wheelModel.meshes.get(0).scale(3f, 1.5f, 1.5f);
     }
 
     protected void init() {
         BoundingBox bounds = new BoundingBox();
 
-        // chassis
-        final Model chassisModel = objLoader.loadModel(Gdx.files.internal("data/car.obj"));
-        Planet.INSTANCE.disposables.add(chassisModel);
-        chassisModel.materials.get(0).clear();
-        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED), ColorAttribute.createSpecular(Color.WHITE));
-
         Vector3 chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());
-        Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
-        chassisHalfExtents.scl(0.5f);
-
-        // wheel
-        final Model wheelModel = objLoader.loadModel(Gdx.files.internal("data/wheel.obj"));
-        Planet.INSTANCE.disposables.add(wheelModel);
-        wheelModel.materials.get(0).clear();
-        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
-        // wheelModel.meshes.get(0).scale(3f, 1.5f, 1.5f);
-        
         Vector3 wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
+
+        Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
         Planet.INSTANCE.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
+
+        chassisHalfExtents.scl(0.5f);
 
         chassis = Planet.INSTANCE.world.add("chassis", 0, 3f, 0);
         wheels[0] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
@@ -197,18 +204,39 @@ public class Car implements ControllerListener {
     }
 
     @Override
+    public boolean axisMoved(Controller controller, int axisCode, float value) {
+        if (axisCode == 0) {
+            rightPressed = (value > 0.25) ? true : false;
+            leftPressed = (value < -0.25) ? true : false;
+        }
+        return false;
+    }
+
+    @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
+        if (buttonCode == 1)
+            upPressed = true;
+
+        if (buttonCode == 0)
+            downPressed = true;
+
+        if (buttonCode == 2) {}
+            // vehicle.getRigidBody().applyCentralImpulse(new Vector3(0, 1000f, 0));
+
         return false;
     }
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        return false;
-    }
+        if (buttonCode == 3)
+            reset();
 
-    @Override
-    public boolean axisMoved(Controller controller, int axisCode, float value) {
-        // TODO Auto-generated method stub
+        if (buttonCode == 1)
+            upPressed = false;
+
+        if (buttonCode == 0)
+            downPressed = false;
+
         return false;
     }
 

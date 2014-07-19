@@ -1,7 +1,8 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.Color;
 
 public class MonsterTruck extends Car {
 
@@ -9,39 +10,18 @@ public class MonsterTruck extends Car {
     }
 
     @Override
-    public boolean axisMoved(Controller controller, int axisCode, float value) {
-        if (axisCode == 0) {
-            rightPressed = (value > 0.25) ? true : false;
-            leftPressed = (value < -0.25) ? true : false;
-        }
-        return false;
-    }
+    protected void loadModels() {
+        // chassis
+        chassisModel = objLoader.loadModel(Gdx.files.internal("data/truck.obj"));
+        Planet.INSTANCE.disposables.add(chassisModel);
+        chassisModel.materials.get(0).clear();
+        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED), ColorAttribute.createSpecular(Color.WHITE));
 
-    @Override
-    public boolean buttonDown(Controller controller, int buttonCode) {
-        if (buttonCode == 1)
-            upPressed = true;
-
-        if (buttonCode == 0)
-            downPressed = true;
-
-        if (buttonCode == 2) {}
-            // vehicle.getRigidBody().applyCentralImpulse(new Vector3(0, 1000f, 0));
-
-        return false;
-    }
-
-    @Override
-    public boolean buttonUp(Controller controller, int buttonCode) {
-        if (buttonCode == 3)
-            reset();
-
-        if (buttonCode == 1)
-            upPressed = false;
-
-        if (buttonCode == 0)
-            downPressed = false;
-
-        return false;
+        // wheel
+        wheelModel = objLoader.loadModel(Gdx.files.internal("data/wheel.obj"));
+        Planet.INSTANCE.disposables.add(wheelModel);
+        wheelModel.materials.get(0).clear();
+        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
+        // wheelModel.meshes.get(0).scale(3f, 1.5f, 1.5f);
     }
 }
