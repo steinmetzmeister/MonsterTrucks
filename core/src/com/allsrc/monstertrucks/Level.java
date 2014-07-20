@@ -14,9 +14,6 @@ public class Level {
     Array<Checkpoint> checkpoints = new Array<Checkpoint>();
 
     public Level() {
-        Checkpoint cp = new Checkpoint();
-        cp.init();
-        checkpoints.add(cp);
     }
 
     public void saveToFile() {
@@ -25,7 +22,12 @@ public class Level {
             FileWriter writer = new FileWriter(file);  
             PrintWriter out = new PrintWriter(writer);
 
-            // out.print("hello, world");  
+            for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
+                out.println(checkpoint.name + ','
+                    + checkpoint.pos.x + ','
+                    + checkpoint.pos.y + ','
+                    + checkpoint.pos.z);
+            }
 
             out.close();
         } catch(IOException e) {
@@ -39,7 +41,11 @@ public class Level {
             BufferedReader in = new BufferedReader(new FileReader(file));
 
             while (in.ready()) {
-                System.out.println(in.readLine());
+                String[] checkpoint = in.readLine().split(",");
+                Planet.INSTANCE.level.checkpoints.add(new Checkpoint(new Vector3(
+                    Float.parseFloat(checkpoint[1]),
+                    Float.parseFloat(checkpoint[2]),
+                    Float.parseFloat(checkpoint[3]))));
             }
 
             in.close();

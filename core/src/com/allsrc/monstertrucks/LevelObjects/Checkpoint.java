@@ -12,6 +12,8 @@ import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 
+import com.badlogic.gdx.math.Vector3;
+
 public class Checkpoint extends LevelObject {
     ObjLoader objLoader = new ObjLoader();
     BulletEntity entity;
@@ -32,14 +34,22 @@ public class Checkpoint extends LevelObject {
     CheckpointCallback cpb;
     boolean reached = false;
 
-    public void init() {
+    public Checkpoint(Vector3 _pos) {
+        create(_pos);
+    }
+
+    public void create(Vector3 _pos) {
         cpb = new CheckpointCallback();
         cpb.checkpoint = this;
 
         final Model blockModel = objLoader.loadModel(Gdx.files.internal("data/block.obj"));
-        Planet.INSTANCE.world.addConstructor("block", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
-        entity = Planet.INSTANCE.world.add("block", 5f, 0f, 5f);
+        Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
+        entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+
+        pos = _pos;
+
+        Planet.INSTANCE.level.checkpoints.add(this);
     }
 
     public void update() {

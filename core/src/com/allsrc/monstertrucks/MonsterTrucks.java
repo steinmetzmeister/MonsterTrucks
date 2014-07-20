@@ -228,7 +228,12 @@ public class MonsterTrucks extends MonsterTrucksBase {
         	case Keys.R:
             	//
             	break;
-        	}
+            case Keys.L:
+            	Planet.INSTANCE.level.saveToFile();
+            case Keys.O:
+            	Planet.INSTANCE.level.loadFromFile();
+            	break;
+        }
         return false;
     }
 
@@ -247,8 +252,9 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		if (rayTestCB.hasHit()) {
 			btVector3 p = rayTestCB.getHitPointWorld();
-			Planet.INSTANCE.world.add("block", p.getX(), p.getY() - 0.5f, p.getZ());
+			Checkpoint point = new Checkpoint(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 		}
+
 		return true;
 	}
 }
