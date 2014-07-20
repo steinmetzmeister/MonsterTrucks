@@ -42,11 +42,12 @@ public class Car implements ControllerListener {
     protected BulletEntity chassis;
     protected BulletEntity wheels[] = new BulletEntity[4];
 
-    protected float maxForce = 150f;
     protected float currentForce = 0f;
+    protected float currentAngle = 0f;
+
+    protected float maxForce = 150f;
     protected float acceleration = 250f; // second
     protected float maxAngle = 35f;
-    protected float currentAngle = 0f;
     protected float steerSpeed = 65f; // second
 
     protected float frictionSlip = 125f;
@@ -64,27 +65,32 @@ public class Car implements ControllerListener {
     protected Model chassisModel;
     protected Model wheelModel;
 
+    protected String chassisModelFile = "data/car.obj";
+    protected String wheelModelFile = "data/wheel.obj";
+    protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
+
     public Car() {
-        loadModels();
         init();
     }
 
     protected void loadModels() {
         // chassis
-        chassisModel = objLoader.loadModel(Gdx.files.internal("data/car.obj"));
+        chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.INSTANCE.disposables.add(chassisModel);
         chassisModel.materials.get(0).clear();
         chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED), ColorAttribute.createSpecular(Color.WHITE));
 
         // wheel
-        wheelModel = objLoader.loadModel(Gdx.files.internal("data/wheel.obj"));
+        wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
         Planet.INSTANCE.disposables.add(wheelModel);
         wheelModel.materials.get(0).clear();
         wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
-        // wheelModel.meshes.get(0).scale(3f, 1.5f, 1.5f);
+        wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
     }
 
     protected void init() {
+        loadModels();
+        
         BoundingBox bounds = new BoundingBox();
 
         Vector3 chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());

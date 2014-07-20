@@ -89,7 +89,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		final float width = Gdx.graphics.getWidth();
 		final float height = Gdx.graphics.getHeight();
 		
-		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
+		// Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
+		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height , 3f);
 
 		Planet.INSTANCE.modelBatch = new ModelBatch();
 		Planet.INSTANCE.world = new BulletWorld();
@@ -145,18 +146,17 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
 
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		Planet.INSTANCE.camera.update();
 		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-
 		Planet.INSTANCE.modelBatch.end();
-		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
-
-		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.INSTANCE.camera.update();
-		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-
-		Planet.INSTANCE.modelBatch.end();
+		
+		// Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		// Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		// Planet.INSTANCE.camera.update();
+		// Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+		// Planet.INSTANCE.modelBatch.end();
 
 		// UI
 		stage.act(Gdx.graphics.getDeltaTime());
