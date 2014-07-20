@@ -70,9 +70,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	private Skin skin;
 	private Stage stage;
 
-	public Array<Car> cars = new Array<Car>();
-	public float[] terrainVerts;
-
 	// rays
 	ClosestRayResultCallback rayTestCB;
 	Vector3 rayFrom = new Vector3();
@@ -118,8 +115,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		int i = 0;
 		for (Controller controller : Controllers.getControllers())
 		{
-			cars.add((Car)new MonsterTruck());
-			controller.addListener(cars.get(i));
+			Planet.INSTANCE.cars.add((Car)new MonsterTruck());
+			controller.addListener(Planet.INSTANCE.cars.get(i));
 
 			i++;
 		}
@@ -174,7 +171,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public void update () {
 		Planet.INSTANCE.world.update();
 
-		for (Car car : cars)
+		for (Car car : Planet.INSTANCE.cars)
 		{
 			car.update();
 
@@ -188,6 +185,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			Planet.INSTANCE.camera.position.set(cameraPosition);
 			Planet.INSTANCE.camera.lookAt(carPosition);
         	Planet.INSTANCE.camera.up.set(Vector3.Y);
+       	}
+
+       	for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
+       		checkpoint.update();
        	}
 	}
 

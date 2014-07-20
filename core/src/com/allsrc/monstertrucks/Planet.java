@@ -12,5 +12,6 @@ public enum Planet {
     public ModelBatch modelBatch;
     public BulletWorld world;
     public Array<Disposable> disposables = new Array<Disposable>();
+    public Array<Car> cars = new Array<Car>();
     public Level level;
 }
