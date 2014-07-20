@@ -11,7 +11,13 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 public class Level {
-    Vector3[][] objs;
+    Array<Checkpoint> checkpoints = new Array<Checkpoint>();
+
+    public Level() {
+        Checkpoint cp = new Checkpoint();
+        cp.init();
+        checkpoints.add(cp);
+    }
 
     public void saveToFile() {
         try {

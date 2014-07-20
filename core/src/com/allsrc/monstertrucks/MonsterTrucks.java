@@ -134,6 +134,9 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		// rays
 		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
+
+		// Level
+		Planet.INSTANCE.level = new Level();
 	}
 
 	@Override
