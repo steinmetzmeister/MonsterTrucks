@@ -26,9 +26,10 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
 import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 
-import com.badlogic.gdx.controllers.Controller;
+import com.badlogic.gdx.controllers.Controller;;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.ControllerListener;
+import com.badlogic.gdx.controllers.mappings.Ouya;
 
 public class Car implements ControllerListener {
     Vector3 tmpV = new Vector3();
@@ -220,10 +221,10 @@ public class Car implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        if (buttonCode == 1)
+        if (buttonCode == 1 || buttonCode == Ouya.BUTTON_O)
             upPressed = true;
 
-        if (buttonCode == 0)
+        if (buttonCode == 0 || buttonCode == Ouya.BUTTON_U)
             downPressed = true;
 
         if (buttonCode == 2) {}
@@ -234,13 +235,13 @@ public class Car implements ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        if (buttonCode == 3)
+        if (buttonCode == 3 || buttonCode == Ouya.BUTTON_Y)
             reset();
 
-        if (buttonCode == 1)
+        if (buttonCode == 1 || buttonCode == Ouya.BUTTON_O)
             upPressed = false;
 
-        if (buttonCode == 0)
+        if (buttonCode == 0 || buttonCode == Ouya.BUTTON_U)
             downPressed = false;
 
         return false;

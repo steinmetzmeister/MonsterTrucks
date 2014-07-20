@@ -1,0 +1,1 @@
+./gradlew desktop:run || ./gradlew android:installDebug android:run
