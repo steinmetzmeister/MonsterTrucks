@@ -89,7 +89,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		final float width = Gdx.graphics.getWidth();
 		final float height = Gdx.graphics.getHeight();
 		
-		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height, 3f);
+		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
 
 		Planet.INSTANCE.modelBatch = new ModelBatch();
 		Planet.INSTANCE.world = new BulletWorld();
@@ -139,14 +139,23 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public void render () {
 		update();
 
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		Planet.INSTANCE.camera.update();
-
 		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Planet.INSTANCE.camera.update();
 		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+
+		Planet.INSTANCE.modelBatch.end();
+		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+
+		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Planet.INSTANCE.camera.update();
+		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+
 		Planet.INSTANCE.modelBatch.end();
 
 		// UI
@@ -234,7 +243,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		if (rayTestCB.hasHit()) {
 			btVector3 p = rayTestCB.getHitPointWorld();
-			Planet.INSTANCE.world.add("block", p.getX(), p.getY(), p.getZ());
+			Planet.INSTANCE.world.add("block", p.getX(), p.getY() - 0.5f, p.getZ());
 		}
 		return true;
 	}

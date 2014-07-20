@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.Color;
 
 public class MonsterTruck extends Car {
 
+    protected float maxForce = 100f;
+    protected float acceleration = 200f; // second
+
     public MonsterTruck() {
     }
 
@@ -22,6 +25,6 @@ public class MonsterTruck extends Car {
         Planet.INSTANCE.disposables.add(wheelModel);
         wheelModel.materials.get(0).clear();
         wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
-        // wheelModel.meshes.get(0).scale(3f, 1.5f, 1.5f);
+        wheelModel.meshes.get(0).scale(3f, 2f, 2f);
     }
 }
