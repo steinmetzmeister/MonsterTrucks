@@ -12,10 +12,12 @@ import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+
 import com.badlogic.gdx.math.Vector3;
 
 public class Checkpoint extends LevelObject {
-    ObjLoader objLoader = new ObjLoader();
     BulletEntity entity;
 
     public class CheckpointCallback extends ContactResultCallback {
@@ -25,8 +27,11 @@ public class Checkpoint extends LevelObject {
         public float addSingleResult (btManifoldPoint cp,
             btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
             btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-                System.out.println("Checkpoint reached.");
                 checkpoint.reached = true;
+                entity.model.materials.get(0).set(
+                    ColorAttribute.createDiffuse(Color.BLUE),
+                    ColorAttribute.createSpecular(Color.PURPLE));
+                
                 return 0f;
         }
     }
@@ -42,7 +47,7 @@ public class Checkpoint extends LevelObject {
         cpb = new CheckpointCallback();
         cpb.checkpoint = this;
 
-        final Model blockModel = objLoader.loadModel(Gdx.files.internal("data/block.obj"));
+        final Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
         Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
         entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);

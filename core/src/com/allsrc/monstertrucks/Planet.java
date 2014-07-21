@@ -2,12 +2,14 @@ package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
+import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public enum Planet {
     INSTANCE;
 
+    public ObjLoader objLoader = new ObjLoader();
     public PerspectiveCamera camera;
     public ModelBatch modelBatch;
     public BulletWorld world;
