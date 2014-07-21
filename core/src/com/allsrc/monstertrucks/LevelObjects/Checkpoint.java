@@ -31,7 +31,7 @@ public class Checkpoint extends LevelObject {
                 entity.model.materials.get(0).set(
                     ColorAttribute.createDiffuse(Color.BLUE),
                     ColorAttribute.createSpecular(Color.PURPLE));
-                
+
                 return 0f;
         }
     }
@@ -48,9 +48,10 @@ public class Checkpoint extends LevelObject {
         cpb.checkpoint = this;
 
         final Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
+        Planet.INSTANCE.disposables.add(blockModel);
         Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
         entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
-        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+        //entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 
         pos = _pos;
 

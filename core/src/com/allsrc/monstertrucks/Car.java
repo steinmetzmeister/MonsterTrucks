@@ -151,6 +151,7 @@ public class Car implements ControllerListener {
         float angle = currentAngle;
         float force = currentForce;
 
+        /*
         // turn
         if (rightPressed) {
             if (angle > 0f) angle = 0f;
@@ -160,12 +161,13 @@ public class Car implements ControllerListener {
             angle = MathUtils.clamp(angle + steerSpeed * delta, 0f, maxAngle);
         } else
             angle = 0f;
+        */
 
-        if (angle != currentAngle) {
-            currentAngle = angle;
+        // if (angle != currentAngle) {
+        //     currentAngle = angle;
             vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
             vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
-        }
+        // }
 
         // de/accelerate
         if (upPressed) {
@@ -210,11 +212,17 @@ public class Car implements ControllerListener {
         // TODO Auto-generated method stub
     }
 
+    float axisValue;
+
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
         if (axisCode == 0) {
-            rightPressed = (value > 0.25) ? true : false;
-            leftPressed = (value < -0.25) ? true : false;
+            if (value < 0.1f && value > -0.1f)
+                currentAngle = 0;
+            else
+                currentAngle = MonsterUtils.map(value, 1f, -1f, -maxAngle, maxAngle);
+            // rightPressed = (value > 0.25) ? true : false;
+            // leftPressed = (value < -0.25) ? true : false;
         }
         return false;
     }
