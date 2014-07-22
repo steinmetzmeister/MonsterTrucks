@@ -27,16 +27,20 @@ public class Checkpoint extends LevelObject {
         public float addSingleResult (btManifoldPoint cp,
             btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
             btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
+                if (checkpoint.reached)
+                    return 0f;
+
                 checkpoint.reached = true;
-                entity.model.materials.get(0).set(
-                    ColorAttribute.createDiffuse(Color.BLUE),
-                    ColorAttribute.createSpecular(Color.PURPLE));
+
+                checkpoint.entity.model.materials.get(0).set(
+                    ColorAttribute.createDiffuse(Color.ORANGE),
+                    ColorAttribute.createSpecular(Color.WHITE));
 
                 return 0f;
         }
     }
 
-    CheckpointCallback cpb;
+    CheckpointCallback checkpointCallback;
     boolean reached = false;
 
     public Checkpoint(Vector3 _pos) {
@@ -44,14 +48,14 @@ public class Checkpoint extends LevelObject {
     }
 
     public void create(Vector3 _pos) {
-        cpb = new CheckpointCallback();
-        cpb.checkpoint = this;
+        checkpointCallback = new CheckpointCallback();
+        checkpointCallback.checkpoint = this;
 
         final Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
         Planet.INSTANCE.disposables.add(blockModel);
         Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
         entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
-        //entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 
         pos = _pos;
 
@@ -62,7 +66,7 @@ public class Checkpoint extends LevelObject {
         if (!reached)
         {
             for (Car car : Planet.INSTANCE.cars) {
-                Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, cpb);
+                Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, checkpointCallback);
             }
         }
     }

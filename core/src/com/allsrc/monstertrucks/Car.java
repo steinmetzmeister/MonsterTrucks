@@ -48,8 +48,8 @@ public class Car implements ControllerListener {
 
     protected float maxForce = 150f;
     protected float acceleration = 250f; // second
-    protected float maxAngle = 35f;
-    protected float steerSpeed = 65f; // second
+    protected float maxAngle = 25f;
+    // protected float steerSpeed = 65f; // second
 
     protected float frictionSlip = 125f;
     protected float maxSuspensionForce = 8000f;

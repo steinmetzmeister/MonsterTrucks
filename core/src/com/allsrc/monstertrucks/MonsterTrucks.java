@@ -94,7 +94,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		//
 		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1.f));
+		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.8f, 0.8f, 0.8f, 1f));
 		
 		light = new DirectionalLight();
 		light.set(0.8f, 0.8f, 0.8f, -0.5f, -1f, 0.7f);
@@ -105,9 +105,11 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// TERRAIN
 		final Model model = objLoader.loadModel(Gdx.files.internal("data/terrain.obj"));
 
+		Color terrainColor = new Color(0.70f, 0.65f, 0.60f, 1f);
+
 		model.meshes.get(0).scale(2f, 2f, 2f);
         model.materials.get(0).clear();
-        model.materials.get(0).set(ColorAttribute.createDiffuse(Color.GREEN), ColorAttribute.createSpecular(Color.WHITE));
+        model.materials.get(0).set(ColorAttribute.createDiffuse(Color.GREEN)); //, ColorAttribute.createSpecular(Color.WHITE));
 
 		Planet.INSTANCE.world.addConstructor("terrain", new BulletConstructor(model, 0f, new btBvhTriangleMeshShape(model.meshParts)));
 		Planet.INSTANCE.world.add("terrain", 0f, 0f, 0f);
@@ -190,6 +192,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
        	for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
        		checkpoint.update();
        	}
+
+       	for (Coin coin : Planet.INSTANCE.level.coins) {
+       		coin.update();
+       	}
 	}
 
 	@Override
@@ -253,7 +259,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		if (rayTestCB.hasHit()) {
 			btVector3 p = rayTestCB.getHitPointWorld();
-			Checkpoint point = new Checkpoint(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
+			Coin point = new Coin(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
 		}
 
 		return true;
