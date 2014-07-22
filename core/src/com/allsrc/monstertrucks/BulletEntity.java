@@ -31,7 +31,6 @@ public class BulletEntity extends BaseEntity {
 	private final static Matrix4 tmpM = new Matrix4();
 	public BulletEntity.MotionState motionState;
 	public btCollisionObject body;
-	public ModelInstance model;
 
 	public BulletEntity (final Model model, final btRigidBodyConstructionInfo bodyInfo, final float x, final float y, final float z) {
 		this(model, bodyInfo == null ? null : new btRigidBody(bodyInfo), x, y, z);
@@ -62,8 +61,6 @@ public class BulletEntity extends BaseEntity {
 			} else
 				body.setWorldTransform(transform);
 		}
-
-		model = modelInstance;
 	}
 
 	@Override

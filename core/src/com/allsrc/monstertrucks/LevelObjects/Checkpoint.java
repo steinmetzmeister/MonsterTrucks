@@ -32,7 +32,7 @@ public class Checkpoint extends LevelObject {
 
                 checkpoint.reached = true;
 
-                checkpoint.entity.model.materials.get(0).set(
+                checkpoint.entity.modelInstance.materials.get(0).set(
                     ColorAttribute.createDiffuse(Color.ORANGE),
                     ColorAttribute.createSpecular(Color.WHITE));
 
@@ -55,7 +55,7 @@ public class Checkpoint extends LevelObject {
         Planet.INSTANCE.disposables.add(blockModel);
         Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
         entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
-        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+        // entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 
         pos = _pos;
 

@@ -20,7 +20,11 @@ import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 
 import com.badlogic.gdx.math.Vector3;
 
-public class Coin extends LevelObject {
+import com.badlogic.gdx.audio.Sound;
+
+import com.badlogic.gdx.utils.Disposable;
+
+public class Coin {
     BulletEntity entity;
 
     public class CoinCallback extends ContactResultCallback {
@@ -37,7 +41,11 @@ public class Coin extends LevelObject {
                 if (coin.touched)
                     return 0f;
 
+                System.out.println("Coin collected.");
+                pickupSound.play();
+
                 coin.touched = true;
+                coin.dispose();
 
                 return 0f;
         }
@@ -46,34 +54,48 @@ public class Coin extends LevelObject {
     CoinCallback coinCallback;
 
     public static Texture texture = texture = new Texture(Gdx.files.internal("data/coin.png"), true);
+    public static Sound pickupSound = Gdx.audio.newSound(Gdx.files.internal("data/coins.wav"));
 
     TextureAttribute textureAttribute;
 
     public boolean touched = false;
 
-    public Coin(Vector3 _pos) {
-        pos = _pos;
-
+    public Coin(Vector3 pos) {
         coinCallback = new CoinCallback(this);
 
         textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
 
-        final Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/coin.obj"));
-        Planet.INSTANCE.disposables.add(blockModel);
-        Planet.INSTANCE.world.addConstructor("coin", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
+        final Model coinModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/coin.obj"));
+        // Planet.INSTANCE.disposables.add(coinModel);
+        Planet.INSTANCE.world.addConstructor("coin", new BulletConstructor(coinModel, 0f, new btBvhTriangleMeshShape(coinModel.meshParts)));
         entity = Planet.INSTANCE.world.add("coin", pos.x, pos.y, pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 
-        entity.model.materials.get(0).set(
+        entity.modelInstance.materials.get(0).set(
             textureAttribute,
             ColorAttribute.createSpecular(Color.WHITE));
-
-        entity.transform.rotate(Vector3.Y, 90f);
 
         Planet.INSTANCE.level.coins.add(this);
     }
 
     public void update() {
-        entity.transform.rotate(Vector3.Y, 1f);
+        if (!touched)
+        {
+            entity.transform.rotate(Vector3.Y, 1f);
+
+            for (Car car : Planet.INSTANCE.cars) {
+                Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, coinCallback);
+            }
+        }
+    }
+
+    public void dispose () {
+        Planet.INSTANCE.world.remove(entity);
+
+        Planet.INSTANCE.level.coins.removeValue(this, true);
+        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
+        entity.dispose();
+
+        System.out.println("Coin disposed.");
     }
 }

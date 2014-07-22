@@ -47,6 +47,10 @@ public class BaseWorld<T extends BaseEntity> implements Disposable {
 		return constructors.get(name);
 	}
 
+	public void remove (final T entity) {
+		entities.removeValue(entity, true);
+	}
+
 	public void add (final T entity) {
 		entities.add(entity);
 	}
