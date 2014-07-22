@@ -193,8 +193,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
        		checkpoint.update();
        	}
 
-       	for (Coin coin : Planet.INSTANCE.level.coins) {
-       		coin.update();
+       	for (Collectible collectible : Planet.INSTANCE.level.collectibles) {
+       		collectible.update();
        	}
 	}
 
