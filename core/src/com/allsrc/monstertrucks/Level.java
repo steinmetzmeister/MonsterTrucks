@@ -14,6 +14,7 @@ public class Level {
     Array<Checkpoint> checkpoints = new Array<Checkpoint>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
+    Array<Ball> balls = new Array<Ball>();
 
     public Level() {
     }

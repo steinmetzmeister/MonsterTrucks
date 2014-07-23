@@ -53,7 +53,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 	boolean initialized;
 
-	int numPlayers = 1;
+	int numPlayers = 2;
 	
 	public void init() {
 		if (initialized) return;
@@ -129,8 +129,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			Planet.INSTANCE.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
 			Controllers.getControllers().get(i).addListener(Planet.INSTANCE.cars.get(i));
 
-			System.out.println(i);
-
 			// i++;
 		}
 
@@ -148,7 +146,11 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		new Trigger(new Vector3(0f, 0f, 10f), new Vector3(10f, 10f, 10f));
+		new Trigger(new Vector3(0f, 0f, 10f), new Vector3(10f, 10f, 10f), new Color(1f, 0f, 1f, 0.4f));
+
+		new Ball(new Vector3(-5f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(1f, 1f, 0f, 1f));
+		new Ball(new Vector3(0f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(0f, 1f, 1f, 1f));
+		new Ball(new Vector3(5f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(1f, 0f, 1f, 1f));
 	}
 
 	@Override

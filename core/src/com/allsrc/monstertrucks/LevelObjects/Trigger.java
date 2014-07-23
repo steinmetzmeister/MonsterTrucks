@@ -20,7 +20,6 @@ import com.badlogic.gdx.utils.Disposable;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 
 import com.badlogic.gdx.graphics.GL20;
@@ -43,8 +42,6 @@ public class Trigger {
                     return 0f;
 
                 trigger.wasTriggered();
-
-                System.out.println("Triggered.");
                 
                 return 0f;
         }
@@ -53,45 +50,34 @@ public class Trigger {
     public TriggerCallback triggerCallback;
 
     public boolean triggered = false;
-
+    
     public BulletEntity entity;
 
-    public Trigger(Vector3 pos, Vector3 size) {
-        init(pos, size);
+    public static Model triggerModel;
+    public Color triggerColor;
+
+    public Trigger(Vector3 pos, Vector3 size, Color color) {
+        init(pos, size, color);
     }
 
-    public void init(Vector3 pos, Vector3 size) {
+    public void init(Vector3 pos, Vector3 size, Color color) {
         triggerCallback = new TriggerCallback(this);
 
-        ModelBuilder builder = new ModelBuilder();
-        Model sphere = builder.createSphere(size.x, size.y, size.z, 16, 16,
-            new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color(1f, 0f, 0f, 0.4f)),
-            new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
-            Usage.Position | Usage.Normal);
+        triggerColor = color;
+        
+        if (triggerModel == null)
+        {
+           triggerModel = Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
+                new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
+                new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
+                Usage.Position | Usage.Normal);
 
-        Planet.INSTANCE.world.addConstructor("trigger", new BulletConstructor(sphere, 0f, new btBvhTriangleMeshShape(sphere.meshParts)));
+           Planet.INSTANCE.world.addConstructor("trigger", new BulletConstructor(triggerModel, 0f,
+            new btBvhTriangleMeshShape(triggerModel.meshParts)));
+        }
+        
         entity = Planet.INSTANCE.world.add("trigger", pos.x, pos.y, pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
-
-        /*
-        if (collectibleModel == null) {
-            collectibleModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
-            texture = new Texture(Gdx.files.internal(textureFile), true);
-            textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
-            pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
-            meshShape = new btBvhTriangleMeshShape(collectibleModel.meshParts);
-            
-            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(collectibleModel, 0f, meshShape));
-        }
-
-        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
-        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
-
-        entity.modelInstance.materials.get(0).set(
-            textureAttribute,
-            ColorAttribute.createSpecular(Color.WHITE));
-
-        */
         
         addToTriggers();
     }

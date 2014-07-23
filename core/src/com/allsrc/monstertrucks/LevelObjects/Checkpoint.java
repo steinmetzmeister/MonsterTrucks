@@ -27,19 +27,16 @@ public class Checkpoint extends LevelObject {
         public float addSingleResult (btManifoldPoint cp,
             btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
             btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-                if (checkpoint.reached)
-                    return 0f;
-
-                checkpoint.reached = true;
 
                 checkpoint.entity.modelInstance.materials.get(0).set(
-                    ColorAttribute.createDiffuse(Color.ORANGE),
+                    ColorAttribute.createDiffuse(testing.carColor),
                     ColorAttribute.createSpecular(Color.WHITE));
 
                 return 0f;
         }
     }
 
+    Car testing;
     CheckpointCallback checkpointCallback;
     boolean reached = false;
 
@@ -63,11 +60,9 @@ public class Checkpoint extends LevelObject {
     }
 
     public void update() {
-        if (!reached)
-        {
-            for (Car car : Planet.INSTANCE.cars) {
-                Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, checkpointCallback);
-            }
+        for (Car car : Planet.INSTANCE.cars) {
+            testing = car;
+            Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, checkpointCallback);
         }
     }
 }
