@@ -52,6 +52,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
 
 	boolean initialized;
+
+	int numPlayers = 2;
 	
 	public void init() {
 		if (initialized) return;
@@ -86,8 +88,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		final float width = Gdx.graphics.getWidth();
 		final float height = Gdx.graphics.getHeight();
 		
-		// Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
-		Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height , 3f);
+		if (numPlayers == 2)
+			Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
+		else
+			Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height , 3f);
 
 		Planet.INSTANCE.modelBatch = new ModelBatch();
 		Planet.INSTANCE.world = new BulletWorld();
@@ -114,13 +118,20 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.world.addConstructor("terrain", new BulletConstructor(model, 0f, new btBvhTriangleMeshShape(model.meshParts)));
 		Planet.INSTANCE.world.add("terrain", 0f, 0f, 0f);
 
-		int i = 0;
-		for (Controller controller : Controllers.getControllers())
+		// int i = 0; 
+		// for (Controller controller : Controllers.getControllers())
+		for (int i = 0; i < numPlayers; i++)
 		{
-			Planet.INSTANCE.cars.add((Car)new MonsterTruck());
-			controller.addListener(Planet.INSTANCE.cars.get(i));
+			Color c = Color.RED;
+			if (i == 1)
+				c = Color.BLUE;
 
-			i++;
+			Planet.INSTANCE.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
+			Controllers.getControllers().get(i).addListener(Planet.INSTANCE.cars.get(i));
+
+			System.out.println(i);
+
+			// i++;
 		}
 
 		final Model blockModel = objLoader.loadModel(Gdx.files.internal("data/block.obj"));
@@ -142,27 +153,42 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public void render () {
 		update();
 
-		
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
-
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.INSTANCE.camera.update();
-		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-		Planet.INSTANCE.modelBatch.end();
-		
-		// Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
-		// Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		// Planet.INSTANCE.camera.update();
-		// Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-		// Planet.INSTANCE.modelBatch.end();
+		if (numPlayers == 2)
+			renderTwoPlayerScreen();
+		else
+			renderScreen();
 
 		// UI
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
+	}
+
+	public void renderScreen() {
+		updateCameraPosition(0);
+		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		Planet.INSTANCE.camera.update();
+		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+		Planet.INSTANCE.modelBatch.end();
+	}
+
+	public void renderTwoPlayerScreen() {
+		updateCameraPosition(0);
+		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Planet.INSTANCE.camera.update();
+		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+		Planet.INSTANCE.modelBatch.end();
+		
+		updateCameraPosition(1);
+		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Planet.INSTANCE.camera.update();
+		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
+		Planet.INSTANCE.modelBatch.end();
 	}
 
 	// context of truck
@@ -170,23 +196,25 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	Vector3 carPosition = new Vector3();
 	Vector3 cameraPosition = new Vector3();
 
+	public void updateCameraPosition(int playerNum) {
+		Planet.INSTANCE.cars.get(playerNum).chassis.motionState.getWorldTransform(worldTransform);
+
+		worldTransform.getTranslation(carPosition);
+		cameraPosition.set(carPosition);
+
+		cameraPosition.set(cameraPosition.x - 5f, cameraPosition.y + 12f, cameraPosition.z - 10f);
+
+		Planet.INSTANCE.camera.position.set(cameraPosition);
+		Planet.INSTANCE.camera.lookAt(carPosition);
+        Planet.INSTANCE.camera.up.set(Vector3.Y);
+	}
+
 	public void update () {
 		Planet.INSTANCE.world.update();
 
 		for (Car car : Planet.INSTANCE.cars)
 		{
 			car.update();
-
-			car.chassis.motionState.getWorldTransform(worldTransform);
-
-			worldTransform.getTranslation(carPosition);
-			cameraPosition.set(carPosition);
-
-			cameraPosition.set(cameraPosition.x - 5f, cameraPosition.y + 12f, cameraPosition.z - 10f);
-
-			Planet.INSTANCE.camera.position.set(cameraPosition);
-			Planet.INSTANCE.camera.lookAt(carPosition);
-        	Planet.INSTANCE.camera.up.set(Vector3.Y);
        	}
 
        	for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
@@ -261,7 +289,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			btVector3 p = rayTestCB.getHitPointWorld();
 
 			if (button == 0) {
-				Checkpoint point = new Checkpoint(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
+				Checkpoint point = new Checkpoint(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 			} else {
 				Coin point = new Coin(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
 			}

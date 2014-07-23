@@ -50,6 +50,7 @@ public class Collectible {
     public static Texture texture;
     public static TextureAttribute textureAttribute;
     public static Sound pickupSound;
+    public static btBvhTriangleMeshShape meshShape;
 
     public String name;
     public String modelFile;
@@ -64,10 +65,10 @@ public class Collectible {
             texture = new Texture(Gdx.files.internal(textureFile), true);
             textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
             pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
+            meshShape = new btBvhTriangleMeshShape(collectibleModel.meshParts);
+            
+            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(collectibleModel, 0f, meshShape));
         }
-        
-        Planet.INSTANCE.world.addConstructor(name,new BulletConstructor(collectibleModel, 0f,
-            new btBvhTriangleMeshShape(collectibleModel.meshParts)));
 
         entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
@@ -93,7 +94,8 @@ public class Collectible {
             entity.transform.rotate(Vector3.Y, 1f);
 
             for (Car car : Planet.INSTANCE.cars) {
-                Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, collectibleCallback);
+                if (entity.body != null)
+                    Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, collectibleCallback);
             }
         }
     }

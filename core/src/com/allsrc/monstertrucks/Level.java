@@ -12,8 +12,6 @@ import java.io.BufferedReader;
 
 public class Level {
     Array<Checkpoint> checkpoints = new Array<Checkpoint>();
-    Array<Coin> coins = new Array<Coin>();
-
     Array<Collectible> collectibles = new Array<Collectible>();
 
     public Level() {

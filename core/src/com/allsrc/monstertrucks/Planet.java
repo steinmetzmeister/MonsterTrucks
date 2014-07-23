@@ -10,10 +10,14 @@ public enum Planet {
     INSTANCE;
 
     public ObjLoader objLoader = new ObjLoader();
+    
     public PerspectiveCamera camera;
     public ModelBatch modelBatch;
     public BulletWorld world;
     public Array<Disposable> disposables = new Array<Disposable>();
+
+    public Array<Player> players = new Array<Player>();
     public Array<Car> cars = new Array<Car>();
+
     public Level level;
 }

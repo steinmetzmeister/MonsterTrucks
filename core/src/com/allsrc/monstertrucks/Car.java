@@ -70,16 +70,15 @@ public class Car implements ControllerListener {
     protected String wheelModelFile = "data/wheel.obj";
     protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
 
-    public Car() {
-        init();
-    }
+    protected Color carColor;
+    protected Vector3 initPos;
 
     protected void loadModels() {
         // chassis
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.INSTANCE.disposables.add(chassisModel);
         chassisModel.materials.get(0).clear();
-        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.RED), ColorAttribute.createSpecular(Color.WHITE));
+        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(carColor), ColorAttribute.createSpecular(Color.WHITE));
 
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
@@ -102,7 +101,7 @@ public class Car implements ControllerListener {
 
         chassisHalfExtents.scl(0.5f);
 
-        chassis = Planet.INSTANCE.world.add("chassis", 0, 3f, 0);
+        chassis = Planet.INSTANCE.world.add("chassis", initPos.x, initPos.y, initPos.z);
         wheels[0] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
         wheels[1] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
         wheels[2] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
@@ -194,7 +193,7 @@ public class Car implements ControllerListener {
     }
 
     public void reset() {
-        chassis.body.setWorldTransform(chassis.transform.setToTranslation(0, 3f, 0));
+        chassis.body.setWorldTransform(chassis.transform.setToTranslation(initPos));
         chassis.body.setInterpolationWorldTransform(chassis.transform);
         ((btRigidBody)(chassis.body)).setLinearVelocity(Vector3.Zero);
         ((btRigidBody)(chassis.body)).setAngularVelocity(Vector3.Zero);
@@ -229,10 +228,12 @@ public class Car implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        if (buttonCode == 1 || buttonCode == Ouya.BUTTON_O)
+        System.out.println(buttonCode);
+
+        if (buttonCode == 1 || buttonCode == 14 || buttonCode == Ouya.BUTTON_O)
             upPressed = true;
 
-        if (buttonCode == 0 || buttonCode == Ouya.BUTTON_U)
+        if (buttonCode == 0 || buttonCode == 15 || buttonCode == Ouya.BUTTON_U)
             downPressed = true;
 
         if (buttonCode == 2) {}
@@ -243,13 +244,13 @@ public class Car implements ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        if (buttonCode == 3 || buttonCode == Ouya.BUTTON_Y)
+        if (buttonCode == 3 || buttonCode == 12 || buttonCode == Ouya.BUTTON_Y)
             reset();
 
-        if (buttonCode == 1 || buttonCode == Ouya.BUTTON_O)
+        if (buttonCode == 1 || buttonCode == 14 || buttonCode == Ouya.BUTTON_O)
             upPressed = false;
 
-        if (buttonCode == 0 || buttonCode == Ouya.BUTTON_U)
+        if (buttonCode == 0 || buttonCode == 15 || buttonCode == Ouya.BUTTON_U)
             downPressed = false;
 
         return false;

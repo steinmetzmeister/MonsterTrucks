@@ -6,11 +6,14 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
 public class MonsterTruck extends Car {
-    public void init() {
+    public MonsterTruck(Vector3 pos, Color color) {
+        initPos = pos;
+        carColor = color;
+
         maxForce = 100f;
         acceleration = 200f; // second
 
-        chassisModelFile = "data/complexCar.obj";
+        chassisModelFile = "data/truck.obj";
         wheelScale = new Vector3(3f, 2.5f, 2.5f);
 
         super.init();
