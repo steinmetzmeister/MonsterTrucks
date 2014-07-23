@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 public class Level {
     Array<Checkpoint> checkpoints = new Array<Checkpoint>();
     Array<Collectible> collectibles = new Array<Collectible>();
+    Array<Trigger> triggers = new Array<Trigger>();
 
     public Level() {
     }

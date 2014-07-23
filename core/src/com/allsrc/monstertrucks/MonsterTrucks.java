@@ -53,7 +53,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 	boolean initialized;
 
-	int numPlayers = 2;
+	int numPlayers = 1;
 	
 	public void init() {
 		if (initialized) return;
@@ -147,6 +147,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		// Level
 		Planet.INSTANCE.level = new Level();
+
+		new Trigger(new Vector3(0f, 0f, 10f), new Vector3(10f, 10f, 10f));
 	}
 
 	@Override
@@ -223,6 +225,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
        	for (Collectible collectible : Planet.INSTANCE.level.collectibles) {
        		collectible.update();
+       	}
+
+       	for (Trigger trigger : Planet.INSTANCE.level.triggers) {
+       		trigger.update();
        	}
 	}
 

@@ -228,8 +228,6 @@ public class Car implements ControllerListener {
 
     @Override
     public boolean buttonDown(Controller controller, int buttonCode) {
-        System.out.println(buttonCode);
-
         if (buttonCode == 1 || buttonCode == 14 || buttonCode == Ouya.BUTTON_O)
             upPressed = true;
 
