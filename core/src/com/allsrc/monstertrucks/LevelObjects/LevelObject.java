@@ -7,21 +7,16 @@ public class LevelObject {
     public Vector3 pos;
 
     public LevelObject() {}
-    public LevelObject(String _name, Vector3 _pos) {
-        name = _name;
-        pos = _pos;
-    }
 
     public void update() {
         // update
     }
 
-    public String getSaveText() {
-        return name + " "
-            + pos.x + "," + pos.y + "," + pos.z;
+    public String getSaveLine() {
+        return name + " " + pos.x + "," + pos.y + "," + pos.z;
     }
 
-    public static void loadFromText(String text) {
+    public static void loadFromLine(String line) {
         System.out.println(name + " loader not implemented.");
     }
 }

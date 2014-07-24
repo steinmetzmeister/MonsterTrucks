@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 
-public class Trigger {
+public class Trigger extends LevelObject {
 
     public class TriggerCallback extends ContactResultCallback {
         public Trigger trigger;
@@ -47,6 +47,8 @@ public class Trigger {
         }
     }
 
+    public static String name = "trigger";
+
     public TriggerCallback triggerCallback;
 
     public boolean triggered = false;
@@ -55,19 +57,22 @@ public class Trigger {
 
     public static Model triggerModel;
     public Color triggerColor;
+    public int size;
 
-    public Trigger(Vector3 pos, Vector3 size, Color color) {
-        init(pos, size, color);
+    public Trigger(Vector3 _pos, int _size, Color color) {
+        init(_pos, _size, color);
     }
 
-    public void init(Vector3 pos, Vector3 size, Color color) {
+    public void init(Vector3 _pos, int _size, Color color) {
         triggerCallback = new TriggerCallback(this);
 
+        pos = _pos;
+        size = _size;
         triggerColor = color;
         
         if (triggerModel == null)
         {
-           triggerModel = Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
+           triggerModel = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
                 new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
                 new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
                 Usage.Position | Usage.Normal);
@@ -112,5 +117,25 @@ public class Trigger {
         removeFromTriggers();
         
         entity.dispose();
+    }
+
+    public String getSaveLine() {
+        return name + ","
+            + pos.x + "," + pos.y + "," + pos.z + ","
+            + size + "," + triggerColor.r + "," + triggerColor.g + "," + triggerColor.b + "," + triggerColor.a;
+            
+    }
+
+    public static void loadFromLine(String line) {
+        String[] ls = line.split(",");
+        new Trigger(new Vector3(
+            Float.parseFloat(ls[1]),
+            Float.parseFloat(ls[2]),
+            Float.parseFloat(ls[3])), Integer.parseInt(ls[4]),
+            new Color(
+                Float.parseFloat(ls[5]),
+                Float.parseFloat(ls[6]),
+                Float.parseFloat(ls[7]),
+                Float.parseFloat(ls[8])));
     }
 }

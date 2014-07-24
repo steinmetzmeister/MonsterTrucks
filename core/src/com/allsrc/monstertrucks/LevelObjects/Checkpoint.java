@@ -36,6 +36,9 @@ public class Checkpoint extends LevelObject {
         }
     }
 
+    public static String name = "checkpoint";
+    public static Model blockModel;
+
     Color testing;
     CheckpointCallback checkpointCallback;
     boolean reached = false;
@@ -48,11 +51,15 @@ public class Checkpoint extends LevelObject {
         checkpointCallback = new CheckpointCallback();
         checkpointCallback.checkpoint = this;
 
-        final Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
-        Planet.INSTANCE.disposables.add(blockModel);
-        Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
+        if (blockModel == null) {
+            Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
+            Planet.INSTANCE.disposables.add(blockModel);
+
+            final btBvhTriangleMeshShape meshShape = new btBvhTriangleMeshShape(blockModel.meshParts);
+            Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, meshShape));
+        }
+
         entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
-        // entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
 
         pos = _pos;
 
@@ -84,8 +91,11 @@ public class Checkpoint extends LevelObject {
         entity.dispose();
     }
 
+    public String getSaveLine() {
+        return name + "," + pos.x + "," + pos.y + "," + pos.z;
+    }
+
     public static void loadFromLine(String text) {
-        System.out.println(text);
         String[] p = text.split(",");
         new Checkpoint(new Vector3(
             Float.parseFloat(p[1]),

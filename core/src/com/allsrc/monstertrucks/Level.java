@@ -40,10 +40,19 @@ public class Level {
             PrintWriter out = new PrintWriter(writer);
 
             for (Checkpoint checkpoint : checkpoints) {
-                out.println(checkpoint.name + ','
-                    + checkpoint.pos.x + ','
-                    + checkpoint.pos.y + ','
-                    + checkpoint.pos.z);
+                out.println(checkpoint.getSaveLine());
+            }
+
+            for (Trigger trigger : triggers) {
+                out.println(trigger.getSaveLine());
+            }
+
+            for (Ball ball : balls) {
+                out.println(ball.getSaveLine());
+            }
+
+            for (Collectible collectible : collectibles) {
+                out.println(collectible.getSaveLine());
             }
 
             out.close();
@@ -57,8 +66,23 @@ public class Level {
             File file = new File("output.txt");  
             BufferedReader in = new BufferedReader(new FileReader(file));
 
+            String line;
+            String word;
             while (in.ready()) {
-                Checkpoint.loadFromLine(in.readLine());
+                line = in.readLine();
+                word = line.substring(0, line.indexOf(','));
+                
+                if (word.equals("checkpoint"))
+                    Checkpoint.loadFromLine(line);
+
+                else if (word.equals("trigger"))
+                    Trigger.loadFromLine(line);
+
+                else if (word.equals("ball"))
+                    Ball.loadFromLine(line);
+
+                else if (word.equals("coin"))
+                    Coin.loadFromLine(line);
             }
 
             in.close();

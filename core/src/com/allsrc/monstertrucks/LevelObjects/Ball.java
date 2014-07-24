@@ -25,26 +25,30 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Ball {
+public class Ball extends LevelObject {
     BulletEntity entity;
 
     public static Model ballModel;
+    public static String name = "ball";
+    public int size;
     public Color color;
 
-    public Ball(Vector3 pos, Vector3 size, Color _color) {
-        init(pos, size, _color);
+    public Ball(Vector3 _pos, int _size, Color _color) {
+        init(_pos, _size, _color);
     }
 
-    public void init(Vector3 pos, Vector3 size, Color _color) {
+    public void init(Vector3 _pos, int _size, Color _color) {
+        pos = _pos;
+        size = _size;
         color = _color;
 
         if (ballModel == null)
         {
-            ballModel = Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
+            ballModel = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
                 new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
                 Usage.Position | Usage.Normal);
 
-            final BulletConstructor ballConstructor = new BulletConstructor(ballModel, 5f, new btSphereShape(size.x / 2));
+            final BulletConstructor ballConstructor = new BulletConstructor(ballModel, 5f, new btSphereShape(size / 2));
 
             ballConstructor.bodyInfo.setRestitution(1f);
             Planet.INSTANCE.world.addConstructor("ball", ballConstructor);
@@ -71,5 +75,27 @@ public class Ball {
         removeFromBalls();
         
         entity.dispose();
+    }
+
+    public String getSaveLine() {
+        return name + ","+ pos.x + "," + pos.y + "," + pos.z + ","
+            + size + ","
+            + color.r + "," + color.g + "," + color.b + "," + color.a;
+    }
+
+    public static void loadFromLine(String line) {
+        String[] ls = line.split(",");
+        new Ball(
+            new Vector3(
+                Float.parseFloat(ls[1]),
+                Float.parseFloat(ls[2]),
+                Float.parseFloat(ls[3])),
+            Integer.parseInt(ls[4]),
+            new Color(
+                Float.parseFloat(ls[5]),
+                Float.parseFloat(ls[6]),
+                Float.parseFloat(ls[7]),
+                Float.parseFloat(ls[8]))
+        );
     }
 }

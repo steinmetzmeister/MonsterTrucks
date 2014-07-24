@@ -150,11 +150,11 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		new Trigger(new Vector3(0f, 0f, 10f), new Vector3(10f, 10f, 10f), new Color(1f, 0f, 1f, 0.4f));
+		new Trigger(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
 
-		new Ball(new Vector3(-5f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(1f, 1f, 0f, 1f));
-		new Ball(new Vector3(0f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(0f, 1f, 1f, 1f));
-		new Ball(new Vector3(5f, 5f, 5f), new Vector3(3f, 3f, 3f), new Color(1f, 0f, 1f, 1f));
+		new Ball(new Vector3(-5f, 5f, 5f), 3, new Color(1f, 1f, 0f, 1f));
+		new Ball(new Vector3(0f, 5f, 5f), 3, new Color(0f, 1f, 1f, 1f));
+		new Ball(new Vector3(5f, 5f, 5f), 3, new Color(1f, 0f, 1f, 1f));
 	}
 
 	@Override

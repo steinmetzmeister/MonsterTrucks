@@ -18,7 +18,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Collectible {
+public class Collectible extends LevelObject {
 
     public class CollectibleCallback extends ContactResultCallback {
         public Collectible collectible;
@@ -57,7 +57,9 @@ public class Collectible {
     public String textureFile;
     public String soundFile;
 
-    public void init(Vector3 pos) {
+    public void init(Vector3 _pos) {
+        pos = _pos;
+
         collectibleCallback = new CollectibleCallback(this);
 
         if (collectibleModel == null) {
