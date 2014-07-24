@@ -74,4 +74,22 @@ public class Checkpoint extends LevelObject {
     public void testCollision(btCollisionObject body) {
         Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, checkpointCallback);
     }
+
+    public void dispose() {
+        Planet.INSTANCE.world.remove(entity);
+        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
+
+        Planet.INSTANCE.level.checkpoints.removeValue(this, false);
+        
+        entity.dispose();
+    }
+
+    public static void loadFromLine(String text) {
+        System.out.println(text);
+        String[] p = text.split(",");
+        new Checkpoint(new Vector3(
+            Float.parseFloat(p[1]),
+            Float.parseFloat(p[2]),
+            Float.parseFloat(p[3])));
+    }
 }

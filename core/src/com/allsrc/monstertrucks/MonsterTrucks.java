@@ -274,6 +274,9 @@ public class MonsterTrucks extends MonsterTrucksBase {
         	case Keys.R:
             	//
             	break;
+            case Keys.C:
+            	Planet.INSTANCE.level.clearLevel();
+            	break;
             case Keys.L:
             	Planet.INSTANCE.level.saveToFile();
             	break;

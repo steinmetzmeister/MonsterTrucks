@@ -19,13 +19,27 @@ public class Level {
     public Level() {
     }
 
+    public void clearLevel() {
+        for (int j = checkpoints.size - 1; j >= 0; j--)
+            checkpoints.get(j).dispose();
+
+        for (int j = collectibles.size - 1; j >= 0; j--)
+            collectibles.get(j).dispose();
+
+        for (int j = triggers.size - 1; j >= 0; j--)
+            triggers.get(j).dispose();
+
+        for (int j = balls.size - 1; j >= 0; j--)
+            balls.get(j).dispose();
+    }
+
     public void saveToFile() {
         try {
             File file = new File("output.txt");  
             FileWriter writer = new FileWriter(file);  
             PrintWriter out = new PrintWriter(writer);
 
-            for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
+            for (Checkpoint checkpoint : checkpoints) {
                 out.println(checkpoint.name + ','
                     + checkpoint.pos.x + ','
                     + checkpoint.pos.y + ','
@@ -44,11 +58,7 @@ public class Level {
             BufferedReader in = new BufferedReader(new FileReader(file));
 
             while (in.ready()) {
-                String[] checkpoint = in.readLine().split(",");
-                Planet.INSTANCE.level.checkpoints.add(new Checkpoint(new Vector3(
-                    Float.parseFloat(checkpoint[1]),
-                    Float.parseFloat(checkpoint[2]),
-                    Float.parseFloat(checkpoint[3]))));
+                Checkpoint.loadFromLine(in.readLine());
             }
 
             in.close();
