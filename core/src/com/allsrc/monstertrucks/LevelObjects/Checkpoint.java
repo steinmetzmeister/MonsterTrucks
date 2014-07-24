@@ -29,14 +29,14 @@ public class Checkpoint extends LevelObject {
             btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
 
                 checkpoint.entity.modelInstance.materials.get(0).set(
-                    ColorAttribute.createDiffuse(testing.carColor),
+                    ColorAttribute.createDiffuse(testing),
                     ColorAttribute.createSpecular(Color.WHITE));
 
                 return 0f;
         }
     }
 
-    Car testing;
+    Color testing;
     CheckpointCallback checkpointCallback;
     boolean reached = false;
 
@@ -61,8 +61,17 @@ public class Checkpoint extends LevelObject {
 
     public void update() {
         for (Car car : Planet.INSTANCE.cars) {
-            testing = car;
-            Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, checkpointCallback);
+            testing = car.carColor;
+            testCollision(car.chassis.body);
         }
+
+        for (Ball ball : Planet.INSTANCE.level.balls) {
+            testing = ball.color;
+            testCollision(ball.entity.body);
+        }
+    }
+
+    public void testCollision(btCollisionObject body) {
+        Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, checkpointCallback);
     }
 }

@@ -12,6 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/GdxTheme" >
         <activity
+            android:launchMode="singleInstance"
             android:name="com.allsrc.monstertrucks.android.AndroidLauncher"
             android:label="@string/app_name" 
             android:screenOrientation="landscape"

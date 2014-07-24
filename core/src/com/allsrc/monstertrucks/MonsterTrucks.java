@@ -48,12 +48,14 @@ import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 
 import com.badlogic.gdx.physics.bullet.linearmath.*;
 
+import com.badlogic.gdx.Application.ApplicationType;
+
 public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
 
 	boolean initialized;
 
-	int numPlayers = 2;
+	int numPlayers = 1;
 	
 	public void init() {
 		if (initialized) return;
@@ -127,7 +129,9 @@ public class MonsterTrucks extends MonsterTrucksBase {
 				c = Color.BLUE;
 
 			Planet.INSTANCE.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
-			Controllers.getControllers().get(i).addListener(Planet.INSTANCE.cars.get(i));
+
+			if (i < Controllers.getControllers().size)
+				Controllers.getControllers().get(i).addListener(Planet.INSTANCE.cars.get(i));
 
 			// i++;
 		}
@@ -182,14 +186,14 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	public void renderTwoPlayerScreen() {
 		updateCameraPosition(0);
 		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		Planet.INSTANCE.camera.update();
 		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
 		Planet.INSTANCE.modelBatch.end();
 		
 		updateCameraPosition(1);
 		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
-		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		Planet.INSTANCE.camera.update();
 		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
 		Planet.INSTANCE.modelBatch.end();
@@ -280,8 +284,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
         return false;
     }
 
-    @Override
-	public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+	public void touchDownDesktop (int screenX, int screenY, int pointer, int button) {
 		Ray ray = Planet.INSTANCE.camera.getPickRay(screenX, screenY);
 		rayFrom.set(ray.origin);
 		rayTo.set(ray.direction).scl(50f).add(rayFrom);
@@ -302,7 +305,74 @@ public class MonsterTrucks extends MonsterTrucksBase {
 				Coin point = new Coin(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
 			}
 		}
-
-		return true;
 	}
+
+	int startedX = 0;
+	int startedY = 0;
+
+	public void touchDownMobile (int screenX, int screenY, int pointer, int button) {
+		if (screenY < 200) {
+    		Planet.INSTANCE.cars.get(0).reset();
+    		return;
+    	}
+
+    	startedX = screenX;
+
+    	int width = Gdx.graphics.getWidth();
+    	if (screenX > width / 2) {
+    		Planet.INSTANCE.cars.get(0).downPressed = true;
+    	}
+    	else {
+    		Planet.INSTANCE.cars.get(0).upPressed = true;
+    	}
+	}
+
+	@Override
+    public boolean touchDown (int screenX, int screenY, int pointer, int button) {
+    	if ((Gdx.app.getType() == ApplicationType.Android ||
+    		Gdx.app.getType() == ApplicationType.iOS) &&
+    		Controllers.getControllers().size == 0) {
+
+    		touchDownMobile(screenX, screenY, pointer, button);
+    	}
+    	else
+    		touchDownDesktop(screenX, screenY, pointer, button);
+
+    	return false;
+    }
+
+    @Override
+    public boolean touchUp (int screenX, int screenY, int pointer, int button) {
+    	if (Gdx.app.getType() == ApplicationType.Android ||
+    		Gdx.app.getType() == ApplicationType.iOS) {
+
+    		startedX = 0;
+        
+    		Planet.INSTANCE.cars.get(0).currentAngle = 0f;
+
+        	Planet.INSTANCE.cars.get(0).upPressed = false;
+        	Planet.INSTANCE.cars.get(0).downPressed = false;
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged (int screenX, int screenY, int pointer) {
+    	if (Gdx.app.getType() == ApplicationType.Android ||
+    		Gdx.app.getType() == ApplicationType.iOS) {
+
+    		int x = (screenX - startedX) * -1;
+    		if (x > 200) x = 200;
+    		if (x < -200) x = -200;
+
+    		if (startedX != 0) {
+    			Planet.INSTANCE.cars.get(0).currentAngle = MonsterUtils.map(x, -200f, 200f,
+    				-Planet.INSTANCE.cars.get(0).maxAngle,
+    				Planet.INSTANCE.cars.get(0).maxAngle);
+    		}
+    	}
+
+        return false;
+    }    
 }
