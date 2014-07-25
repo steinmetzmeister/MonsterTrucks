@@ -13,6 +13,12 @@ public class Coin extends Collectible {
         init(_pos);
     }
 
+    public void init(Vector3 _pos) {
+        super.init(_pos);
+        rot = (int)(Math.random() * 360);
+        entity.transform.rotate(Vector3.Y, rot);
+    }
+
     public void update() {
         entity.transform.rotate(Vector3.Y, 1f);
 
