@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 public class LevelObject {
     public static String name;
     public Vector3 pos;
+    public int rot;
 
     public LevelObject() {}
 

@@ -151,6 +151,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Planet.INSTANCE.level = new Level();
 
 		new Checkpoint(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
+		new Gate(new Vector3(0f, -2f, 20f), 0, new Color(0f, 0.75f, 0.33f, 1f));
 
 		new Ball(new Vector3(-5f, 5f, 5f), 3, new Color(1f, 1f, 0f, 1f));
 		new Ball(new Vector3(0f, 5f, 5f), 3, new Color(0f, 1f, 1f, 1f));
@@ -321,7 +322,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
     			Planet.INSTANCE.level.clearLevel();
     			Planet.INSTANCE.level.loadFromFile();
     		}
-    		
+
     		return;
     	}
 
