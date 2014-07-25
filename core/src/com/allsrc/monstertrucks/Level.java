@@ -14,7 +14,11 @@ import java.io.BufferedReader;
 
 import com.badlogic.gdx.files.FileHandle;
 
+import com.badlogic.gdx.utils.Disposable;
+
 public class Level {
+    Terrain terrain = new Terrain();
+
     Array<ColorChanger> changers = new Array<ColorChanger>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
@@ -86,6 +90,10 @@ public class Level {
                 else if (word.equals("coin"))
                     Coin.loadFromLine(line);
             }
+
+    }
+
+    public void load() {
 
     }
 }
