@@ -1,28 +1,20 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.Gdx;
-
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
-
 public class Checkpoint extends Trigger {
-
+    
     public static String name = "checkpoint";
     public Gate gate;
 
     public Checkpoint(Vector3 _pos, int _size, Color color) {
         super(_pos, _size, color);
-
-        gate = new Gate(_pos, 0, color);
     }
 
     public void init() {
         super.init();
+        gate = new Gate(pos, 0, triggerColor);
     }
 
     public void dispose() {

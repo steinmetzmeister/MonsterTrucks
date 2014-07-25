@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
 public class Gate extends LevelObject {
-    BulletEntity entity;
+    public BulletEntity entity;
 
     public static String name = "gate";
     public static Model model;
@@ -23,6 +23,7 @@ public class Gate extends LevelObject {
 
         if (model == null) {
             model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
+            meshShape = new btBvhTriangleMeshShape(model.meshParts);
             Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
         }
 
