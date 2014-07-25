@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 public class Level {
-    Array<Checkpoint> checkpoints = new Array<Checkpoint>();
+    Array<ColorChanger> changers = new Array<ColorChanger>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
     Array<Ball> balls = new Array<Ball>();
@@ -20,8 +20,8 @@ public class Level {
     }
 
     public void clearLevel() {
-        for (int j = checkpoints.size - 1; j >= 0; j--)
-            checkpoints.get(j).dispose();
+        for (int j = changers.size - 1; j >= 0; j--)
+            changers.get(j).dispose();
 
         for (int j = collectibles.size - 1; j >= 0; j--)
             collectibles.get(j).dispose();
@@ -39,8 +39,8 @@ public class Level {
             FileWriter writer = new FileWriter(file);  
             PrintWriter out = new PrintWriter(writer);
 
-            for (Checkpoint checkpoint : checkpoints) {
-                out.println(checkpoint.getSaveLine());
+            for (ColorChanger changer : changers) {
+                out.println(changer.getSaveLine());
             }
 
             for (Trigger trigger : triggers) {
@@ -73,7 +73,7 @@ public class Level {
                 word = line.substring(0, line.indexOf(','));
                 
                 if (word.equals("checkpoint"))
-                    Checkpoint.loadFromLine(line);
+                    ColorChanger.loadFromLine(line);
 
                 else if (word.equals("trigger"))
                     Trigger.loadFromLine(line);

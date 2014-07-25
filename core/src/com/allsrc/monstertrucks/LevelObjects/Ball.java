@@ -48,7 +48,7 @@ public class Ball extends LevelObject {
                 new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
                 Usage.Position | Usage.Normal);
 
-            final BulletConstructor ballConstructor = new BulletConstructor(ballModel, 5f, new btSphereShape(size / 2));
+            final BulletConstructor ballConstructor = new BulletConstructor(ballModel, 5f, new btSphereShape(size / 2f));
 
             ballConstructor.bodyInfo.setRestitution(1f);
             Planet.INSTANCE.world.addConstructor("ball", ballConstructor);

@@ -150,7 +150,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		new Trigger(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
+		new Checkpoint(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
 
 		new Ball(new Vector3(-5f, 5f, 5f), 3, new Color(1f, 1f, 0f, 1f));
 		new Ball(new Vector3(0f, 5f, 5f), 3, new Color(0f, 1f, 1f, 1f));
@@ -225,8 +225,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			car.update();
        	}
 
-       	for (Checkpoint checkpoint : Planet.INSTANCE.level.checkpoints) {
-       		checkpoint.update();
+       	for (ColorChanger changer : Planet.INSTANCE.level.changers) {
+       		changer.update();
        	}
 
        	for (Collectible collectible : Planet.INSTANCE.level.collectibles) {
@@ -303,7 +303,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			btVector3 p = rayTestCB.getHitPointWorld();
 
 			if (button == 0) {
-				Checkpoint point = new Checkpoint(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
+				ColorChanger point = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 			} else {
 				Coin point = new Coin(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
 			}

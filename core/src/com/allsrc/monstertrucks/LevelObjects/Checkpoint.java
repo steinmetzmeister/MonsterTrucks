@@ -2,104 +2,62 @@ package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.Gdx;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
-import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
-
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
-
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
-public class Checkpoint extends LevelObject {
-    BulletEntity entity;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
-    public class CheckpointCallback extends ContactResultCallback {
-        public Checkpoint checkpoint;
-
-        @Override
-        public float addSingleResult (btManifoldPoint cp,
-            btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
-            btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-
-                checkpoint.entity.modelInstance.materials.get(0).set(
-                    ColorAttribute.createDiffuse(testing),
-                    ColorAttribute.createSpecular(Color.WHITE));
-
-                return 0f;
-        }
-    }
-
+public class Checkpoint extends Trigger {
     public static String name = "checkpoint";
-    public static Model blockModel;
 
-    Color testing;
-    CheckpointCallback checkpointCallback;
-    boolean reached = false;
+    public static String checkpointModelFile = "data/checkpoint.obj";
+    public static Model checkpointModel;
+    public static btBvhTriangleMeshShape checkpointMeshShape;
 
-    public Checkpoint(Vector3 _pos) {
-        create(_pos);
+    public BulletEntity checkpointEntity;
+
+    public Checkpoint(Vector3 _pos, int _size, Color color) {
+        super(_pos, _size, color);
     }
 
-    public void create(Vector3 _pos) {
-        checkpointCallback = new CheckpointCallback();
-        checkpointCallback.checkpoint = this;
+    public void init() {
+        if (checkpointModel == null) {
+            checkpointModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(checkpointModelFile));
+            checkpointMeshShape = new btBvhTriangleMeshShape(checkpointModel.meshParts);
 
-        if (blockModel == null) {
-            Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
-            Planet.INSTANCE.disposables.add(blockModel);
+            checkpointModel.materials.get(0).set(ColorAttribute.createDiffuse(triggerColor), ColorAttribute.createSpecular(Color.WHITE));
 
-            final btBvhTriangleMeshShape meshShape = new btBvhTriangleMeshShape(blockModel.meshParts);
-            Planet.INSTANCE.world.addConstructor("checkpoint", new BulletConstructor(blockModel, 0f, meshShape));
+            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(checkpointModel, 0f, checkpointMeshShape));
         }
 
-        entity = Planet.INSTANCE.world.add("checkpoint", _pos.x, _pos.y, _pos.z);
+        checkpointEntity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
 
-        pos = _pos;
-
-        Planet.INSTANCE.level.checkpoints.add(this);
-    }
-
-    public void update() {
-        for (Car car : Planet.INSTANCE.cars) {
-            testing = car.carColor;
-            testCollision(car.chassis.body);
-        }
-
-        for (Ball ball : Planet.INSTANCE.level.balls) {
-            testing = ball.color;
-            testCollision(ball.entity.body);
-        }
-    }
-
-    public void testCollision(btCollisionObject body) {
-        Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, checkpointCallback);
+        super.init();
     }
 
     public void dispose() {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
-
-        Planet.INSTANCE.level.checkpoints.removeValue(this, false);
+        Planet.INSTANCE.world.remove(checkpointEntity);
+        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(checkpointEntity.body);
         
-        entity.dispose();
+        checkpointEntity.dispose();
+
+        super.dispose();
     }
 
-    public String getSaveLine() {
-        return name + "," + pos.x + "," + pos.y + "," + pos.z;
-    }
-
-    public static void loadFromLine(String text) {
-        String[] p = text.split(",");
+    public static void loadFromLine(String line) {
+        String[] ls = line.split(",");
         new Checkpoint(new Vector3(
-            Float.parseFloat(p[1]),
-            Float.parseFloat(p[2]),
-            Float.parseFloat(p[3])));
+            Float.parseFloat(ls[1]),
+            Float.parseFloat(ls[2]),
+            Float.parseFloat(ls[3])), Integer.parseInt(ls[4]),
+            new Color(
+                Float.parseFloat(ls[5]),
+                Float.parseFloat(ls[6]),
+                Float.parseFloat(ls[7]),
+                Float.parseFloat(ls[8])));
     }
 }

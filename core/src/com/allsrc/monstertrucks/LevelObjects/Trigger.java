@@ -60,20 +60,20 @@ public class Trigger extends LevelObject {
     public int size;
 
     public Trigger(Vector3 _pos, int _size, Color color) {
-        init(_pos, _size, color);
-    }
-
-    public void init(Vector3 _pos, int _size, Color color) {
-        triggerCallback = new TriggerCallback(this);
-
         pos = _pos;
         size = _size;
         triggerColor = color;
+
+        init();
+    }
+
+    public void init() {
+        triggerCallback = new TriggerCallback(this);
         
         if (triggerModel == null)
         {
            triggerModel = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
-                new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
+                new Material(new ColorAttribute(ColorAttribute.Diffuse, triggerColor),
                 new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
                 Usage.Position | Usage.Normal);
 
