@@ -23,6 +23,7 @@ public class Level {
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
     Array<Ball> balls = new Array<Ball>();
+    Array<BulletObject> bulletObjects = new Array<BulletObject>();
 
     public Level() {
     }
@@ -39,6 +40,9 @@ public class Level {
 
         for (int j = balls.size - 1; j >= 0; j--)
             balls.get(j).dispose();
+
+        for (int j = bulletObjects.size - 1; j >= 0; j--)
+            bulletObjects.get(j).dispose();
     }
 
     public void saveToFile() {
@@ -61,6 +65,10 @@ public class Level {
 
             for (Collectible collectible : collectibles) {
                 out.println(collectible.getSaveLine());
+            }
+
+            for (BulletObject bulletObject : bulletObjects) {
+                out.println(bulletObject.getSaveLine());
             }
 
             out.close();
@@ -89,6 +97,9 @@ public class Level {
 
                 else if (word.equals("coin"))
                     Coin.loadFromLine(line);
+
+                else if (word.equals("gate"))
+                    Gate.loadFromLine(line);
             }
 
     }

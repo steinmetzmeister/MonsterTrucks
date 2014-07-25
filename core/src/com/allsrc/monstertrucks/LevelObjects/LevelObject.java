@@ -14,7 +14,7 @@ public class LevelObject {
     }
 
     public String getSaveLine() {
-        return name + " " + pos.x + "," + pos.y + "," + pos.z;
+        return name + "," + pos.x + "," + pos.y + "," + pos.z;
     }
 
     public static void loadFromLine(String line) {

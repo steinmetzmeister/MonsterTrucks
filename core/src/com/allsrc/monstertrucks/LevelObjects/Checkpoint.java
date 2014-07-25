@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
 public class Checkpoint extends Trigger {
-    
+
     public static String name = "checkpoint";
     public Gate gate;
 
@@ -14,7 +14,7 @@ public class Checkpoint extends Trigger {
 
     public void init() {
         super.init();
-        gate = new Gate(pos, 0, triggerColor);
+        gate = new Gate(pos, 0, triggerColor, true);
     }
 
     public void dispose() {
