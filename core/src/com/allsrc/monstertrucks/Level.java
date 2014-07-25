@@ -1,5 +1,7 @@
 package com.allsrc.monstertrucks;
 
+import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -9,6 +11,8 @@ import java.io.PrintWriter;
 import java.io.IOException;
 import java.io.FileReader;
 import java.io.BufferedReader;
+
+import com.badlogic.gdx.files.FileHandle;
 
 public class Level {
     Array<ColorChanger> changers = new Array<ColorChanger>();
@@ -35,7 +39,7 @@ public class Level {
 
     public void saveToFile() {
         try {
-            File file = new File("output.txt");  
+            File file = new File("data/output.txt");  
             FileWriter writer = new FileWriter(file);  
             PrintWriter out = new PrintWriter(writer);
 
@@ -62,21 +66,19 @@ public class Level {
     }
 
     public void loadFromFile() {
-        try {
-            File file = new File("output.txt");  
-            BufferedReader in = new BufferedReader(new FileReader(file));
 
-            String line;
+            FileHandle file = Gdx.files.internal("data/output.txt");
+            String[] lines = file.readString().split("\n");
+
             String word;
-            while (in.ready()) {
-                line = in.readLine();
+            for (String line : lines) {
                 word = line.substring(0, line.indexOf(','));
                 
-                if (word.equals("checkpoint"))
+                if (word.equals("changer"))
                     ColorChanger.loadFromLine(line);
 
-                else if (word.equals("trigger"))
-                    Trigger.loadFromLine(line);
+                else if (word.equals("checkpoint"))
+                    Checkpoint.loadFromLine(line);
 
                 else if (word.equals("ball"))
                     Ball.loadFromLine(line);
@@ -85,9 +87,5 @@ public class Level {
                     Coin.loadFromLine(line);
             }
 
-            in.close();
-        } catch(IOException e) {
-            System.out.println(e.toString());
-        }
     }
 }

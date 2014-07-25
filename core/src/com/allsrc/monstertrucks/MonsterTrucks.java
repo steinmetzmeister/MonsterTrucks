@@ -210,7 +210,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		worldTransform.getTranslation(carPosition);
 		cameraPosition.set(carPosition);
 
-		cameraPosition.set(cameraPosition.x - 5f, cameraPosition.y + 12f, cameraPosition.z - 10f);
+		cameraPosition.set(cameraPosition.x - 10f, cameraPosition.y + 20f, cameraPosition.z - 15f);
 
 		Planet.INSTANCE.camera.position.set(cameraPosition);
 		Planet.INSTANCE.camera.lookAt(carPosition);
@@ -315,7 +315,13 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 	public void touchDownMobile (int screenX, int screenY, int pointer, int button) {
 		if (screenY < 200) {
-    		Planet.INSTANCE.cars.get(0).reset();
+			if (screenX < Gdx.graphics.getWidth() / 2) {
+    			Planet.INSTANCE.cars.get(0).reset();
+    		} else {
+    			Planet.INSTANCE.level.clearLevel();
+    			Planet.INSTANCE.level.loadFromFile();
+    		}
+    		
     		return;
     	}
 

@@ -48,6 +48,13 @@ public class Checkpoint extends Trigger {
         super.dispose();
     }
 
+    public String getSaveLine() {
+        return name + ","
+            + pos.x + "," + pos.y + "," + pos.z + ","
+            + size + "," + triggerColor.r + "," + triggerColor.g + "," + triggerColor.b + "," + triggerColor.a;
+            
+    }
+
     public static void loadFromLine(String line) {
         String[] ls = line.split(",");
         new Checkpoint(new Vector3(
