@@ -126,7 +126,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		{
 			Color c = Color.RED;
 			if (i == 1)
-				c = Color.BLUE;
+				c = Color.BLACK;
 
 			Planet.INSTANCE.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
 
@@ -306,7 +306,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			if (button == 0) {
 				ColorChanger point = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 			} else {
-				Coin point = new Coin(new Vector3(p.getX(), p.getY() + 1f, p.getZ()));
+				Ball point = new Ball(new Vector3(p.getX(), p.getY() + 1f, p.getZ()), 3, new Color(1f, 1f, 0f, 1f));
 			}
 		}
 	}

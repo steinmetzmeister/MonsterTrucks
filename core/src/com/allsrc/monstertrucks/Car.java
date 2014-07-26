@@ -84,7 +84,7 @@ public class Car implements ControllerListener {
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
         Planet.INSTANCE.disposables.add(wheelModel);
         wheelModel.materials.get(0).clear();
-        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.BLACK), ColorAttribute.createSpecular(Color.WHITE));
+        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.WHITE));
         wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
     }
 

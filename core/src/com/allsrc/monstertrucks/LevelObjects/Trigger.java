@@ -123,7 +123,6 @@ public class Trigger extends LevelObject {
         return name + ","
             + pos.x + "," + pos.y + "," + pos.z + ","
             + size + "," + triggerColor.r + "," + triggerColor.g + "," + triggerColor.b + "," + triggerColor.a;
-            
     }
 
     public static void loadFromLine(String line) {
