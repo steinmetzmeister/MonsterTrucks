@@ -1,80 +1,46 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
-import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
+import com.badlogic.gdx.Gdx;
 
-import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 
-public class Ball extends LevelObject {
-    BulletEntity entity;
-
-    public static Model ballModel;
+public class Ball extends BulletObject {
     public static String name = "ball";
+    public static Model model;
     public int size;
-    public Color color;
 
     public Ball(Vector3 _pos, int _size, Color _color) {
-        init(_pos, _size, _color);
-    }
-
-    public void init(Vector3 _pos, int _size, Color _color) {
         pos = _pos;
         size = _size;
         color = _color;
 
-        if (ballModel == null)
+        init();
+    }
+
+    public void init() {
+        if (model == null)
         {
-            ballModel = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+            model = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
                 new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
                 Usage.Position | Usage.Normal);
 
-            final BulletConstructor ballConstructor = new BulletConstructor(ballModel, 5f, new btSphereShape(size / 2f));
+            final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, new btSphereShape(size / 2f));
 
             ballConstructor.bodyInfo.setRestitution(1f);
-            Planet.INSTANCE.world.addConstructor("ball", ballConstructor);
+            Planet.INSTANCE.world.addConstructor(name, ballConstructor);
         }
 
-        entity = Planet.INSTANCE.world.add("ball", pos.x, pos.y, pos.z);
+        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
         entity.modelInstance.materials.get(0).set(new Material(new ColorAttribute(ColorAttribute.Diffuse, color)));
-        
-        addToBalls();
-    }
 
-    public void addToBalls() {
-        Planet.INSTANCE.level.balls.add(this);
-    }
-
-    public void removeFromBalls() {
-        Planet.INSTANCE.level.balls.removeValue(this, true);
-    }
-
-    public void dispose () {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
-
-        removeFromBalls();
-        
-        entity.dispose();
+        addToBulletObjects();
     }
 
     public String getSaveLine() {
@@ -95,7 +61,6 @@ public class Ball extends LevelObject {
                 Float.parseFloat(ls[5]),
                 Float.parseFloat(ls[6]),
                 Float.parseFloat(ls[7]),
-                Float.parseFloat(ls[8]))
-        );
+                Float.parseFloat(ls[8])));
     }
 }

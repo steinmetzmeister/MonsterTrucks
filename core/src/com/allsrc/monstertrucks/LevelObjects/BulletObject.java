@@ -3,6 +3,7 @@ package com.allsrc.monstertrucks;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
@@ -26,32 +27,35 @@ public class BulletObject extends LevelObject {
         }
 
         entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
+
+        entity.modelInstance.materials.get(0).set(
+            ColorAttribute.createDiffuse(color),
+            ColorAttribute.createSpecular(Color.WHITE));
+
+        entity.transform.rotate(Vector3.Y, rot);
+
+        addToBulletObjects();
+    }
+
+    public void addToBulletObjects() {
+        Planet.INSTANCE.level.bulletObjects.add(this);
+    }
+
+    public void removeFromBulletObjects() {
+        Planet.INSTANCE.level.bulletObjects.removeValue(this, true);
     }
 
     public void dispose() {
         Planet.INSTANCE.world.remove(entity);
         Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
         entity.dispose();
+
+        removeFromBulletObjects();
     }
 
     public String getSaveLine() {
         return name + "," + pos.x + "," + pos.y + "," + pos.z + ","
             + rot + ","
             + color.r + "," + color.g + "," + color.b + "," + color.a;
-    }
-
-    public static void loadFromLine(String line) {
-        String[] ls = line.split(",");
-        new Gate(
-            new Vector3(
-                Float.parseFloat(ls[1]),
-                Float.parseFloat(ls[2]),
-                Float.parseFloat(ls[3])),
-            Integer.parseInt(ls[4]),
-            new Color(
-                Float.parseFloat(ls[5]),
-                Float.parseFloat(ls[6]),
-                Float.parseFloat(ls[7]),
-                Float.parseFloat(ls[8])));
     }
 }

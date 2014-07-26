@@ -25,7 +25,7 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 
-public class Trigger extends LevelObject {
+public class Trigger extends BulletObject {
 
     public class TriggerCallback extends ContactResultCallback {
         public Trigger trigger;
@@ -48,21 +48,18 @@ public class Trigger extends LevelObject {
     }
 
     public static String name = "trigger";
+    public static Model model;
 
     public TriggerCallback triggerCallback;
 
     public boolean triggered = false;
     
-    public BulletEntity entity;
-
-    public static Model triggerModel;
-    public Color triggerColor;
     public int size;
 
-    public Trigger(Vector3 _pos, int _size, Color color) {
+    public Trigger(Vector3 _pos, int _size, Color _color) {
         pos = _pos;
         size = _size;
-        triggerColor = color;
+        color = _color;
 
         init();
     }
@@ -70,29 +67,21 @@ public class Trigger extends LevelObject {
     public void init() {
         triggerCallback = new TriggerCallback(this);
         
-        if (triggerModel == null)
+        if (model == null)
         {
-           triggerModel = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
-                new Material(new ColorAttribute(ColorAttribute.Diffuse, triggerColor),
+            model = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+                new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
                 new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
                 Usage.Position | Usage.Normal);
 
-           Planet.INSTANCE.world.addConstructor("trigger", new BulletConstructor(triggerModel, 0f,
-            new btBvhTriangleMeshShape(triggerModel.meshParts)));
+            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, 
+                new btBvhTriangleMeshShape(model.meshParts)));
         }
         
-        entity = Planet.INSTANCE.world.add("trigger", pos.x, pos.y, pos.z);
+        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
         
-        addToTriggers();
-    }
-
-    public void addToTriggers() {
-        Planet.INSTANCE.level.triggers.add(this);
-    }
-
-    public void removeFromTriggers() {
-        Planet.INSTANCE.level.triggers.removeValue(this, true);
+        addToBulletObjects();
     }
 
     public void update() {
@@ -110,19 +99,10 @@ public class Trigger extends LevelObject {
         // dispose();
     }
 
-    public void dispose () {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
-
-        removeFromTriggers();
-        
-        entity.dispose();
-    }
-
     public String getSaveLine() {
         return name + ","
             + pos.x + "," + pos.y + "," + pos.z + ","
-            + size + "," + triggerColor.r + "," + triggerColor.g + "," + triggerColor.b + "," + triggerColor.a;
+            + size + "," + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
     public static void loadFromLine(String line) {

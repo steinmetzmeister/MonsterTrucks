@@ -17,8 +17,6 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Disposable;
 
 public class Level {
-    Terrain terrain = new Terrain();
-
     Array<ColorChanger> changers = new Array<ColorChanger>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
@@ -35,12 +33,6 @@ public class Level {
         for (int j = collectibles.size - 1; j >= 0; j--)
             collectibles.get(j).dispose();
 
-        for (int j = triggers.size - 1; j >= 0; j--)
-            triggers.get(j).dispose();
-
-        for (int j = balls.size - 1; j >= 0; j--)
-            balls.get(j).dispose();
-
         for (int j = bulletObjects.size - 1; j >= 0; j--)
             bulletObjects.get(j).dispose();
     }
@@ -53,10 +45,6 @@ public class Level {
 
             for (ColorChanger changer : changers) {
                 out.println(changer.getSaveLine());
-            }
-
-            for (Trigger trigger : triggers) {
-                out.println(trigger.getSaveLine());
             }
 
             for (Ball ball : balls) {
@@ -89,9 +77,6 @@ public class Level {
                 if (word.equals("changer"))
                     ColorChanger.loadFromLine(line);
 
-                else if (word.equals("checkpoint"))
-                    Checkpoint.loadFromLine(line);
-
                 else if (word.equals("ball"))
                     Ball.loadFromLine(line);
 
@@ -100,6 +85,9 @@ public class Level {
 
                 else if (word.equals("gate"))
                     Gate.loadFromLine(line);
+
+                else if (word.equals("checkpoint"))
+                    Checkpoint.loadFromLine(line);
             }
 
     }
