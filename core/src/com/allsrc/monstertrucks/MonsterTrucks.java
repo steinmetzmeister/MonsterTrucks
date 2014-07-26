@@ -80,6 +80,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	Vector3 rayTo = new Vector3();
 	Vector3 tempV = new Vector3();
 
+	Terrain terrain;
+
 	@Override
 	public void create () {
 		init();
@@ -107,18 +109,11 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		environment.add(light);
 		//
+		
+		// Level
+		Planet.INSTANCE.level = new Level();
 
-		// TERRAIN
-		final Model model = objLoader.loadModel(Gdx.files.internal("data/terrain.obj"));
-
-		Color terrainColor = new Color(0.70f, 0.65f, 0.60f, 1f);
-
-		model.meshes.get(0).scale(2f, 2f, 2f);
-        model.materials.get(0).clear();
-        model.materials.get(0).set(ColorAttribute.createDiffuse(Color.GREEN), ColorAttribute.createSpecular(Color.WHITE));
-
-		Planet.INSTANCE.world.addConstructor("terrain", new BulletConstructor(model, 0f, new btBvhTriangleMeshShape(model.meshParts)));
-		Planet.INSTANCE.world.add("terrain", 0f, 0f, 0f);
+		terrain = new Terrain("data/terrain.obj", Color.GREEN);
 
 		// int i = 0; 
 		// for (Controller controller : Controllers.getControllers())
@@ -146,9 +141,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		// rays
 		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
-
-		// Level
-		Planet.INSTANCE.level = new Level();
 
 		new Checkpoint(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
 		new Gate(new Vector3(0f, -2f, 20f), 0, new Color(0f, 0.75f, 0.33f, 1f));

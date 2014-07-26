@@ -15,13 +15,16 @@ public class BulletObject extends LevelObject {
     public Color color;
 
     public static String name;
-    public static Model model;
-    public static btBvhTriangleMeshShape meshShape;
+    public Model model;
+    public btBvhTriangleMeshShape meshShape;
+
+    public float scale = 1f;
 
     public void init(String _name, String modelFile) {
         if (model == null) {
             name = _name;
             model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
+            model.meshes.get(0).scale(scale, scale, scale);
             meshShape = new btBvhTriangleMeshShape(model.meshParts);
             Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
         }
