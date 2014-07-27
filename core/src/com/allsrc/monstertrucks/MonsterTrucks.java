@@ -113,7 +113,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		terrain = new Terrain("data/terrain.obj", Color.GREEN);
+		// terrain = new Terrain("data/terrain.obj", Color.GREEN);
 
 		// int i = 0; 
 		// for (Controller controller : Controllers.getControllers())
@@ -131,9 +131,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			// i++;
 		}
 
-		final Model blockModel = objLoader.loadModel(Gdx.files.internal("data/block.obj"));
-		Planet.INSTANCE.world.addConstructor("block", new BulletConstructor(blockModel, 0f, new btBvhTriangleMeshShape(blockModel.meshParts)));
-
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(this);
@@ -142,7 +139,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// rays
 		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
 
-		Checkpoint checkpoint = new Checkpoint(10);
+		/*Checkpoint checkpoint = new Checkpoint(10);
 		checkpoint.setPos(0f, 0f, 10f);
 		checkpoint.setColor(new Color(1f, 0f, 1f, 0.4f));
 		
@@ -150,14 +147,11 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		gate.setPos(new Vector3(0f, -2f, 20f));
 		gate.setColor(new Color(0f, 0.75f, 0.33f, 1f));
 
-		Ball ballA = new Ball(3, MonsterColor.CYAN);
-		ballA.setPos(-5f, 5f, 5f);
+		new Ball(3, MonsterColor.CYAN).setPos(-5f, 5f, 5f);
+		new Ball(3, MonsterColor.MAGENTA).setPos(0f, 5f, 5f);
+		new Ball(3, MonsterColor.YELLOW).setPos(5f, 5f, 5f);*/
 
-		Ball ballB = new Ball(3, MonsterColor.MAGENTA);
-		ballB.setPos(0f, 5f, 5f);
-
-		Ball ballC = new Ball(3, MonsterColor.YELLOW);
-		ballC.setPos(5f, 5f, 5f);
+		Planet.INSTANCE.level.loadFromFile();
 	}
 
 	@Override

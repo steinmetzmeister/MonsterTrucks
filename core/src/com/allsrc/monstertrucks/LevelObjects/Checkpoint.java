@@ -44,8 +44,6 @@ public class Checkpoint extends Trigger {
     }
 
     public String getSaveLine() {
-        int size = getSize();
-
         return name
             + "," + pos.x + "," + pos.y + "," + pos.z
             + "," + getSize()

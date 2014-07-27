@@ -29,6 +29,17 @@ public class Gate extends BulletObject {
         super.dispose();
     }
 
+    public String getSaveLine() {
+        String[] implode = {
+            name,
+            pos.x + "," + pos.y + "," + pos.z,
+            "0",
+            color.r + "," + color.g + "," + color.b + "," + color.a
+        };
+
+        return buildSaveLine(implode);
+    }
+
     public static void loadFromLine(String line) {
         String[] ls = line.split(",");
         Gate gate = new Gate();

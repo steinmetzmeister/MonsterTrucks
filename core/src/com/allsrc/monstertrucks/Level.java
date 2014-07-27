@@ -47,10 +47,6 @@ public class Level {
                 out.println(changer.getSaveLine());
             }
 
-            for (Ball ball : balls) {
-                out.println(ball.getSaveLine());
-            }
-
             for (Collectible collectible : collectibles) {
                 out.println(collectible.getSaveLine());
             }
@@ -88,6 +84,9 @@ public class Level {
 
                 else if (word.equals("checkpoint"))
                     Checkpoint.loadFromLine(line);
+
+                else if (word.equals("terrain"))
+                    Terrain.loadFromLine(line);
             }
 
     }

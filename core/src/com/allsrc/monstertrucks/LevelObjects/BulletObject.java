@@ -63,7 +63,7 @@ public class BulletObject extends LevelObject {
     }
 
     public void setColor(Color color) {
-        color = color;
+        this.color = color;
 
         entity.modelInstance.materials.get(0).set(
             ColorAttribute.createDiffuse(color),
@@ -76,6 +76,17 @@ public class BulletObject extends LevelObject {
         entity.dispose();
 
         removeFromBulletObjects(this);
+    }
+
+    public static String buildSaveLine(String[] implode) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < implode.length; i++) {
+            sb.append(implode[i]);
+            if (i != implode.length - 1) {
+                sb.append(",");
+            }
+        }
+        return sb.toString();
     }
 
     public static void addToBulletObjects(BulletObject object) {

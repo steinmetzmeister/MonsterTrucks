@@ -30,8 +30,8 @@ public class Trigger extends BulletObject {
     public class TriggerCallback extends ContactResultCallback {
         public Trigger trigger;
 
-        public TriggerCallback(Trigger _trigger) {
-            trigger = _trigger;
+        public TriggerCallback(Trigger trigger) {
+            this.trigger = trigger;
         }
         
         @Override
