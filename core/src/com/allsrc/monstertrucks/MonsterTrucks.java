@@ -113,8 +113,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		terrain = new Terrain("data/terrain.obj");
-		terrain.setColor(Color.GREEN);
+		terrain = new Terrain("data/terrain.obj", Color.GREEN);
 
 		// int i = 0; 
 		// for (Controller controller : Controllers.getControllers())
@@ -157,7 +156,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		Ball ballB = new Ball(3, MonsterColor.MAGENTA);
 		ballB.setPos(0f, 5f, 5f);
 
-		Ball ballC = new Ball(3, new Color(1f, 0f, 0f, 1f));
+		Ball ballC = new Ball(3, MonsterColor.YELLOW);
 		ballC.setPos(5f, 5f, 5f);
 	}
 

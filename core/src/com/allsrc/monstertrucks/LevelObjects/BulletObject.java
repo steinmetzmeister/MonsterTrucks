@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
+import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 public class BulletObject extends LevelObject {
     public BulletEntity entity;
@@ -17,7 +18,6 @@ public class BulletObject extends LevelObject {
 
     public void init(String name) {
         entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
-        addToBulletObjects(this);
     }
 
     public Model getModel(String file) {
@@ -29,6 +29,18 @@ public class BulletObject extends LevelObject {
 
     public btBvhTriangleMeshShape getMeshShape(Model model) {
         return new btBvhTriangleMeshShape(model.meshParts);
+    }
+
+    public void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
+        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+    }
+
+    public void addConstructor(String name, Model model, btSphereShape meshShape) {
+        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+    }
+
+    public Vector3 getPos() {
+        return pos;
     }
 
     public void setPos(float x, float y, float z) {
@@ -46,6 +58,10 @@ public class BulletObject extends LevelObject {
         entity.transform.rotate(Vector3.Y, rot);
     }
 
+    public Color getColor() {
+        return color;
+    }
+
     public void setColor(Color color) {
         color = color;
 
@@ -60,12 +76,6 @@ public class BulletObject extends LevelObject {
         entity.dispose();
 
         removeFromBulletObjects(this);
-    }
-
-    public String getSaveLine() {
-        return name + "," + pos.x + "," + pos.y + "," + pos.z + ","
-            + rot + ","
-            + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
     public static void addToBulletObjects(BulletObject object) {

@@ -57,12 +57,12 @@ public class Trigger extends BulletObject {
     
     public int size;
 
-    public Trigger(int _size) {
-        size = _size;
+    public Trigger(int size) {
+        this.size = size;
         model = getModel();
         meshShape = getMeshShape(model);
 
-        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+        addConstructor(name, model, meshShape);
 
         triggerCallback = new TriggerCallback(this);
 
@@ -86,6 +86,10 @@ public class Trigger extends BulletObject {
                     Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, triggerCallback);
             }
         }
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public void wasTriggered() {

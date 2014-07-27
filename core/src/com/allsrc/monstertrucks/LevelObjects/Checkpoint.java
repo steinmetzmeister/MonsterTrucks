@@ -6,13 +6,20 @@ import com.badlogic.gdx.math.Vector3;
 public class Checkpoint extends Trigger {
 
     public static String name = "checkpoint";
+    public Color color;
     public Gate gate;
 
-    public Checkpoint(int _size) {
-        super(_size);
+    public Checkpoint(int size) {
+        super(size);
 
         gate = new Gate();
         BulletObject.removeFromBulletObjects(gate);
+
+        addConstructor(name, model, meshShape);
+
+        init(name);
+
+        addToBulletObjects(this);
     }
 
     public void dispose() {
@@ -23,6 +30,8 @@ public class Checkpoint extends Trigger {
     public void setColor(Color newColor) {
         gate.setColor(newColor);
         super.setColor(newColor);
+
+        color = newColor;
     }
 
     public void setPos(Vector3 newPos) {
@@ -31,9 +40,12 @@ public class Checkpoint extends Trigger {
     }
 
     public String getSaveLine() {
-        return name + ","
-            + pos.x + "," + pos.y + "," + pos.z + ","
-            + size + "," + color.r + "," + color.g + "," + color.b + "," + color.a;
+        int size = getSize();
+
+        return name
+            + "," + pos.x + "," + pos.y + "," + pos.z
+            + "," + getSize()
+            + "," + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
     public static void loadFromLine(String line) {

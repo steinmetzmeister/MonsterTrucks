@@ -18,10 +18,11 @@ public class Gate extends BulletObject {
             model = getModel(modelFile);
             meshShape = getMeshShape(model);
 
-            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+            addConstructor(name, model, meshShape);
         }
 
         init(name);
+        addToBulletObjects(this);
     }
 
     public void dispose() {

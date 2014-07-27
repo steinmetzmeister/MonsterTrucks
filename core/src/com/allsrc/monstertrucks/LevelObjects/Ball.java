@@ -31,12 +31,14 @@ public class Ball extends BulletObject {
             final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
             ballConstructor.bodyInfo.setRestitution(1f);
 
-            Planet.INSTANCE.world.addConstructor(name, ballConstructor);
+            addConstructor(name, model, meshShape);
         }
 
         init(name);
 
         setColor(color);
+
+        addToBulletObjects(this);
     }
 
     public Model getModel() {
