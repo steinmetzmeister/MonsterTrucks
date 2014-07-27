@@ -72,9 +72,9 @@ public class ColorChanger extends LevelObject {
             testCollision(car.chassis.body);
         }
 
-        for (Ball ball : Planet.INSTANCE.level.balls) {
-            testing = ball.color;
-            testCollision(ball.entity.body);
+        for (BulletObject object : Planet.INSTANCE.level.bulletObjects) {
+            testing = object.color;
+            testCollision(object.entity.body);
         }
     }
 

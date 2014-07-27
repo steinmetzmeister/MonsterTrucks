@@ -113,7 +113,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		terrain = new Terrain("data/terrain.obj", Color.GREEN);
+		terrain = new Terrain("data/terrain.obj");
+		terrain.setColor(Color.GREEN);
 
 		// int i = 0; 
 		// for (Controller controller : Controllers.getControllers())
@@ -142,12 +143,22 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// rays
 		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
 
-		new Checkpoint(new Vector3(0f, 0f, 10f), 10, new Color(1f, 0f, 1f, 0.4f));
-		new Gate(new Vector3(0f, -2f, 20f), 0, new Color(0f, 0.75f, 0.33f, 1f));
+		Checkpoint checkpoint = new Checkpoint(10);
+		checkpoint.setPos(0f, 0f, 10f);
+		checkpoint.setColor(new Color(1f, 0f, 1f, 0.4f));
+		
+		Gate gate = new Gate();
+		gate.setPos(new Vector3(0f, -2f, 20f));
+		gate.setColor(new Color(0f, 0.75f, 0.33f, 1f));
 
-		new Ball(new Vector3(-5f, 5f, 5f), 3, new Color(1f, 1f, 0f, 1f));
-		new Ball(new Vector3(0f, 5f, 5f), 3, new Color(0f, 1f, 1f, 1f));
-		new Ball(new Vector3(5f, 5f, 5f), 3, new Color(1f, 0f, 1f, 1f));
+		Ball ballA = new Ball(3, MonsterColor.CYAN);
+		ballA.setPos(-5f, 5f, 5f);
+
+		Ball ballB = new Ball(3, MonsterColor.MAGENTA);
+		ballB.setPos(0f, 5f, 5f);
+
+		Ball ballC = new Ball(3, new Color(1f, 0f, 0f, 1f));
+		ballC.setPos(5f, 5f, 5f);
 	}
 
 	@Override
@@ -296,9 +307,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			btVector3 p = rayTestCB.getHitPointWorld();
 
 			if (button == 0) {
-				ColorChanger point = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
+				ColorChanger changer = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 			} else {
-				Ball point = new Ball(new Vector3(p.getX(), p.getY() + 1f, p.getZ()), 3, new Color(1f, 1f, 0f, 1f));
+				Ball ball = new Ball(3, new Color(1f, 1f, 0f, 1f));
+				ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
 			}
 		}
 	}

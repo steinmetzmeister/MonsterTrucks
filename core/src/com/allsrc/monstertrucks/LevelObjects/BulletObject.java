@@ -13,39 +13,45 @@ import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 public class BulletObject extends LevelObject {
     public BulletEntity entity;
     public Color color;
-
-    public static String name;
-    public Model model;
-    public btBvhTriangleMeshShape meshShape;
-
     public float scale = 1f;
 
-    public void init(String _name, String modelFile) {
-        if (model == null) {
-            name = _name;
-            model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
-            model.meshes.get(0).scale(scale, scale, scale);
-            meshShape = new btBvhTriangleMeshShape(model.meshParts);
-            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
-        }
+    public void init(String name) {
+        entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
+        addToBulletObjects(this);
+    }
 
-        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
+    public Model getModel(String file) {
+        Model model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(file));
+        model.meshes.get(0).scale(scale, scale, scale);
+
+        return model;
+    }
+
+    public btBvhTriangleMeshShape getMeshShape(Model model) {
+        return new btBvhTriangleMeshShape(model.meshParts);
+    }
+
+    public void setPos(float x, float y, float z) {
+        setPos(new Vector3(x, y, z));
+    }
+
+    public void setPos(Vector3 newPos) {
+        pos = newPos;
+        entity.transform.setTranslation(newPos);
+        entity.body.setWorldTransform(entity.transform);
+    }
+
+    public void setRot(int angle) {
+        rot = angle;
+        entity.transform.rotate(Vector3.Y, rot);
+    }
+
+    public void setColor(Color color) {
+        color = color;
 
         entity.modelInstance.materials.get(0).set(
             ColorAttribute.createDiffuse(color),
             ColorAttribute.createSpecular(Color.WHITE));
-
-        entity.transform.rotate(Vector3.Y, rot);
-
-        addToBulletObjects();
-    }
-
-    public void addToBulletObjects() {
-        Planet.INSTANCE.level.bulletObjects.add(this);
-    }
-
-    public void removeFromBulletObjects() {
-        Planet.INSTANCE.level.bulletObjects.removeValue(this, true);
     }
 
     public void dispose() {
@@ -53,12 +59,20 @@ public class BulletObject extends LevelObject {
         Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
         entity.dispose();
 
-        removeFromBulletObjects();
+        removeFromBulletObjects(this);
     }
 
     public String getSaveLine() {
         return name + "," + pos.x + "," + pos.y + "," + pos.z + ","
             + rot + ","
             + color.r + "," + color.g + "," + color.b + "," + color.a;
+    }
+
+    public static void addToBulletObjects(BulletObject object) {
+        Planet.INSTANCE.level.bulletObjects.add(object);
+    }
+
+    public static void removeFromBulletObjects(BulletObject object) {
+        Planet.INSTANCE.level.bulletObjects.removeValue(object, true);
     }
 }

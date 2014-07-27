@@ -12,35 +12,37 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 
 public class Ball extends BulletObject {
+
     public static String name = "ball";
     public static Model model;
+    public static btSphereShape meshShape;
+
     public int size;
 
-    public Ball(Vector3 _pos, int _size, Color _color) {
-        pos = _pos;
-        size = _size;
-        color = _color;
+    public Ball(int size, Color color) {
+        this.size = size;
+        this.color = color;
 
-        init();
-    }
-
-    public void init() {
         if (model == null)
         {
-            model = Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
-                new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
-                Usage.Position | Usage.Normal);
+            model = getModel();
+            meshShape = new btSphereShape(this.size / 2f);
 
-            final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, new btSphereShape(size / 2f));
-
+            final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
             ballConstructor.bodyInfo.setRestitution(1f);
+
             Planet.INSTANCE.world.addConstructor(name, ballConstructor);
         }
 
-        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
-        entity.modelInstance.materials.get(0).set(new Material(new ColorAttribute(ColorAttribute.Diffuse, color)));
+        init(name);
 
-        addToBulletObjects();
+        setColor(color);
+    }
+
+    public Model getModel() {
+        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+            new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
+            Usage.Position | Usage.Normal);
     }
 
     public String getSaveLine() {
@@ -51,16 +53,16 @@ public class Ball extends BulletObject {
 
     public static void loadFromLine(String line) {
         String[] ls = line.split(",");
-        new Ball(
-            new Vector3(
-                Float.parseFloat(ls[1]),
-                Float.parseFloat(ls[2]),
-                Float.parseFloat(ls[3])),
-            Integer.parseInt(ls[4]),
+        Ball ball = new Ball(Integer.parseInt(ls[4]),
             new Color(
                 Float.parseFloat(ls[5]),
                 Float.parseFloat(ls[6]),
                 Float.parseFloat(ls[7]),
                 Float.parseFloat(ls[8])));
+
+        ball.setPos(new Vector3(
+            Float.parseFloat(ls[1]),
+            Float.parseFloat(ls[2]),
+            Float.parseFloat(ls[3])));
     }
 }

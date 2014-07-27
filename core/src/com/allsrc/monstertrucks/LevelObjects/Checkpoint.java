@@ -8,20 +8,26 @@ public class Checkpoint extends Trigger {
     public static String name = "checkpoint";
     public Gate gate;
 
-    public Checkpoint(Vector3 _pos, int _size, Color _color) {
-        super(_pos, _size, _color);
-    }
+    public Checkpoint(int _size) {
+        super(_size);
 
-    public void init() {
-        gate = new Gate(pos, 0, color);
-        gate.removeFromBulletObjects();
-
-        super.init();
+        gate = new Gate();
+        BulletObject.removeFromBulletObjects(gate);
     }
 
     public void dispose() {
         gate.dispose();
         super.dispose();
+    }
+
+    public void setColor(Color newColor) {
+        gate.setColor(newColor);
+        super.setColor(newColor);
+    }
+
+    public void setPos(Vector3 newPos) {
+        gate.setPos(newPos);
+        super.setPos(newPos);
     }
 
     public String getSaveLine() {
@@ -32,16 +38,17 @@ public class Checkpoint extends Trigger {
 
     public static void loadFromLine(String line) {
         String[] ls = line.split(",");
-        new Checkpoint(
-            new Vector3(
-                Float.parseFloat(ls[1]),
-                Float.parseFloat(ls[2]),
-                Float.parseFloat(ls[3])),
-            Integer.parseInt(ls[4]),
-            new Color(
-                Float.parseFloat(ls[5]),
-                Float.parseFloat(ls[6]),
-                Float.parseFloat(ls[7]),
-                Float.parseFloat(ls[8])));
+        Checkpoint checkpoint = new Checkpoint(Integer.parseInt(ls[4]));
+        
+        checkpoint.setPos(new Vector3(
+            Float.parseFloat(ls[1]),
+            Float.parseFloat(ls[2]),
+            Float.parseFloat(ls[3])));
+
+        checkpoint.setColor(new Color(
+            Float.parseFloat(ls[5]),
+            Float.parseFloat(ls[6]),
+            Float.parseFloat(ls[7]),
+            Float.parseFloat(ls[8])));
     }
 }
