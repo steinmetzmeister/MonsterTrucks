@@ -1,5 +1,7 @@
 package com.allsrc.monstertrucks;
 
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
@@ -20,6 +22,8 @@ public class Checkpoint extends Trigger {
         init(name);
 
         addToBulletObjects(this);
+
+        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     }
 
     public void dispose() {

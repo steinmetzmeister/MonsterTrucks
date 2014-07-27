@@ -31,7 +31,7 @@ public class Ball extends BulletObject {
             final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
             ballConstructor.bodyInfo.setRestitution(1f);
 
-            addConstructor(name, model, meshShape);
+            Planet.INSTANCE.world.addConstructor(name, ballConstructor);
         }
 
         init(name);
