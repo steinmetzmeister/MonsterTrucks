@@ -1,24 +1,17 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.graphics.g3d.Model;
-
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-
 import com.badlogic.gdx.math.Vector3;
 
-public class ColorChanger extends LevelObject {
-    BulletEntity entity;
+public class ColorChanger extends BulletObject {
 
     public class ColorChangerCallback extends ContactResultCallback {
         public ColorChanger changer;
@@ -37,31 +30,25 @@ public class ColorChanger extends LevelObject {
     }
 
     public static String name = "changer";
-    public static Model blockModel;
-
+    public static String modelFile = "data/block.obj";
+    public static Model model;
+    public static btBvhTriangleMeshShape meshShape;
     Color testing;
     ColorChangerCallback colorChangerCallback;
-    boolean reached = false;
 
-    public ColorChanger(Vector3 _pos) {
-        create(_pos);
-    }
+    public ColorChanger(Vector3 pos) {
+        if (model == null) {
+            model = getModel(modelFile);
+            meshShape = getMeshShape(model);
 
-    public void create(Vector3 _pos) {
-        colorChangerCallback = new ColorChangerCallback();
-        colorChangerCallback.changer = this;
-
-        if (blockModel == null) {
-            Model blockModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal("data/block.obj"));
-            Planet.INSTANCE.disposables.add(blockModel);
-
-            final btBvhTriangleMeshShape meshShape = new btBvhTriangleMeshShape(blockModel.meshParts);
-            Planet.INSTANCE.world.addConstructor("changer", new BulletConstructor(blockModel, 0f, meshShape));
+            addConstructor(name, model, meshShape);
         }
 
-        entity = Planet.INSTANCE.world.add("changer", _pos.x, _pos.y, _pos.z);
+        init(name);
+        setPos(pos);
 
-        pos = _pos;
+        colorChangerCallback = new ColorChangerCallback();
+        colorChangerCallback.changer = this;
 
         Planet.INSTANCE.level.changers.add(this);
     }
