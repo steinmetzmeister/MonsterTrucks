@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
+import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
@@ -186,9 +187,34 @@ public class Car implements ControllerListener {
             vehicle.applyEngineForce(force, 3);
         }
 
+        boolean isOnGround = false;
+
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
             vehicle.getWheelInfo(i).getWorldTransform().getOpenGLMatrix(wheels[i].transform.val);
+
+            if (vehicle.getWheelInfo(i).getRaycastInfo().getGroundObject() != 0)
+                isOnGround = true;
+        }
+
+        if (!isOnGround) {
+            float impulseScale = 3f;
+
+            if (horzAxis != 0) {
+                Matrix4 m = new Matrix4();
+                m.rotate(((btRigidBody)(chassis.body)).getOrientation());
+                m.translate(new Vector3(0, 0, horzAxis * impulseScale));
+
+                ((btRigidBody)(chassis.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+            }
+
+            if (vertAxis != 0) {
+                Matrix4 m = new Matrix4();
+                m.rotate(((btRigidBody)(chassis.body)).getOrientation());
+                m.translate(new Vector3(-1 * vertAxis * impulseScale, 0, 0));
+
+                ((btRigidBody)(chassis.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+            }
         }
     }
 
@@ -211,7 +237,8 @@ public class Car implements ControllerListener {
         // TODO Auto-generated method stub
     }
 
-    float axisValue;
+    float horzAxis = 0;
+    float vertAxis = 0;
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {
@@ -223,6 +250,13 @@ public class Car implements ControllerListener {
             // rightPressed = (value > 0.25) ? true : false;
             // leftPressed = (value < -0.25) ? true : false;
         }
+
+        if (axisCode == 0)
+            horzAxis = (value < 0.1f && value > -0.1f) ? 0 : value;
+
+        else if (axisCode == 1)
+            vertAxis = (value < 0.1f && value > -0.1f) ? 0 : value;
+
         return false;
     }
 

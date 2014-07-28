@@ -10,8 +10,8 @@ public class MonsterTruck extends Car {
         initPos = pos;
         carColor = color;
 
-        maxForce = 100f;
-        acceleration = 200f; // second
+        maxForce = 200f;
+        acceleration = 300f; // second
 
         chassisModelFile = "data/truck.obj";
         wheelScale = new Vector3(3f, 2.5f, 2.5f);
