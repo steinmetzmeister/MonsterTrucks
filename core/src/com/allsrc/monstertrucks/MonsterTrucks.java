@@ -324,6 +324,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
     	}
 
     	startedX = screenX;
+    	startedY = screenY;
 
     	int width = Gdx.graphics.getWidth();
     	if (screenX > width / 2) {
@@ -354,6 +355,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
     		Gdx.app.getType() == ApplicationType.iOS) {
 
     		startedX = 0;
+    		startedY = 0;
         
     		Planet.INSTANCE.cars.get(0).currentAngle = 0f;
 
@@ -370,13 +372,21 @@ public class MonsterTrucks extends MonsterTrucksBase {
     		Gdx.app.getType() == ApplicationType.iOS) {
 
     		int x = (screenX - startedX) * -1;
-    		if (x > 200) x = 200;
-    		if (x < -200) x = -200;
 
     		if (startedX != 0) {
+    			Planet.INSTANCE.cars.get(0).horzAxis = MonsterUtils.map(x, -300, 300, 1, -1);
+
+				if (x > 200) x = 200;
+    			if (x < -200) x = -200;
+
     			Planet.INSTANCE.cars.get(0).currentAngle = MonsterUtils.map(x, -200f, 200f,
     				-Planet.INSTANCE.cars.get(0).maxAngle,
     				Planet.INSTANCE.cars.get(0).maxAngle);
+    		}
+
+    		if (startedY != 0) {
+    			int y = (screenY - startedY) * -1;
+    			Planet.INSTANCE.cars.get(0).vertAxis = MonsterUtils.map(y, -300, 300, 1, -1);
     		}
     	}
 

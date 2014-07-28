@@ -224,6 +224,9 @@ public class Car implements ControllerListener {
         ((btRigidBody)(chassis.body)).setLinearVelocity(Vector3.Zero);
         ((btRigidBody)(chassis.body)).setAngularVelocity(Vector3.Zero);
         chassis.body.activate();
+
+        horzAxis = 0;
+        vertAxis = 0;
     }
 
     // CONTROLLERS
