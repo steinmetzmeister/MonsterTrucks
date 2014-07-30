@@ -31,6 +31,10 @@ public class Terrain extends BulletObject {
         addToBulletObjects(this);
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getSaveLine() {
         return name + "," + color.r + "," + color.g + "," + color.b + "," + color.a;
     }

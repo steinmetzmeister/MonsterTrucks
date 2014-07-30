@@ -315,11 +315,14 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			btVector3 p = rayTestCB.getHitPointWorld();
 
 			if (button == 0) {
-				ColorChanger changer = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
-			} else {
-                System.out.println((float)Math.random());
 				Ball ball = new Ball(3, new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f));
-				ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
+                ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
+			} else {
+				for (BulletObject bulletObj : Planet.INSTANCE.level.bulletObjects)
+                {
+                    if (rayTestCB.getCollisionObject() == bulletObj.entity.body && bulletObj.getName() != "terrain")
+                        bulletObj.dispose();
+                }
 			}
 		}
 	}

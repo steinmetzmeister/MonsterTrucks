@@ -12,12 +12,17 @@ import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 public class BulletObject extends LevelObject {
+    public String name;
     public BulletEntity entity;
     public Color color;
     public float scale = 1f;
 
     public void init(String name) {
         entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Model getModel(String file) {
