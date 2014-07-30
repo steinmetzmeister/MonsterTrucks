@@ -285,6 +285,21 @@ public class MonsterTrucks extends MonsterTrucksBase {
     }
 
 	public void touchDownDesktop (int screenX, int screenY, int pointer, int button) {
+        if (numPlayers == 2) {
+            float fScreenY;
+            if (screenY < Gdx.graphics.getHeight() / 2) {
+                updateCameraPosition(0);
+                Planet.INSTANCE.camera.update();
+                fScreenY = MonsterUtils.map(screenY, 0, Gdx.graphics.getHeight() / 2, 0, Gdx.graphics.getHeight());
+            } else {
+                updateCameraPosition(1);
+                Planet.INSTANCE.camera.update();
+                fScreenY = MonsterUtils.map(screenY, Gdx.graphics.getHeight() / 2, Gdx.graphics.getHeight(), 0, Gdx.graphics.getHeight());
+            }
+
+            screenY = Math.round(fScreenY);
+        }
+
 		Ray ray = Planet.INSTANCE.camera.getPickRay(screenX, screenY);
 		rayFrom.set(ray.origin);
 		rayTo.set(ray.direction).scl(50f).add(rayFrom);
@@ -302,7 +317,8 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			if (button == 0) {
 				ColorChanger changer = new ColorChanger(new Vector3(p.getX(), p.getY() - 0.5f, p.getZ()));
 			} else {
-				Ball ball = new Ball(3, new Color(1f, 1f, 0f, 1f));
+                System.out.println((float)Math.random());
+				Ball ball = new Ball(3, new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f));
 				ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
 			}
 		}
