@@ -41,7 +41,7 @@ public class Terrain extends BulletObject {
 
     public static void loadFromLine(String line) {
         String[] ls = line.split(",");
-        new Terrain("data/terrain.obj",
+        Planet.INSTANCE.level.terrain = new Terrain("data/terrain.obj",
             new Color(
                 Float.parseFloat(ls[1]),
                 Float.parseFloat(ls[2]),

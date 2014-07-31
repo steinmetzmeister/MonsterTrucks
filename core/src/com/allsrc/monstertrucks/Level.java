@@ -22,6 +22,7 @@ public class Level {
     Array<Trigger> triggers = new Array<Trigger>();
     Array<Ball> balls = new Array<Ball>();
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
+    Terrain terrain;
 
     public Level() {
     }

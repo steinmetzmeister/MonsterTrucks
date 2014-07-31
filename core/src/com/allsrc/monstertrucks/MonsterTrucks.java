@@ -7,29 +7,16 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.Material;
-import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.IntAttribute;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.graphics.g3d.utils.DepthShaderProvider;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.bullet.Bullet;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
-import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
-import com.badlogic.gdx.physics.bullet.linearmath.LinearMath;
-import com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawModes;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -43,19 +30,16 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.Controller;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 
 import com.badlogic.gdx.physics.bullet.linearmath.*;
-
-import com.badlogic.gdx.Application.ApplicationType;
 
 public class MonsterTrucks extends MonsterTrucksBase {
 	ObjLoader objLoader = new ObjLoader();
 
 	boolean initialized;
 
-	int numPlayers = 1;
+	int numPlayers = 2;
 	
 	public void init() {
 		if (initialized) return;
@@ -79,8 +63,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 	Vector3 rayFrom = new Vector3();
 	Vector3 rayTo = new Vector3();
 	Vector3 tempV = new Vector3();
-
-	Terrain terrain;
 
 	@Override
 	public void create () {
@@ -315,8 +297,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			btVector3 p = rayTestCB.getHitPointWorld();
 
 			if (button == 0) {
-				Ball ball = new Ball(3, new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f));
-                ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
+                if (rayTestCB.getCollisionObject() == Planet.INSTANCE.level.terrain.entity.body) {
+				    Ball ball = new Ball(3, new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f));
+                    ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
+                }
 			} else {
 				for (BulletObject bulletObj : Planet.INSTANCE.level.bulletObjects)
                 {
