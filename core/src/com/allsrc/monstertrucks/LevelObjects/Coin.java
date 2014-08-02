@@ -29,7 +29,7 @@ public class Coin extends Collectible {
         return name + "," + pos.x + "," + pos.y + "," + pos.z;
     }
 
-    public static void loadFromLine(String line) {
+    public void loadFromLine(String line) {
         String[] ls = line.split(",");
         new Coin(new Vector3(
             Float.parseFloat(ls[1]),

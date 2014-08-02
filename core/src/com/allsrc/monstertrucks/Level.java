@@ -69,9 +69,9 @@ public class Level {
 
             String word;
             for (String line : lines) {
-                word = line.substring(0, line.indexOf(','));
+                word = line.substring(0, line.indexOf(' '));
                 
-                if (word.equals("changer"))
+/*                if (word.equals("changer"))
                     ColorChanger.loadFromLine(line);
 
                 else if (word.equals("ball"))
@@ -84,10 +84,10 @@ public class Level {
                     Gate.loadFromLine(line);
 
                 else if (word.equals("checkpoint"))
-                    Checkpoint.loadFromLine(line);
+                    Checkpoint.loadFromLine(line);*/
 
-                else if (word.equals("terrain"))
-                    Terrain.loadFromLine(line);
+                if (word.equals("terrain"))
+                    terrain = new Terrain(line);
             }
 
     }

@@ -50,7 +50,7 @@ public class Checkpoint extends Trigger {
             + "," + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
-    public static void loadFromLine(String line) {
+    public void loadFromLine(String line) {
         String[] ls = line.split(",");
         Checkpoint checkpoint = new Checkpoint(Integer.parseInt(ls[4]));
         

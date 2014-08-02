@@ -104,7 +104,7 @@ public class Trigger extends BulletObject {
             + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
-    public static void loadFromLine(String line) {
+    public void loadFromLine(String line) {
         String[] ls = line.split(",");
         Trigger trigger = new Trigger(Integer.parseInt(ls[4]));
 

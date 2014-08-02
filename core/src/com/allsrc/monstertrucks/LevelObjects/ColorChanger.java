@@ -82,7 +82,7 @@ public class ColorChanger extends BulletObject {
         return name + "," + pos.x + "," + pos.y + "," + pos.z;
     }
 
-    public static void loadFromLine(String text) {
+    public void loadFromLine(String text) {
         String[] p = text.split(",");
         new ColorChanger(new Vector3(
             Float.parseFloat(p[1]),

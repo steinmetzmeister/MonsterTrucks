@@ -17,16 +17,17 @@ public class Ball extends BulletObject {
     public static Model model;
     public static btSphereShape meshShape;
 
-    public int size;
+    public static String[] string = { "pos", "size", "color" };
 
     public Ball(int size, Color color) {
-        this.size = size;
+
+        this.size = new Vector3(size, size, size);
         this.color = color;
 
         if (model == null)
         {
             model = getModel();
-            meshShape = new btSphereShape(this.size / 2f);
+            meshShape = new btSphereShape(this.size.x / 2f);
 
             final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
             ballConstructor.bodyInfo.setRestitution(1f);
@@ -42,7 +43,7 @@ public class Ball extends BulletObject {
     }
 
     public Model getModel() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+        return Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
             Usage.Position | Usage.Normal);
     }
@@ -53,7 +54,7 @@ public class Ball extends BulletObject {
             + color.r + "," + color.g + "," + color.b + "," + color.a;
     }
 
-    public static void loadFromLine(String line) {
+    public void loadFromLine(String line) {
         String[] ls = line.split(",");
         Ball ball = new Ball(Integer.parseInt(ls[4]),
             new Color(
