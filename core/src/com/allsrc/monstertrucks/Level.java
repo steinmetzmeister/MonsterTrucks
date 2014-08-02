@@ -75,8 +75,6 @@ public class Level {
                 else if (word.equals("coin"))
                     Coin.loadFromLine(line);
 
-                else if (word.equals("checkpoint"))
-                    Checkpoint.loadFromLine(line);
 */
 
                 if (word.equals("ball"))
@@ -85,11 +83,17 @@ public class Level {
                 else if (word.equals("changer"))
                     new ColorChanger(line);
 
+                else if (word.equals("checkpoint"))
+                    new Checkpoint(line);
+
                 else if (word.equals("gate"))
                     new Gate(line);
 
                 else if (word.equals("terrain"))
                     terrain = new Terrain(line);
+
+                else if (word.equals("trigger"))
+                    new Trigger(line);
             }
 
     }

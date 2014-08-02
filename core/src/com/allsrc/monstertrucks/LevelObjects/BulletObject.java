@@ -132,11 +132,11 @@ public class BulletObject extends LevelObject {
     //
 
     public void setSize(String[] s) {
-        this.size = new Vector3(Float.parseFloat(s[0]), Float.parseFloat(s[1]), Float.parseFloat(s[2]));
+        size = new Vector3(Float.parseFloat(s[0]), Float.parseFloat(s[1]), Float.parseFloat(s[2]));
     }
 
-    public void setSize(Vector3 size) {
-        this.size = size;
+    public void setSize(Vector3 s) {
+        size = s;
     }
 
     public void updateColor() {

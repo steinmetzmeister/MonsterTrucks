@@ -4,26 +4,17 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
+import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Disposable;
 
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
 public class Trigger extends BulletObject {
 
@@ -47,32 +38,63 @@ public class Trigger extends BulletObject {
         }
     }
 
-    public static String name = "trigger";
     public Model model;
-    public btBvhTriangleMeshShape meshShape;
+    public btSphereShape meshShape;
 
     public TriggerCallback triggerCallback;
-
     public boolean triggered = false;
-    
-    public int size;
 
-    public Trigger(int size) {
-        this.size = size;
-        model = getModel();
-        meshShape = getMeshShape(model);
-
-        addConstructor(name, model, meshShape);
+    public void init() {
+        name = "trigger";
+        attrs = new String[]{ "color", "pos", "size" };
 
         triggerCallback = new TriggerCallback(this);
+    }
 
-        init(name);
+    public Trigger(String line) {
+        init();
+        loadFromLine(line);
+        construct();
+        updateColor();
+        updatePos();
+        noResponse();
 
+        Planet.INSTANCE.level.triggers.add(this);
+    }
+
+    public Trigger(Color color, Vector3 pos, Vector3 size) {
+        init();
+        setPos(pos);
+        setSize(size);
+        construct();
+        updateColor();
+        updatePos();
+        noResponse();
+
+        Planet.INSTANCE.level.triggers.add(this);
+    }
+
+    public void noResponse() {
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     }
 
+    public void construct() {
+        if (model == null)
+        {
+            model = getModel();
+            meshShape = new btSphereShape(size.x / 2f);
+
+            final BulletConstructor triggerConstructor = new BulletConstructor(model, 0f, meshShape);
+
+            Planet.INSTANCE.world.addConstructor(name, triggerConstructor);
+        }
+
+        entity();
+        addToBulletObjects(this);
+    }
+
     public Model getModel() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+        return Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
             new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
             Usage.Position | Usage.Normal);
@@ -88,35 +110,8 @@ public class Trigger extends BulletObject {
         }
     }
 
-    public int getSize() {
-        return size;
-    }
-
     public void wasTriggered() {
-        triggered = true;
+        triggered = true;System.out.println(name);
         // dispose();
-    }
-
-    public String getSaveLine() {
-        return name + ","
-            + pos.x + "," + pos.y + "," + pos.z + ","
-            + size + ","
-            + color.r + "," + color.g + "," + color.b + "," + color.a;
-    }
-
-    public void loadFromLine(String line) {
-        String[] ls = line.split(",");
-        Trigger trigger = new Trigger(Integer.parseInt(ls[4]));
-
-        trigger.setPos(new Vector3(
-            Float.parseFloat(ls[1]),
-            Float.parseFloat(ls[2]),
-            Float.parseFloat(ls[3])));
-
-        trigger.setColor(new Color(
-            Float.parseFloat(ls[5]),
-            Float.parseFloat(ls[6]),
-            Float.parseFloat(ls[7]),
-            Float.parseFloat(ls[8])));
     }
 }

@@ -19,9 +19,10 @@ public class Gate extends BulletObject {
         updatePos();
     }
 
-    public Gate(Color color, Vector3 size) {
+    public Gate(Color color, Vector3 pos) {
         init();
         setColor(color);
+        setPos(pos);
         construct();
         updateColor();
         updatePos();
