@@ -14,7 +14,7 @@ public class Checkpoint extends Trigger {
     public Checkpoint(int size) {
         super(size);
 
-        gate = new Gate();
+        gate = new Gate(Color.CYAN, new Vector3());
         BulletObject.removeFromBulletObjects(gate);
 
         addConstructor(name, model, meshShape);

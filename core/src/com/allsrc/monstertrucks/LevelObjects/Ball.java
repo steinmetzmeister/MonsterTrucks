@@ -1,7 +1,5 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
@@ -13,21 +11,36 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 
 public class Ball extends BulletObject {
 
-    public static String name = "ball";
-    public static Model model;
-    public static btSphereShape meshShape;
+    public Model model;
+    public btSphereShape meshShape;
 
-    public static String[] string = { "pos", "size", "color" };
+    public void init() {
+        name = "ball";
+        attrs = new String[]{ "color", "pos", "size" };
+    }
 
-    public Ball(int size, Color color) {
+    public Ball(String line) {
+        init();
+        loadFromLine(line);
+        construct();
+        updateColor();
+        updatePos();
+    }
 
-        this.size = new Vector3(size, size, size);
-        this.color = color;
+    public Ball(Color color, Vector3 size) {
+        init();
+        setColor(color);
+        setSize(size);
+        construct();
+        updateColor();
+        updatePos();
+    }
 
+    public void construct() {
         if (model == null)
         {
             model = getModel();
-            meshShape = new btSphereShape(this.size.x / 2f);
+            meshShape = new btSphereShape(size.x / 2f);
 
             final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
             ballConstructor.bodyInfo.setRestitution(1f);
@@ -35,10 +48,7 @@ public class Ball extends BulletObject {
             Planet.INSTANCE.world.addConstructor(name, ballConstructor);
         }
 
-        init(name);
-
-        setColor(color);
-
+        entity();
         addToBulletObjects(this);
     }
 
@@ -46,26 +56,5 @@ public class Ball extends BulletObject {
         return Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
             Usage.Position | Usage.Normal);
-    }
-
-    public String getSaveLine() {
-        return name + ","+ pos.x + "," + pos.y + "," + pos.z + ","
-            + size + ","
-            + color.r + "," + color.g + "," + color.b + "," + color.a;
-    }
-
-    public void loadFromLine(String line) {
-        String[] ls = line.split(",");
-        Ball ball = new Ball(Integer.parseInt(ls[4]),
-            new Color(
-                Float.parseFloat(ls[5]),
-                Float.parseFloat(ls[6]),
-                Float.parseFloat(ls[7]),
-                Float.parseFloat(ls[8])));
-
-        ball.setPos(new Vector3(
-            Float.parseFloat(ls[1]),
-            Float.parseFloat(ls[2]),
-            Float.parseFloat(ls[3])));
     }
 }

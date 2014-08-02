@@ -45,6 +45,10 @@ public class BulletObject extends LevelObject {
         entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
     }
 
+    public void entity() {
+        entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
+    }
+
     public String getName() {
         return name;
     }
@@ -87,12 +91,16 @@ public class BulletObject extends LevelObject {
     }
 
     public void setPos(float x, float y, float z) {
-        setPos(new Vector3(x, y, z));
+        pos = new Vector3(x, y, z);
     }
 
-    public void setPos(Vector3 newPos) {
-        pos = newPos;
-        entity.transform.setTranslation(newPos);
+    public void setPos(Vector3 p) {
+        pos = p;
+        
+    }
+
+    public void updatePos() {
+        entity.transform.setTranslation(pos);
         entity.body.setWorldTransform(entity.transform);
     }
 
@@ -121,6 +129,16 @@ public class BulletObject extends LevelObject {
         this.color = color;
     }
 
+    //
+
+    public void setSize(String[] s) {
+        this.size = new Vector3(Float.parseFloat(s[0]), Float.parseFloat(s[1]), Float.parseFloat(s[2]));
+    }
+
+    public void setSize(Vector3 size) {
+        this.size = size;
+    }
+
     public void updateColor() {
         entity.modelInstance.materials.get(0).set(
             ColorAttribute.createDiffuse(color),
@@ -145,7 +163,7 @@ public class BulletObject extends LevelObject {
             else if (attr == "modelFile") line += getSaveModelFile();
             else if (attr == "pos") line += getSavePos();
             else if (attr == "rot") line += getSaveRot();
-            // else if (attr == "size") line += getSaveSize();
+            else if (attr == "size") line += getSaveSize();
 
             i++;
         }
@@ -184,7 +202,7 @@ public class BulletObject extends LevelObject {
             else if (attr == "modelFile") setModelFile(attrSplit[0]);
             else if (attr == "pos") setPos(attrSplit);
             else if (attr == "rot") setRot(attrSplit);
-            // else if (attr == "size") obj.setSize(attrSplit);
+            else if (attr == "size") setSize(attrSplit);
 
             i++;
         }

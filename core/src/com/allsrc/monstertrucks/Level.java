@@ -71,22 +71,24 @@ public class Level {
             for (String line : lines) {
                 word = line.substring(0, line.indexOf(' '));
                 
-/*                if (word.equals("changer"))
-                    ColorChanger.loadFromLine(line);
-
-                else if (word.equals("ball"))
-                    Ball.loadFromLine(line);
-
+/*                
                 else if (word.equals("coin"))
                     Coin.loadFromLine(line);
 
-                else if (word.equals("gate"))
-                    Gate.loadFromLine(line);
-
                 else if (word.equals("checkpoint"))
-                    Checkpoint.loadFromLine(line);*/
+                    Checkpoint.loadFromLine(line);
+*/
 
-                if (word.equals("terrain"))
+                if (word.equals("ball"))
+                    new Ball(line);
+
+                else if (word.equals("changer"))
+                    new ColorChanger(line);
+
+                else if (word.equals("gate"))
+                    new Gate(line);
+
+                else if (word.equals("terrain"))
                     terrain = new Terrain(line);
             }
 

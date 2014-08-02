@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.Model;
@@ -29,28 +28,32 @@ public class ColorChanger extends BulletObject {
         }
     }
 
-    public static String name = "changer";
-    public static String modelFile = "data/block.obj";
-    public static Model model;
-    public static btBvhTriangleMeshShape meshShape;
     Color testing;
     ColorChangerCallback colorChangerCallback;
 
-    public ColorChanger(Vector3 pos) {
-        if (model == null) {
-            model = getModel(modelFile);
-            meshShape = getMeshShape(model);
-
-            addConstructor(name, model, meshShape);
-        }
-
-        init(name);
-        setPos(pos);
+    public void init() {
+        name = "changer";
+        attrs = new String[]{ "pos" };
+        modelFile = "data/block.obj";
 
         colorChangerCallback = new ColorChangerCallback();
         colorChangerCallback.changer = this;
 
         Planet.INSTANCE.level.changers.add(this);
+    }
+
+    public ColorChanger(String line) {
+        init();
+        loadFromLine(line);
+        construct();
+        updatePos();
+    }
+
+    public ColorChanger(Vector3 pos) {
+        init();
+        setPos(pos);
+        construct();
+        updatePos();
     }
 
     public void update() {
@@ -76,17 +79,5 @@ public class ColorChanger extends BulletObject {
         Planet.INSTANCE.level.changers.removeValue(this, false);
         
         entity.dispose();
-    }
-
-    public String getSaveLine() {
-        return name + "," + pos.x + "," + pos.y + "," + pos.z;
-    }
-
-    public void loadFromLine(String text) {
-        String[] p = text.split(",");
-        new ColorChanger(new Vector3(
-            Float.parseFloat(p[1]),
-            Float.parseFloat(p[2]),
-            Float.parseFloat(p[3])));
     }
 }
