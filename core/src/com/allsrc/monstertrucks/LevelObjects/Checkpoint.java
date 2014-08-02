@@ -34,6 +34,7 @@ public class Checkpoint extends Trigger {
     public void addGate() {
         gate = new Gate(getColor(), getPos());
         BulletObject.removeFromBulletObjects(gate);
+
     }
 
     public void dispose() {

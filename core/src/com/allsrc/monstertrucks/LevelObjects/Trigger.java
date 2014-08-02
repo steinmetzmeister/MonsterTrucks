@@ -4,7 +4,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
+import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
 import com.badlogic.gdx.math.Vector3;
 
@@ -37,9 +37,6 @@ public class Trigger extends BulletObject {
                 return 0f;
         }
     }
-
-    public Model model;
-    public btSphereShape meshShape;
 
     public TriggerCallback triggerCallback;
     public boolean triggered = false;
@@ -74,15 +71,11 @@ public class Trigger extends BulletObject {
         Planet.INSTANCE.level.triggers.add(this);
     }
 
-    public void noResponse() {
-        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
-    }
-
     public void construct() {
         if (model == null)
         {
             model = getModel();
-            meshShape = new btSphereShape(size.x / 2f);
+            meshShape = new btBvhTriangleMeshShape(model.meshParts);
 
             final BulletConstructor triggerConstructor = new BulletConstructor(model, 0f, meshShape);
 
@@ -111,7 +104,7 @@ public class Trigger extends BulletObject {
     }
 
     public void wasTriggered() {
-        triggered = true;System.out.println(name);
+        triggered = true;
         // dispose();
     }
 }

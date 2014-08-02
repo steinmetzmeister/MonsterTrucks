@@ -5,16 +5,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
 public class BulletObject extends LevelObject {
     public BulletEntity entity;
-
-    // color,pos,rot,size,scale
 
     public String[] attrs;
 
@@ -101,18 +101,25 @@ public class BulletObject extends LevelObject {
 
     public void updatePos() {
         entity.transform.setTranslation(pos);
-        entity.body.setWorldTransform(entity.transform);
+        entity.body.setWorldTransform(entity.transform); 
     }
 
     //
 
     public void setRot(String[] r) {
-        setRot(Integer.parseInt(r[1]));
+        rot.y = Integer.parseInt(r[1]);
     }
 
     public void setRot(int angle) {
-        rot.y = angle;
-        entity.transform.rotate(Vector3.Y, rot.y);
+        rot.y += angle;
+    }
+
+    public void setRot(float angle) {
+        rot.y += (int)angle;
+    }
+
+    public void updateRot() {
+        entity.transform.setToRotation(Vector3.Y, rot.y);
     }
 
     //
@@ -142,6 +149,12 @@ public class BulletObject extends LevelObject {
     public void updateColor() {
         entity.modelInstance.materials.get(0).set(
             ColorAttribute.createDiffuse(color),
+            ColorAttribute.createSpecular(Color.WHITE));
+    }
+
+    public void updateTexture(TextureAttribute textureAttribute) {
+        entity.modelInstance.materials.get(0).set(
+            textureAttribute,
             ColorAttribute.createSpecular(Color.WHITE));
     }
 
@@ -214,5 +227,9 @@ public class BulletObject extends LevelObject {
 
     public static void removeFromBulletObjects(BulletObject object) {
         Planet.INSTANCE.level.bulletObjects.removeValue(object, true);
+    }
+
+    public void noResponse() {
+        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     }
 }

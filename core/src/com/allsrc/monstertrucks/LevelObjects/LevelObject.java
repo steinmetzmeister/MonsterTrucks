@@ -16,4 +16,8 @@ public class LevelObject {
     public String getSaveLine() {
         return name + "," + pos.x + "," + pos.y + "," + pos.z;
     }
+
+    public void loadFromLine(String line) {
+        System.out.println(name + " loader not implemented.");
+    }
 }

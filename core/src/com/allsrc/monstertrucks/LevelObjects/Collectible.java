@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
 import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-import com.badlogic.gdx.physics.bullet.collision.btPersistentManifold;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 
 import com.badlogic.gdx.Gdx;
@@ -18,7 +17,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Collectible extends LevelObject {
+public class Collectible extends BulletObject {
 
     public class CollectibleCallback extends ContactResultCallback {
         public Collectible collectible;
@@ -44,40 +43,32 @@ public class Collectible extends LevelObject {
 
     public boolean touched = false;
 
-    public BulletEntity entity;
-
-    public static Model collectibleModel = null;
-    public static Texture texture;
-    public static TextureAttribute textureAttribute;
-    public static Sound pickupSound;
-    public static btBvhTriangleMeshShape meshShape;
-
-    public String name;
-    public String modelFile;
     public String textureFile;
+    public Texture texture;
+    public TextureAttribute textureAttribute;
+    
     public String soundFile;
+    public Sound pickupSound;
 
-    public void init(Vector3 _pos) {
-        pos = _pos;
-
+    public Collectible() {
         collectibleCallback = new CollectibleCallback(this);
+    }
 
-        if (collectibleModel == null) {
-            collectibleModel = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
-            texture = new Texture(Gdx.files.internal(textureFile), true);
-            textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
-            pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
-            meshShape = new btBvhTriangleMeshShape(collectibleModel.meshParts);
-            
-            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(collectibleModel, 0f, meshShape));
+    public void construct() {
+        if (model == null) {
+            model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
+            meshShape = new btBvhTriangleMeshShape(model.meshParts);
+
+            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
         }
 
-        entity = Planet.INSTANCE.world.add(name, pos.x, pos.y, pos.z);
-        entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
+        texture = new Texture(Gdx.files.internal(textureFile), true);
+        textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
+        pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
 
-        entity.modelInstance.materials.get(0).set(
-            textureAttribute,
-            ColorAttribute.createSpecular(Color.WHITE));
+        entity();
+        noResponse();
+        updateTexture(textureAttribute);
 
         addToCollectibles();
     }
@@ -93,8 +84,6 @@ public class Collectible extends LevelObject {
     public void update() {
         if (!touched)
         {
-            entity.transform.rotate(Vector3.Y, 1f);
-
             for (Car car : Planet.INSTANCE.cars) {
                 if (entity.body != null)
                     Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, collectibleCallback);

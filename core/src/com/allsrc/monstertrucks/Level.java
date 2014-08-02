@@ -70,12 +70,6 @@ public class Level {
             String word;
             for (String line : lines) {
                 word = line.substring(0, line.indexOf(' '));
-                
-/*                
-                else if (word.equals("coin"))
-                    Coin.loadFromLine(line);
-
-*/
 
                 if (word.equals("ball"))
                     new Ball(line);
@@ -85,6 +79,9 @@ public class Level {
 
                 else if (word.equals("checkpoint"))
                     new Checkpoint(line);
+
+                else if (word.equals("coin"))
+                    new Coin(line);
 
                 else if (word.equals("gate"))
                     new Gate(line);
