@@ -13,7 +13,7 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
-public class BulletObject extends LevelObject {
+public class BulletObject {
     public BulletEntity entity;
 
     public String[] attrs;

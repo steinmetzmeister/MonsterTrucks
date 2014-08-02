@@ -298,8 +298,9 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 			if (button == 0) {
                 if (rayTestCB.getCollisionObject() == Planet.INSTANCE.level.terrain.entity.body) {
-				    Ball ball = new Ball(new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f), new Vector3(3, 3, 3));
+				    Ball ball = new Ball(new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f), new Vector3(3f, 3f, 3f));
                     ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
+                    ball.updatePos();
                 }
 			} else {
 				for (BulletObject bulletObj : Planet.INSTANCE.level.bulletObjects)
