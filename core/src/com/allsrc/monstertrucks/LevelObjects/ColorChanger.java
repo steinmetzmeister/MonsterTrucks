@@ -77,6 +77,7 @@ public class ColorChanger extends BulletObject {
         Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
 
         Planet.INSTANCE.level.changers.removeValue(this, false);
+        removeFromBulletObjects(this);
         
         entity.dispose();
     }

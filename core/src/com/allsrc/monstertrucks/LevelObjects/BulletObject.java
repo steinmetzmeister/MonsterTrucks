@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.Material;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.Color;
@@ -29,10 +30,19 @@ public class BulletObject {
     public Model model;
     public btBvhTriangleMeshShape meshShape;
 
+    public String textureFile;
+    public Texture texture;
+    public TextureAttribute textureAttribute;
+
     public void construct() {
         if (model == null) {
             model = getModel(modelFile);
             meshShape = getMeshShape(model);
+
+            if (textureFile != null) {
+                texture = new Texture(Gdx.files.internal(textureFile), true);
+                textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
+            }
 
             addConstructor(name, model, meshShape);
         }
@@ -152,10 +162,8 @@ public class BulletObject {
             ColorAttribute.createSpecular(Color.WHITE));
     }
 
-    public void updateTexture(TextureAttribute textureAttribute) {
-        entity.modelInstance.materials.get(0).set(
-            textureAttribute,
-            ColorAttribute.createSpecular(Color.WHITE));
+    public void updateTexture() {
+        entity.modelInstance.materials.get(0).set(textureAttribute);
     }
 
     public void dispose() {

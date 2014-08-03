@@ -35,11 +35,14 @@ import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.linearmath.*;
 
 public class MonsterTrucks extends MonsterTrucksBase {
+    String[] levelObjects = new String[]{ "ball", "changer", "checkpoint", "coin", "gate" };
+    int activeLevelObject = 0;
+
 	ObjLoader objLoader = new ObjLoader();
 
 	boolean initialized;
 
-	int numPlayers = 2;
+	int numPlayers = 1;
 	
 	public void init() {
 		if (initialized) return;
@@ -95,10 +98,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 		// Level
 		Planet.INSTANCE.level = new Level();
 
-		// terrain = new Terrain("data/terrain.obj", Color.GREEN);
-
-		// int i = 0; 
-		// for (Controller controller : Controllers.getControllers())
 		for (int i = 0; i < numPlayers; i++)
 		{
 			Color c = Color.RED;
@@ -120,18 +119,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 		// rays
 		rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
-
-		/*Checkpoint checkpoint = new Checkpoint(10);
-		checkpoint.setPos(0f, 0f, 10f);
-		checkpoint.setColor(new Color(1f, 0f, 1f, 0.4f));
-		
-		Gate gate = new Gate();
-		gate.setPos(new Vector3(0f, -2f, 20f));
-		gate.setColor(new Color(0f, 0.75f, 0.33f, 1f));
-
-		new Ball(3, MonsterColor.CYAN).setPos(-5f, 5f, 5f);
-		new Ball(3, MonsterColor.MAGENTA).setPos(0f, 5f, 5f);
-		new Ball(3, MonsterColor.YELLOW).setPos(5f, 5f, 5f);*/
 
 		Planet.INSTANCE.level.loadFromFile();
 	}
@@ -249,6 +236,12 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
     @Override
     public boolean keyUp (int keycode) {
+
+        if (keycode >= 8 && keycode <= 12) {
+            activeLevelObject = keycode - 8;
+            return false;
+        }
+
         switch (keycode) {
         	case Keys.R:
             	//
@@ -298,9 +291,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 
 			if (button == 0) {
                 if (rayTestCB.getCollisionObject() == Planet.INSTANCE.level.terrain.entity.body) {
-				    Ball ball = new Ball(new Color((float)Math.random(), (float)Math.random(), (float)Math.random(), 1f), new Vector3(3f, 3f, 3f));
-                    ball.setPos(p.getX(), p.getY() + 1f, p.getZ());
-                    ball.updatePos();
+				    createLevelObject(new Vector3(p.getX(), p.getY(), p.getZ()));
                 }
 			} else {
 				for (BulletObject bulletObj : Planet.INSTANCE.level.bulletObjects)
@@ -311,6 +302,38 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			}
 		}
 	}
+
+    public void createLevelObject(Vector3 pos) {
+        String lo = levelObjects[activeLevelObject];
+
+        if (lo == "ball") {
+            pos.y += 1f;
+            Ball ball = new Ball(MonsterColor.randomColor(), new Vector3(3, 3, 3));
+            ball.setPos(pos);
+            ball.updatePos();
+        }
+
+        else if (lo == "changer") {
+            ColorChanger c = new ColorChanger(pos);
+            c.rot.y = (int)(Math.random() * 360);
+            c.updateRot();
+            c.setPos(pos);
+            c.updatePos();
+        }
+
+        else if (lo == "checkpoint") {
+            Checkpoint c = new Checkpoint(MonsterColor.randomColor(), pos, new Vector3(10, 10, 10));
+            c.setRot((int)(Math.random() * 360));
+            c.updateRot();
+            c.setPos(pos);
+            c.updatePos();
+        }
+
+        else if (lo == "coin") {
+            pos.y += 1f;
+            new Coin(pos);
+        }
+    }
 
 	int startedX = 0;
 	int startedY = 0;

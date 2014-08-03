@@ -61,6 +61,7 @@ public class Trigger extends BulletObject {
 
     public Trigger(Color color, Vector3 pos, Vector3 size) {
         init();
+        setColor(color);
         setPos(pos);
         setSize(size);
         construct();

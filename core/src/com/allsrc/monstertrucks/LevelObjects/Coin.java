@@ -1,5 +1,6 @@
 package com.allsrc.monstertrucks;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
 public class Coin extends Collectible {
@@ -21,6 +22,9 @@ public class Coin extends Collectible {
 
         randomRot();
         updatePos();
+
+        noResponse();
+        updateTexture();
     }
 
     public Coin(Vector3 pos) {
@@ -32,6 +36,9 @@ public class Coin extends Collectible {
 
         randomRot();
         updatePos();
+
+        noResponse();
+        updateTexture();
     }
 
     public void randomRot() {

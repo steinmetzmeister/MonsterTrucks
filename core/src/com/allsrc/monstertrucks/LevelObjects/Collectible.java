@@ -11,8 +11,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
-import com.badlogic.gdx.graphics.Texture;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Disposable;
@@ -42,10 +41,6 @@ public class Collectible extends BulletObject {
     public CollectibleCallback collectibleCallback;;
 
     public boolean touched = false;
-
-    public String textureFile;
-    public Texture texture;
-    public TextureAttribute textureAttribute;
     
     public String soundFile;
     public Sound pickupSound;
@@ -55,20 +50,9 @@ public class Collectible extends BulletObject {
     }
 
     public void construct() {
-        if (model == null) {
-            model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(modelFile));
-            meshShape = new btBvhTriangleMeshShape(model.meshParts);
-
-            Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
-        }
-
-        texture = new Texture(Gdx.files.internal(textureFile), true);
-        textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
         pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
 
-        entity();
-        noResponse();
-        updateTexture(textureAttribute);
+        super.construct();
 
         addToCollectibles();
     }
@@ -92,6 +76,7 @@ public class Collectible extends BulletObject {
     }
 
     public void pickedUp() {
+        System.out.println("PI");
         pickupSound.play();
 
         touched = true;
@@ -103,6 +88,7 @@ public class Collectible extends BulletObject {
         Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
 
         removeFromCollectibles();
+        removeFromBulletObjects(this);
         
         entity.dispose();
     }
