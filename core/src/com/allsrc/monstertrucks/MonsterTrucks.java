@@ -191,10 +191,6 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			car.update();
        	}
 
-       	for (ColorChanger changer : Planet.INSTANCE.level.changers) {
-       		changer.update();
-       	}
-
        	for (Collectible collectible : Planet.INSTANCE.level.collectibles) {
        		collectible.update();
        	}

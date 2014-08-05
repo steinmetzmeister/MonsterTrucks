@@ -1,56 +1,26 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObjectWrapper;
-import com.badlogic.gdx.physics.bullet.collision.ContactResultCallback;
-import com.badlogic.gdx.physics.bullet.collision.btManifoldPoint;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.Model;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.math.Vector3;
 
-public class ColorChanger extends BulletObject {
-
-    public class ColorChangerCallback extends ContactResultCallback {
-        public ColorChanger changer;
-
-        @Override
-        public float addSingleResult (btManifoldPoint cp,
-            btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
-            btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-
-                changer.entity.modelInstance.materials.get(0).set(
-                    ColorAttribute.createDiffuse(testing),
-                    ColorAttribute.createSpecular(Color.WHITE));
-
-                return 0f;
-        }
-    }
-
-    Color testing;
-    ColorChangerCallback colorChangerCallback;
+public class ColorChanger extends Trigger {
 
     public void init() {
         name = "changer";
         attrs = new String[]{ "pos" };
-
-        colorChangerCallback = new ColorChangerCallback();
-        colorChangerCallback.changer = this;
-
-        Planet.INSTANCE.level.changers.add(this);
     }
 
     public ColorChanger(String line) {
+        super();
         init();
         loadFromLine(line);
         construct();
     }
 
     public ColorChanger(Vector3 pos) {
+        super();
         init();
         setPos(pos);
-        construct(); 
+        construct();
     }
 
     public void construct() {
@@ -58,35 +28,14 @@ public class ColorChanger extends BulletObject {
         updatePos();
     }
 
-    public void update() {
-        for (Car car : Planet.INSTANCE.cars) {
-            testing = car.carColor;
-            testCollision(car.chassis.body);
-        }
-
-        for (BulletObject object : Planet.INSTANCE.level.bulletObjects) {
-            testing = object.color;
-            testCollision(object.entity.body);
-        }
-    }
-
-    public void testCollision(btCollisionObject body) {
-        Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, colorChangerCallback);
-    }
-
-    public void dispose() {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
-
-        Planet.INSTANCE.level.changers.removeValue(this, false);
-        removeFromBulletObjects(this);
-        
-        entity.dispose();
-    }
-
     public static void load() {
         Planet.INSTANCE.loader.add("changer");
         Planet.INSTANCE.loader.loadModel("data/block.obj");
         addDefaultConstructor("changer");
+    }
+
+    public void triggered() {
+        color = testing.color;
+        updateColor();
     }
 }

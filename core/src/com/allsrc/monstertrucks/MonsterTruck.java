@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 public class MonsterTruck extends Car {
     public MonsterTruck(Vector3 pos, Color color) {
         initPos = pos;
-        carColor = color;
+        this.color = color;
 
         maxForce = 200f;
         acceleration = 300f; // second

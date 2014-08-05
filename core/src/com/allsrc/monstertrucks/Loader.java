@@ -23,7 +23,8 @@ public class Loader {
     }
 
     public void add(String name) {
-        objects.put(name, new Object());
+        if (!objects.containsKey(name))
+            objects.put(name, new Object());
         set(name);
     }
 

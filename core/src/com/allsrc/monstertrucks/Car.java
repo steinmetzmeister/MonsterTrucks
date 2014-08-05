@@ -32,7 +32,7 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 
-public class Car implements ControllerListener {
+public class Car extends BulletObject implements ControllerListener {
     Vector3 tmpV = new Vector3();
 
     protected ObjLoader objLoader = new ObjLoader();
@@ -71,7 +71,6 @@ public class Car implements ControllerListener {
     protected String wheelModelFile = "data/wheel.obj";
     protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
 
-    protected Color carColor;
     protected Vector3 initPos;
 
     protected void loadModels() {
@@ -79,7 +78,7 @@ public class Car implements ControllerListener {
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.INSTANCE.disposables.add(chassisModel);
         chassisModel.materials.get(0).clear();
-        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(carColor), ColorAttribute.createSpecular(Color.WHITE));
+        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(Color.WHITE));
 
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));

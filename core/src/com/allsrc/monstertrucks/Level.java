@@ -18,25 +18,20 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.graphics.Color;
 
 public class Level {
-    Array<ColorChanger> changers = new Array<ColorChanger>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
-    Array<Ball> balls = new Array<Ball>();
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
     Terrain terrain;
 
     public Level() {
         Ball.load();
+        Checkpoint.load();
         ColorChanger.load();
         Coin.load();
         Gate.load();
-        Trigger.load();
     }
 
     public void clearLevel() {
-        for (int j = changers.size - 1; j >= 0; j--)
-            changers.get(j).dispose();
-
         for (int j = collectibles.size - 1; j >= 0; j--)
             collectibles.get(j).dispose();
 
@@ -49,14 +44,6 @@ public class Level {
             File file = new File("data/output.txt");  
             FileWriter writer = new FileWriter(file);  
             PrintWriter out = new PrintWriter(writer);
-
-            for (ColorChanger changer : changers) {
-                out.println(changer.getSaveLine());
-            }
-
-            for (Collectible collectible : collectibles) {
-                out.println(collectible.getSaveLine());
-            }
 
             for (BulletObject bulletObject : bulletObjects) {
                 out.println(bulletObject.getSaveLine());
@@ -97,9 +84,6 @@ public class Level {
 
                 else if (word.equals("track"))
                     new Track(line);
-
-                else if (word.equals("trigger"))
-                    new Trigger(line);
             }
 
     }
