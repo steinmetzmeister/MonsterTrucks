@@ -7,21 +7,30 @@ public class Terrain extends BulletObject {
     public void init() {
         name = "terrain";
         attrs = new String[]{ "color", "modelFile" };
-        scale = 2f;
     }
 
     public Terrain(String line) {
         init();
         loadFromLine(line);
         construct();
-        updateColor();
     }
 
-    public Terrain(Color color, String modelFile) {
+    public Terrain(Color color) {
         init();
         setColor(color);
-        setModelFile(modelFile);
         construct();
+    }
+
+    public void construct() {
+        entity();
         updateColor();
+        scale(2f);
+    }
+
+    public static void load(String modelFile) {
+        Planet.INSTANCE.loader.add("terrain");
+        Planet.INSTANCE.loader.loadModel(modelFile);
+        Planet.INSTANCE.loader.getModel().meshes.get(0).scale(2f, 2f, 2f);
+        addDefaultConstructor("terrain");
     }
 }

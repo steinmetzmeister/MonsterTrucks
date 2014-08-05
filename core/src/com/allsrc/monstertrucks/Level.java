@@ -13,8 +13,9 @@ import java.io.FileReader;
 import java.io.BufferedReader;
 
 import com.badlogic.gdx.files.FileHandle;
-
 import com.badlogic.gdx.utils.Disposable;
+
+import com.badlogic.gdx.graphics.Color;
 
 public class Level {
     Array<ColorChanger> changers = new Array<ColorChanger>();
@@ -25,6 +26,11 @@ public class Level {
     Terrain terrain;
 
     public Level() {
+        Ball.load();
+        ColorChanger.load();
+        Coin.load();
+        Gate.load();
+        Trigger.load();
     }
 
     public void clearLevel() {
@@ -67,6 +73,9 @@ public class Level {
             FileHandle file = Gdx.files.internal("data/output.txt");
             String[] lines = file.readString().split("\n");
 
+            Terrain.load("data/terrain.obj");
+            terrain = new Terrain(Color.GREEN);
+
             String word;
             for (String line : lines) {
                 word = line.substring(0, line.indexOf(' '));
@@ -86,8 +95,8 @@ public class Level {
                 else if (word.equals("gate"))
                     new Gate(line);
 
-                else if (word.equals("terrain"))
-                    terrain = new Terrain(line);
+                else if (word.equals("track"))
+                    new Track(line);
 
                 else if (word.equals("trigger"))
                     new Trigger(line);

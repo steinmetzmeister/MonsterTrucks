@@ -296,7 +296,7 @@ public class MonsterTrucks extends MonsterTrucksBase {
 			} else {
 				for (BulletObject bulletObj : Planet.INSTANCE.level.bulletObjects)
                 {
-                    if (rayTestCB.getCollisionObject() == bulletObj.entity.body && bulletObj.getName() != "terrain")
+                    if (rayTestCB.getCollisionObject() == bulletObj.entity.body && bulletObj.name != "terrain")
                         bulletObj.dispose();
                 }
 			}
@@ -332,6 +332,10 @@ public class MonsterTrucks extends MonsterTrucksBase {
         else if (lo == "coin") {
             pos.y += 1f;
             new Coin(pos);
+        }
+
+        else if (lo == "gate") {
+            new Gate(MonsterColor.randomColor(), pos);
         }
     }
 

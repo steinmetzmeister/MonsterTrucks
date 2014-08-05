@@ -40,6 +40,7 @@ public class Trigger extends BulletObject {
 
     public TriggerCallback triggerCallback;
     public boolean triggered = false;
+    public static float size = 10f;
 
     public void init() {
         name = "trigger";
@@ -52,11 +53,6 @@ public class Trigger extends BulletObject {
         init();
         loadFromLine(line);
         construct();
-        updateColor();
-        updatePos();
-        noResponse();
-
-        Planet.INSTANCE.level.triggers.add(this);
     }
 
     public Trigger(Color color, Vector3 pos, Vector3 size) {
@@ -65,33 +61,15 @@ public class Trigger extends BulletObject {
         setPos(pos);
         setSize(size);
         construct();
+    }
+
+    public void construct() {
+        entity();
         updateColor();
         updatePos();
         noResponse();
 
         Planet.INSTANCE.level.triggers.add(this);
-    }
-
-    public void construct() {
-        if (model == null)
-        {
-            model = getModel();
-            meshShape = new btBvhTriangleMeshShape(model.meshParts);
-
-            final BulletConstructor triggerConstructor = new BulletConstructor(model, 0f, meshShape);
-
-            Planet.INSTANCE.world.addConstructor(name, triggerConstructor);
-        }
-
-        entity();
-        addToBulletObjects(this);
-    }
-
-    public Model getModel() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
-            new Material(new ColorAttribute(ColorAttribute.Diffuse, color),
-            new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
-            Usage.Position | Usage.Normal);
     }
 
     public void update() {
@@ -107,5 +85,19 @@ public class Trigger extends BulletObject {
     public void wasTriggered() {
         triggered = true;
         // dispose();
+    }
+
+    public static void load() {
+        Planet.INSTANCE.loader.add("trigger");
+        Planet.INSTANCE.loader.objects.get("trigger").model = createSphere();
+
+        addDefaultConstructor("trigger");
+    }
+
+    public static Model createSphere() {
+        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+            new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.RED),
+            new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
+            Usage.Position | Usage.Normal);
     }
 }

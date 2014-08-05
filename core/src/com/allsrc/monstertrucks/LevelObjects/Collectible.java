@@ -49,11 +49,8 @@ public class Collectible extends BulletObject {
         collectibleCallback = new CollectibleCallback(this);
     }
 
-    public void construct() {
-        pickupSound = Gdx.audio.newSound(Gdx.files.internal(soundFile));
-
-        super.construct();
-
+    public void entity() {
+        super.entity();
         addToCollectibles();
     }
 
@@ -76,8 +73,7 @@ public class Collectible extends BulletObject {
     }
 
     public void pickedUp() {
-        System.out.println("PI");
-        pickupSound.play();
+        Planet.INSTANCE.loader.objects.get(name).sound.play();
 
         touched = true;
         dispose();

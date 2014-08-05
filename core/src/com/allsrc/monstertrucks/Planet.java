@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.Disposable;
 public enum Planet {
     INSTANCE;
 
+    public Loader loader = new Loader();
+
     public ObjLoader objLoader = new ObjLoader();
     
     public PerspectiveCamera camera;

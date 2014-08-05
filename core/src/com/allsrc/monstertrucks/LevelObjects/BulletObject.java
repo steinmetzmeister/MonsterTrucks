@@ -27,109 +27,44 @@ public class BulletObject {
     public Vector3 size = new Vector3(1f, 1f, 1f);
     public float scale = 1f;
 
-    public Model model;
+    public static Model model;
     public btBvhTriangleMeshShape meshShape;
 
     public String textureFile;
-    public Texture texture;
-    public TextureAttribute textureAttribute;
+    public static Texture texture;
+    public static TextureAttribute textureAttribute;
 
-    public void construct() {
-        if (model == null) {
-            model = getModel(modelFile);
-            meshShape = getMeshShape(model);
+    public static void addDefaultConstructor(String name) {
+        Planet.INSTANCE.loader.set(name);
 
-            if (textureFile != null) {
-                texture = new Texture(Gdx.files.internal(textureFile), true);
-                textureAttribute = new TextureAttribute(TextureAttribute.Diffuse, texture);
-            }
-
-            addConstructor(name, model, meshShape);
-        }
-
-        init(name);
-        addToBulletObjects(this);
+        addConstructor(name,
+            Planet.INSTANCE.loader.getModel(),
+            new btBvhTriangleMeshShape(Planet.INSTANCE.loader.getModel().meshParts));
     }
 
-    public void init(String name) {
-        entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
+    public static void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
+        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+    }
+
+    public static void addConstructor(String name, Model model, btSphereShape meshShape) {
+        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
     }
 
     public void entity() {
         entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Model getModel(String file) {
-        Model model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(file));
-        model.meshes.get(0).scale(scale, scale, scale);
-
-        return model;
-    }
-
-    public btBvhTriangleMeshShape getMeshShape(Model model) {
-        return new btBvhTriangleMeshShape(model.meshParts);
-    }
-
-    public void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
-        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
-    }
-
-    public void addConstructor(String name, Model model, btSphereShape meshShape) {
-        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
-    }
-
-    public void setModelFile(String mf) {
-        modelFile = mf;
+        addToBulletObjects(this);
     }
 
     //
 
-    public Vector3 getPos() {
-        return pos;
+    public void randomRot() {
+        setRot((int)(Math.random() * 360));
+        updateRot();
+        updatePos();
     }
 
-    public void setPos(String[] p) {
-        setPos(Float.parseFloat(p[0]), Float.parseFloat(p[1]), Float.parseFloat(p[2]));
-    }
-
-    public void setPos(float x, float y, float z) {
-        pos = new Vector3(x, y, z);
-    }
-
-    public void setPos(Vector3 p) {
-        pos = p;
-        
-    }
-
-    public void updatePos() {
-        entity.transform.setTranslation(pos);
-        entity.body.setWorldTransform(entity.transform); 
-    }
-
-    //
-
-    public void setRot(String[] r) {
-        rot.y = Integer.parseInt(r[1]);
-    }
-
-    public void setRot(int angle) {
-        rot.y += angle;
-    }
-
-    public void setRot(float angle) {
-        rot.y += (int)angle;
-    }
-
-    public void updateRot() {
-        entity.transform.setToRotation(Vector3.Y, rot.y);
+    public void scale(float to) {
+        //
     }
 
     //
@@ -146,15 +81,47 @@ public class BulletObject {
         this.color = color;
     }
 
+    public Vector3 getPos() {
+        return pos;
+    }
+
+    public void setPos(String[] p) {
+        setPos(Float.parseFloat(p[0]), Float.parseFloat(p[1]), Float.parseFloat(p[2]));
+    }
+
+    public void setPos(Vector3 pos) {
+        this.pos = pos;
+        
+    }
+
+    public void setPos(float x, float y, float z) {
+        pos = new Vector3(x, y, z);
+    }
+
     //
+
+    public void setRot(String[] r) {
+        rot.y = Integer.parseInt(r[1]);
+    }
+
+    public void setRot(int angle) {
+        rot.y += angle;
+    }
+
+    public void setRot(float angle) {
+        rot.y += (int)angle;
+    }
+
 
     public void setSize(String[] s) {
         size = new Vector3(Float.parseFloat(s[0]), Float.parseFloat(s[1]), Float.parseFloat(s[2]));
     }
 
-    public void setSize(Vector3 s) {
-        size = s;
+    public void setSize(Vector3 size) {
+        this.size = size;
     }
+
+    //
 
     public void updateColor() {
         entity.modelInstance.materials.get(0).set(
@@ -162,7 +129,20 @@ public class BulletObject {
             ColorAttribute.createSpecular(Color.WHITE));
     }
 
+    public void updatePos() {
+        entity.transform.setTranslation(pos);
+        entity.body.setWorldTransform(entity.transform); 
+    }
+
+    public void updateRot() {
+        entity.transform.setToRotation(Vector3.Y, rot.y);
+    }
+
     public void updateTexture() {
+        TextureAttribute textureAttribute = new TextureAttribute(
+            TextureAttribute.Diffuse,
+            Planet.INSTANCE.loader.objects.get(name).texture);
+
         entity.modelInstance.materials.get(0).set(textureAttribute);
     }
 
@@ -181,7 +161,6 @@ public class BulletObject {
             if (i > 0) line += ",";
 
             if (attr == "color") line += getSaveColor();
-            else if (attr == "modelFile") line += getSaveModelFile();
             else if (attr == "pos") line += getSavePos();
             else if (attr == "rot") line += getSaveRot();
             else if (attr == "size") line += getSaveSize();
@@ -220,7 +199,6 @@ public class BulletObject {
             String[] attrSplit = lineSplit[i].split(",");
 
             if (attr == "color") setColor(attrSplit);
-            else if (attr == "modelFile") setModelFile(attrSplit[0]);
             else if (attr == "pos") setPos(attrSplit);
             else if (attr == "rot") setRot(attrSplit);
             else if (attr == "size") setSize(attrSplit);

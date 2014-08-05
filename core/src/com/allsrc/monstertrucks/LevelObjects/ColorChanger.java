@@ -34,7 +34,6 @@ public class ColorChanger extends BulletObject {
     public void init() {
         name = "changer";
         attrs = new String[]{ "pos" };
-        modelFile = "data/block.obj";
 
         colorChangerCallback = new ColorChangerCallback();
         colorChangerCallback.changer = this;
@@ -46,13 +45,16 @@ public class ColorChanger extends BulletObject {
         init();
         loadFromLine(line);
         construct();
-        updatePos();
     }
 
     public ColorChanger(Vector3 pos) {
         init();
         setPos(pos);
-        construct();
+        construct(); 
+    }
+
+    public void construct() {
+        entity();
         updatePos();
     }
 
@@ -80,5 +82,11 @@ public class ColorChanger extends BulletObject {
         removeFromBulletObjects(this);
         
         entity.dispose();
+    }
+
+    public static void load() {
+        Planet.INSTANCE.loader.add("changer");
+        Planet.INSTANCE.loader.loadModel("data/block.obj");
+        addDefaultConstructor("changer");
     }
 }

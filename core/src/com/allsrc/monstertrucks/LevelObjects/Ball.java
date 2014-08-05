@@ -12,19 +12,17 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 public class Ball extends BulletObject {
 
     public Model model;
-    public btSphereShape meshShape;
+    public static float size = 3f;
 
     public void init() {
         name = "ball";
-        attrs = new String[]{ "color", "pos", "size" };
+        attrs = new String[]{ "color", "pos" };
     }
 
     public Ball(String line) {
         init();
         loadFromLine(line);
         construct();
-        updateColor();
-        updatePos();
     }
 
     public Ball(Color color, Vector3 size) {
@@ -32,29 +30,33 @@ public class Ball extends BulletObject {
         setColor(color);
         setSize(size);
         construct();
+    }
+
+    public void construct() {
+        entity();
         updateColor();
         updatePos();
     }
 
-    public void construct() {
-        if (model == null)
-        {
-            model = getModel();
-            meshShape = new btSphereShape(size.x / 2f);
+    public static void load() {
+        Planet.INSTANCE.loader.add("ball");
+        Planet.INSTANCE.loader.objects.get("ball").model = createSphere();
 
-            final BulletConstructor ballConstructor = new BulletConstructor(model, 5f, meshShape);
-            ballConstructor.bodyInfo.setRestitution(1f);
+        btSphereShape meshShape = new btSphereShape(size / 2f);
 
-            Planet.INSTANCE.world.addConstructor(name, ballConstructor);
-        }
+        BulletConstructor ballConstructor = new BulletConstructor(
+            Planet.INSTANCE.loader.getModel(), 
+            5f,
+            meshShape);
 
-        entity();
-        addToBulletObjects(this);
+        ballConstructor.bodyInfo.setRestitution(1f);
+
+        Planet.INSTANCE.world.addConstructor("ball", ballConstructor);
     }
 
-    public Model getModel() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size.x, size.y, size.z, 16, 16,
+    public static Model createSphere() {
+        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
             Usage.Position | Usage.Normal);
-    }
+    } 
 }

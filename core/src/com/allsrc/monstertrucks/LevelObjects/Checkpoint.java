@@ -10,7 +10,6 @@ public class Checkpoint extends Trigger {
     public void init() {
         super.init();
 
-        name = "checkpoint";
         attrs = new String[]{ "color", "pos", "size" };
     }
 
@@ -24,6 +23,11 @@ public class Checkpoint extends Trigger {
         super(color, pos, size);
         addGate();
         adjustColor();
+    }
+
+    public String getSaveLine() {
+        name = "checkpoint";
+        return super.getSaveLine();
     }
 
     public void setRot(int angle) {
