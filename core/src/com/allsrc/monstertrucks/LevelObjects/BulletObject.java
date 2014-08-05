@@ -98,7 +98,9 @@ public class BulletObject {
         pos = new Vector3(x, y, z);
     }
 
-    //
+    public float getRot() {
+        return rot.y;
+    }
 
     public void setRot(String[] r) {
         rot.y = Float.parseFloat(r[1]);

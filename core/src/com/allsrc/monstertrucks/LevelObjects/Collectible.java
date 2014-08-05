@@ -67,7 +67,7 @@ public class Collectible extends BulletObject {
         {
             for (Car car : Planet.INSTANCE.cars) {
                 if (entity.body != null)
-                    Planet.INSTANCE.world.collisionWorld.contactPairTest(car.chassis.body, entity.body, collectibleCallback);
+                    Planet.INSTANCE.world.collisionWorld.contactPairTest(car.entity.body, entity.body, collectibleCallback);
             }
         }
     }

@@ -7,7 +7,7 @@ public class Gate extends BulletObject {
 
     public void init() {
         name = "gate";
-        attrs = new String[]{ "color", "pos" };
+        attrs = new String[]{ "color", "pos", "rot" };
     }
 
     public Gate(String line) {
@@ -26,8 +26,9 @@ public class Gate extends BulletObject {
     public void construct() {
         entity();
         updateColor();
+        
+        updateRot();
         updatePos();
-        randomRot();
     }
 
     public static void load() {

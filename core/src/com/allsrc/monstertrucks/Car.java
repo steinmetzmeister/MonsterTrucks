@@ -59,11 +59,6 @@ public class Car extends BulletObject implements ControllerListener {
     protected float suspensionDamping = 2.3f;
     protected float suspensionStiffness = 40f;
 
-    protected boolean upPressed;
-    protected boolean downPressed;
-    protected boolean leftPressed;
-    protected boolean rightPressed;
-
     protected Model chassisModel;
     protected Model wheelModel;
 
@@ -71,9 +66,28 @@ public class Car extends BulletObject implements ControllerListener {
     protected String wheelModelFile = "data/wheel.obj";
     protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
 
+    protected Vector3 chassisHalfExtents;
+    protected Vector3 wheelHalfExtents;
+
     protected Vector3 initPos;
 
-    protected void loadModels() {
+    // left axii of any controller
+    float horzAxis = 0;
+    float vertAxis = 0;
+
+    protected boolean upPressed;
+    protected boolean downPressed;
+    protected boolean leftPressed;
+    protected boolean rightPressed;
+
+    public Car(Vector3 pos, Color color) {
+        setColor(color);
+        setPos(pos);
+
+        initPos = pos;
+    }
+
+    protected void loadAssets() {
         // chassis
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.INSTANCE.disposables.add(chassisModel);
@@ -86,30 +100,41 @@ public class Car extends BulletObject implements ControllerListener {
         wheelModel.materials.get(0).clear();
         wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.WHITE));
         wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
-    }
 
-    protected void init() {
-        loadModels();
-        
         BoundingBox bounds = new BoundingBox();
 
-        Vector3 chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());
-        Vector3 wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
+        chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());
+        wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
 
         Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
         Planet.INSTANCE.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
 
         chassisHalfExtents.scl(0.5f);
 
-        chassis = Planet.INSTANCE.world.add("chassis", initPos.x, initPos.y, initPos.z);
+        entity = Planet.INSTANCE.world.add("chassis", initPos.x, initPos.y, initPos.z);
         wheels[0] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
         wheels[1] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
         wheels[2] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
         wheels[3] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
+    }
 
-        // Create the vehicle
+    protected void init() {
+        loadAssets();
+        
+        setTuning();
         raycaster = new btDefaultVehicleRaycaster((btDynamicsWorld)Planet.INSTANCE.world.collisionWorld);
+        vehicle = new btRaycastVehicle(tuning, (btRigidBody)entity.body, raycaster);
 
+        ((btDynamicsWorld)Planet.INSTANCE.world.collisionWorld).addVehicle(vehicle);
+
+        vehicle.setCoordinateSystem(0, 1, 2);
+
+        addWheels();
+
+        entity.body.setActivationState(Collision.DISABLE_DEACTIVATION);
+    }
+
+    public void setTuning() {
         tuning = new btVehicleTuning();
         tuning.setFrictionSlip(frictionSlip);
         tuning.setMaxSuspensionForce(maxSuspensionForce);
@@ -117,15 +142,9 @@ public class Car extends BulletObject implements ControllerListener {
         tuning.setSuspensionCompression(suspensionCompression);
         tuning.setSuspensionDamping(suspensionDamping);
         tuning.setSuspensionStiffness(suspensionStiffness);
+    }
 
-        vehicle = new btRaycastVehicle(tuning, (btRigidBody)chassis.body, raycaster);
-
-        chassis.body.setActivationState(Collision.DISABLE_DEACTIVATION);
-
-        ((btDynamicsWorld)Planet.INSTANCE.world.collisionWorld).addVehicle(vehicle);
-
-        vehicle.setCoordinateSystem(0, 1, 2);
-
+    public void addWheels() {
         Vector3 point = new Vector3();
         Vector3 direction = new Vector3(0, -1, 0);
         Vector3 axis = new Vector3(-1, 0, 0);
@@ -201,28 +220,28 @@ public class Car extends BulletObject implements ControllerListener {
 
             if (horzAxis != 0) {
                 Matrix4 m = new Matrix4();
-                m.rotate(((btRigidBody)(chassis.body)).getOrientation());
+                m.rotate(((btRigidBody)(entity.body)).getOrientation());
                 m.translate(new Vector3(0, 0, horzAxis * impulseScale));
 
-                ((btRigidBody)(chassis.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+                ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
             }
 
             if (vertAxis != 0) {
                 Matrix4 m = new Matrix4();
-                m.rotate(((btRigidBody)(chassis.body)).getOrientation());
+                m.rotate(((btRigidBody)(entity.body)).getOrientation());
                 m.translate(new Vector3(-1 * vertAxis * impulseScale, 0, 0));
 
-                ((btRigidBody)(chassis.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+                ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
             }
         }
     }
 
     public void reset() {
-        chassis.body.setWorldTransform(chassis.transform.setToTranslation(initPos));
-        chassis.body.setInterpolationWorldTransform(chassis.transform);
-        ((btRigidBody)(chassis.body)).setLinearVelocity(Vector3.Zero);
-        ((btRigidBody)(chassis.body)).setAngularVelocity(Vector3.Zero);
-        chassis.body.activate();
+        entity.body.setWorldTransform(entity.transform.setToTranslation(initPos));
+        entity.body.setInterpolationWorldTransform(entity.transform);
+        ((btRigidBody)(entity.body)).setLinearVelocity(Vector3.Zero);
+        ((btRigidBody)(entity.body)).setAngularVelocity(Vector3.Zero);
+        entity.body.activate();
 
         horzAxis = 0;
         vertAxis = 0;
@@ -238,9 +257,6 @@ public class Car extends BulletObject implements ControllerListener {
     public void disconnected(Controller controller) {
         // TODO Auto-generated method stub
     }
-
-    float horzAxis = 0;
-    float vertAxis = 0;
 
     @Override
     public boolean axisMoved(Controller controller, int axisCode, float value) {

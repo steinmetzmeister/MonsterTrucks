@@ -6,7 +6,7 @@ public class ColorChanger extends Trigger {
 
     public void init() {
         name = "changer";
-        attrs = new String[]{ "pos" };
+        attrs = new String[]{ "pos", "rot" };
     }
 
     public ColorChanger(String line) {
@@ -26,6 +26,7 @@ public class ColorChanger extends Trigger {
     public void construct() {
         entity();
         updatePos();
+        randomRot();
     }
 
     public static void load() {

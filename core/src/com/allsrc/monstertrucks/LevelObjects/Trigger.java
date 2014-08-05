@@ -44,7 +44,7 @@ public class Trigger extends BulletObject {
     public void update() {
         for (Car car : Planet.INSTANCE.cars) {
             testing = (BulletObject)car;
-            testCollision(car.chassis.body);
+            testCollision(car.entity.body);
         }
 
         for (BulletObject object : Planet.INSTANCE.level.bulletObjects) {
