@@ -25,10 +25,10 @@ public class Ball extends BulletObject {
         construct();
     }
 
-    public Ball(Color color, Vector3 size) {
+    public Ball(Color color, Vector3 pos) {
         init();
         setColor(color);
-        setSize(size);
+        setPos(pos);
         construct();
     }
 

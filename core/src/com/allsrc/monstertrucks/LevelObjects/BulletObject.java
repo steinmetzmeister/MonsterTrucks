@@ -101,7 +101,7 @@ public class BulletObject {
     //
 
     public void setRot(String[] r) {
-        rot.y = Integer.parseInt(r[1]);
+        rot.y = Float.parseFloat(r[1]);
     }
 
     public void setRot(int angle) {
@@ -155,17 +155,14 @@ public class BulletObject {
     }
 
     public String getSaveLine() {
-        String line = "";
-        int i = 0;
+        String line = name;
         for (String attr : attrs) {
-            if (i > 0) line += ",";
+            line += " ";
 
             if (attr == "color") line += getSaveColor();
             else if (attr == "pos") line += getSavePos();
             else if (attr == "rot") line += getSaveRot();
             else if (attr == "size") line += getSaveSize();
-
-            i++;
         }
 
         return line;

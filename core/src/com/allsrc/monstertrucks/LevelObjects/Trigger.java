@@ -57,6 +57,11 @@ public class Trigger extends BulletObject {
         Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, triggerCallback);
     }
 
+    public void dispose() {
+        super.dispose();
+        Planet.INSTANCE.level.triggers.removeValue(this, true);
+    }
+
     public void triggered() {
         //
     }

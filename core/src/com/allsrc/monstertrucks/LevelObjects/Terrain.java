@@ -6,7 +6,7 @@ public class Terrain extends BulletObject {
 
     public void init() {
         name = "terrain";
-        attrs = new String[]{ "color", "modelFile" };
+        attrs = new String[]{ "color" };
     }
 
     public Terrain(String line) {
@@ -25,6 +25,7 @@ public class Terrain extends BulletObject {
         entity();
         updateColor();
         scale(2f);
+        removeFromBulletObjects(this);
     }
 
     public static void load(String modelFile) {

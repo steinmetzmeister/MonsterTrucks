@@ -17,7 +17,7 @@ public class Checkpoint extends Trigger {
 
     public void init() {
         name = "checkpoint";
-        attrs = new String[]{ "color", "pos", "size" };
+        attrs = new String[]{ "color", "pos", "rot", "size" };
     }
 
     public Checkpoint(String line) {
@@ -41,21 +41,19 @@ public class Checkpoint extends Trigger {
         addGate();
         adjustColor();
         updateColor();
+        updateRot();
+        updatePos();
         noResponse();
     }
 
     public void setRot(int angle) {
-        Vector3 pos = getPos();
-
         rot.y = angle;
-        updateRot();
-        setPos(pos);
-        updatePos();
-        
-        gate.rot.y = angle;
-        gate.updateRot();
-        gate.setPos(pos);
-        gate.updatePos();
+        gate.setRot(angle);
+    }
+
+    public void setRot(float angle) {
+        rot.y = angle;
+        gate.setRot(angle);
     }
 
     public void adjustColor() {
@@ -66,6 +64,8 @@ public class Checkpoint extends Trigger {
     public void addGate() {
         gate = new Gate(getColor(), getPos());
         gate.updateColor();
+        gate.updateRot();
+        gate.updatePos();
         BulletObject.removeFromBulletObjects(gate);
     }
 
