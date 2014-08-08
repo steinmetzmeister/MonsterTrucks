@@ -54,6 +54,9 @@ public class Trigger extends BulletObject {
     }
 
     public void testCollision(btCollisionObject body) {
+        if (paused)
+            return;
+        
         Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, triggerCallback);
     }
 
@@ -70,7 +73,11 @@ public class Trigger extends BulletObject {
         paused = false;
     }
 
-    public void stop() {
+    public void pause() {
         paused = true;
+    }
+
+    public void reset() {
+        paused = false;
     }
 }

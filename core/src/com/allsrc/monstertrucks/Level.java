@@ -21,6 +21,7 @@ public class Level {
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
+    Checkpoints checkpoints = new Checkpoints();
     
     Terrain terrain;
     Track track;
@@ -76,7 +77,7 @@ public class Level {
                 new ColorChanger(line);
 
             else if (word.equals("checkpoint"))
-                new Checkpoint(line);
+                checkpoints.add(new Checkpoint(line));
 
             else if (word.equals("coin"))
                 new Coin(line);

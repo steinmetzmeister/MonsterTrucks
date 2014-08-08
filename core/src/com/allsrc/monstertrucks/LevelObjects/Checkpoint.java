@@ -11,9 +11,12 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
 public class Checkpoint extends Trigger {
+    protected Checkpoints manager;
 
     public Gate gate;
     public static float size = 10f;
+    protected Color activeColor;
+    protected static Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
 
     public void init() {
         name = "checkpoint";
@@ -43,6 +46,8 @@ public class Checkpoint extends Trigger {
         updateColor();
         updateRot();
         noResponse();
+
+        activeColor = getColor();
     }
 
     public void updateRot() {
@@ -72,8 +77,10 @@ public class Checkpoint extends Trigger {
     }
 
     public void triggered() {
-        stop();
-    }
+        if (this.manager.test(this)) {
+            // 
+        }
+    } 
 
     public static void load() {
         Gate.load();
@@ -89,5 +96,31 @@ public class Checkpoint extends Trigger {
             new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.RED),
             new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
             Usage.Position | Usage.Normal);
+    }
+
+    public void setManager(Checkpoints manager) {
+        this.manager = manager;
+    }
+
+    public void setInactive() {
+        pause();
+        color = inactiveColor;
+        updateColor();
+
+        gate.setColor(inactiveColor);
+        gate.updateColor();
+    }
+
+    public void setActive() {
+        start();
+        color = activeColor;
+        updateColor();
+
+        gate.setColor(activeColor);
+        gate.updateColor();
+    }
+
+    public String getSaveColor() {
+        return activeColor.r + "," + activeColor.g + "," + activeColor.b + "," + activeColor.a;
     }
 }
