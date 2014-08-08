@@ -48,6 +48,8 @@ public class MonsterListener implements InputProcessor, GestureListener {
 
         if (keycode >= 8 && keycode <= 12) {
             activeLevelObject = keycode - 8;
+            Planet.INSTANCE.main.activeObjectLabel.setText(
+                levelObjects[activeLevelObject]);
             return false;
         }
 

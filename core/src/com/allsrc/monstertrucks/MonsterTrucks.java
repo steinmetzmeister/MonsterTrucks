@@ -12,7 +12,6 @@ import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
@@ -23,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -33,8 +33,6 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.physics.bullet.linearmath.*;
 
 public class MonsterTrucks implements ApplicationListener {
-
-	ObjLoader objLoader = new ObjLoader();
 
 	boolean initialized;
 
@@ -56,6 +54,7 @@ public class MonsterTrucks implements ApplicationListener {
 
 	private Skin skin;
 	private Stage stage;
+	public Label activeObjectLabel;
 
 	// rays
 
@@ -113,6 +112,14 @@ public class MonsterTrucks implements ApplicationListener {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
+
+		activeObjectLabel = new Label("Object", skin);
+
+		Table table = new Table();
+		table.left().bottom();
+    	table.setFillParent(true);
+	    stage.addActor(table);
+	    table.add(activeObjectLabel).width(100);
 
 		Planet.INSTANCE.level.loadFromFile();
 	}
