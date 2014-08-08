@@ -37,10 +37,10 @@ public class Coin extends Collectible {
     }
 
     public static void load() {
-        Planet.INSTANCE.loader.add("coin");
-        Planet.INSTANCE.loader.loadModel("data/coin.obj");
-        Planet.INSTANCE.loader.loadSound("data/coins.wav");
-        Planet.INSTANCE.loader.loadTexture("data/coin.png");
+        Planet.EX.loader.add("coin");
+        Planet.EX.loader.loadModel("data/coin.obj");
+        Planet.EX.loader.loadSound("data/coins.wav");
+        Planet.EX.loader.loadTexture("data/coin.png");
         addDefaultConstructor("coin");
     }
 }

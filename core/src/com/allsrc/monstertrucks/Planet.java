@@ -8,7 +8,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 
 public enum Planet {
-    INSTANCE;
+    EX;
 
     public MonsterTrucks main;
 
@@ -27,5 +27,6 @@ public enum Planet {
     public Array<Player> players = new Array<Player>();
     public Array<Car> cars = new Array<Car>();
 
+    public Settings settings;
     public Level level;
 }

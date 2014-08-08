@@ -39,23 +39,23 @@ public class Ball extends BulletObject {
     }
 
     public static void load() {
-        Planet.INSTANCE.loader.add("ball");
-        Planet.INSTANCE.loader.objects.get("ball").model = createSphere();
+        Planet.EX.loader.add("ball");
+        Planet.EX.loader.objects.get("ball").model = createSphere();
 
         btSphereShape meshShape = new btSphereShape(size / 2f);
 
         BulletConstructor ballConstructor = new BulletConstructor(
-            Planet.INSTANCE.loader.getModel(), 
+            Planet.EX.loader.getModel(), 
             5f,
             meshShape);
 
         ballConstructor.bodyInfo.setRestitution(1f);
 
-        Planet.INSTANCE.world.addConstructor("ball", ballConstructor);
+        Planet.EX.world.addConstructor("ball", ballConstructor);
     }
 
     public static Model createSphere() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+        return Planet.EX.modelBuilder.createSphere(size, size, size, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, new Color())),
             Usage.Position | Usage.Normal);
     } 

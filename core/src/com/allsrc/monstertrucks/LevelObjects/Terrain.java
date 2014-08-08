@@ -29,9 +29,9 @@ public class Terrain extends BulletObject {
     }
 
     public static void load(String modelFile) {
-        Planet.INSTANCE.loader.add("terrain");
-        Planet.INSTANCE.loader.loadModel(modelFile);
-        Planet.INSTANCE.loader.getModel().meshes.get(0).scale(2f, 2f, 2f);
+        Planet.EX.loader.add("terrain");
+        Planet.EX.loader.loadModel(modelFile);
+        Planet.EX.loader.getModel().meshes.get(0).scale(2f, 2f, 2f);
         addDefaultConstructor("terrain");
     }
 }

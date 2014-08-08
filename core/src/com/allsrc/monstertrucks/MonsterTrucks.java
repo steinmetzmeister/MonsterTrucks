@@ -8,10 +8,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
-import com.badlogic.gdx.graphics.g3d.Environment;
-import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
@@ -38,17 +35,7 @@ public class MonsterTrucks implements ApplicationListener {
 
 	int numPlayers = 1;
 	
-	public void init() {
-		if (initialized) return;
-
-		Bullet.init();
-		initialized = true;
-	}
-
 	public PerspectiveCamera camera;
-
-	public Environment environment;
-	public DirectionalLight light;
 
 	public ModelBuilder modelBuilder = new ModelBuilder();
 
@@ -56,15 +43,28 @@ public class MonsterTrucks implements ApplicationListener {
 	private Stage stage;
 	public Label activeObjectLabel;
 
-	// rays
-
     MonsterListener monsterListener;
+
+	public void init() {
+		if (initialized)
+			return;
+
+		Bullet.init();
+		initialized = true;
+	}
 
 	@Override
 	public void create () {
 		init();
 
-        Planet.INSTANCE.main = this;
+        Planet.EX.main = this;
+
+        Planet.EX.modelBatch = new ModelBatch();
+        Planet.EX.settings = new Settings();
+        Planet.EX.world = new BulletWorld();
+
+        Planet.EX.settings.width = Gdx.graphics.getWidth();
+        Planet.EX.settings.height = Gdx.graphics.getHeight();
 
         monsterListener = new MonsterListener();
         monsterListener.init();
@@ -72,46 +72,41 @@ public class MonsterTrucks implements ApplicationListener {
 		stage = new Stage();
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-		final float width = Gdx.graphics.getWidth();
-		final float height = Gdx.graphics.getHeight();
-		
-		if (numPlayers == 2)
-			Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / (height / 2), 3f);
-		else
-			Planet.INSTANCE.camera = new PerspectiveCamera(67f, 3f * width / height , 3f);
+		switch (numPlayers) {
+			case 1:
+				Planet.EX.camera = new PerspectiveCamera(
+					67f,
+					3f * Planet.EX.settings.width / Planet.EX.settings.height,
+					3f);
+				break;
+			case 2:
+				Planet.EX.camera = new PerspectiveCamera(
+					67f,
+					3f * Planet.EX.settings.width / (Planet.EX.settings.height / 2),
+					3f);
+				break;
 
-		Planet.INSTANCE.modelBatch = new ModelBatch();
-		Planet.INSTANCE.world = new BulletWorld();
-
-		//
-		environment = new Environment();
-		environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
-		
-		light = new DirectionalLight();
-		light.set(0.8f, 0.8f, 0.8f, -0.5f, -1f, 0.7f);
-
-		environment.add(light);
-		//
-		
-		// Level
-		Planet.INSTANCE.level = new Level();
+			case 3:
+			case 4:
+				break;
+		}
 
 		for (int i = 0; i < numPlayers; i++)
 		{
-			Color c = Color.RED;
-			if (i == 1)
-				c = Color.BLACK;
-
-			Planet.INSTANCE.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
+			Color c = MonsterColor.randomColor();
+			Planet.EX.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
 
 			if (i < Controllers.getControllers().size)
-				Controllers.getControllers().get(i).addListener(Planet.INSTANCE.cars.get(i));
+				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
 		}
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
+
+		Planet.EX.level = new Level();
+		Planet.EX.level.loadFromFile();
 
 		activeObjectLabel = new Label("Object", skin);
 
@@ -120,8 +115,6 @@ public class MonsterTrucks implements ApplicationListener {
     	table.setFillParent(true);
 	    stage.addActor(table);
 	    table.add(activeObjectLabel).width(100);
-
-		Planet.INSTANCE.level.loadFromFile();
 	}
 
 	@Override
@@ -131,10 +124,18 @@ public class MonsterTrucks implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		if (numPlayers == 2)
-			renderTwoPlayerScreen();
-		else
-			renderScreen();
+		switch (numPlayers) {
+			case 1:
+				renderScreen();
+				break;
+			case 2:
+				renderSplitScreen();
+				break;
+
+			case 3:
+			case 4:
+				break;
+		}
 
 		// UI
 		stage.act(Gdx.graphics.getDeltaTime());
@@ -143,27 +144,27 @@ public class MonsterTrucks implements ApplicationListener {
 
 	public void renderScreen() {
 		updateCameraPosition(0);
-		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Planet.EX.modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		Planet.INSTANCE.camera.update();
-		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-		Planet.INSTANCE.modelBatch.end();
+		Planet.EX.camera.update();
+		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+		Planet.EX.modelBatch.end();
 	}
 
-	public void renderTwoPlayerScreen() {
+	public void renderSplitScreen() {
 		updateCameraPosition(0);
-		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Planet.EX.modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.INSTANCE.camera.update();
-		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-		Planet.INSTANCE.modelBatch.end();
+		Planet.EX.camera.update();
+		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+		Planet.EX.modelBatch.end();
 		
 		updateCameraPosition(1);
-		Planet.INSTANCE.modelBatch.begin(Planet.INSTANCE.camera);
+		Planet.EX.modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.INSTANCE.camera.update();
-		Planet.INSTANCE.world.render(Planet.INSTANCE.modelBatch, environment);
-		Planet.INSTANCE.modelBatch.end();
+		Planet.EX.camera.update();
+		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+		Planet.EX.modelBatch.end();
 	}
 
 	// context of truck
@@ -172,48 +173,46 @@ public class MonsterTrucks implements ApplicationListener {
 	Vector3 cameraPosition = new Vector3();
 
 	public void updateCameraPosition(int playerNum) {
-		Planet.INSTANCE.cars.get(playerNum).entity.motionState.getWorldTransform(worldTransform);
+		Planet.EX.cars.get(playerNum).entity.motionState.getWorldTransform(worldTransform);
 
 		worldTransform.getTranslation(carPosition);
 		cameraPosition.set(carPosition);
 
 		cameraPosition.set(cameraPosition.x - 10f, cameraPosition.y + 20f, cameraPosition.z - 15f);
 
-		Planet.INSTANCE.camera.position.set(cameraPosition);
-		Planet.INSTANCE.camera.lookAt(carPosition);
-        Planet.INSTANCE.camera.up.set(Vector3.Y);
+		Planet.EX.camera.position.set(cameraPosition);
+		Planet.EX.camera.lookAt(carPosition);
+        Planet.EX.camera.up.set(Vector3.Y);
 	}
 
 	public void update () {
-		Planet.INSTANCE.world.update();
+		Planet.EX.world.update();
 
-		for (Car car : Planet.INSTANCE.cars)
-		{
+		for (Car car : Planet.EX.cars)
 			car.update();
-       	}
 
-       	for (Collectible collectible : Planet.INSTANCE.level.collectibles) {
+       	for (Collectible collectible : Planet.EX.level.collectibles)
        		collectible.update();
-       	}
 
-       	for (Trigger trigger : Planet.INSTANCE.level.triggers) {
+       	for (Trigger trigger : Planet.EX.level.triggers)
        		trigger.update();
-       	}
 	}
 
 	@Override
 	public void dispose () {
-		Planet.INSTANCE.world.dispose();
-		Planet.INSTANCE.world = null;
+		Planet.EX.world.dispose();
+		Planet.EX.world = null;
 
-		for (Disposable disposable : Planet.INSTANCE.disposables)
+		for (Disposable disposable : Planet.EX.disposables)
 			disposable.dispose();
-		Planet.INSTANCE.disposables.clear();
 
-		Planet.INSTANCE.modelBatch.dispose();
-		Planet.INSTANCE.modelBatch = null;
+		Planet.EX.disposables.clear();
 
-		light = null;
+		Planet.EX.modelBatch.dispose();
+		Planet.EX.modelBatch = null;
+
+		Planet.EX.level.environment = null;
+		Planet.EX.level.light = null;
 
 		// UI
 		stage.dispose();

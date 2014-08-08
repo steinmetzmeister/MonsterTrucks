@@ -77,6 +77,9 @@ public class Checkpoint extends Trigger {
     }
 
     public void triggered() {
+        if (this.manager == null)
+            return;
+
         if (this.manager.test(this)) {
             // 
         }
@@ -85,14 +88,14 @@ public class Checkpoint extends Trigger {
     public static void load() {
         Gate.load();
 
-        Planet.INSTANCE.loader.add("checkpoint");
-        Planet.INSTANCE.loader.objects.get("checkpoint").model = createSphere();
+        Planet.EX.loader.add("checkpoint");
+        Planet.EX.loader.objects.get("checkpoint").model = createSphere();
 
         addDefaultConstructor("checkpoint");
     }
 
     public static Model createSphere() {
-        return Planet.INSTANCE.modelBuilder.createSphere(size, size, size, 16, 16,
+        return Planet.EX.modelBuilder.createSphere(size, size, size, 16, 16,
             new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.RED),
             new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
             Usage.Position | Usage.Normal);

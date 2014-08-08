@@ -38,16 +38,16 @@ public class Trigger extends BulletObject {
 
     public Trigger() {
         triggerCallback = new TriggerCallback(this);
-        Planet.INSTANCE.level.triggers.add(this);
+        Planet.EX.level.triggers.add(this);
     }
 
     public void update() {
-        for (Car car : Planet.INSTANCE.cars) {
+        for (Car car : Planet.EX.cars) {
             testing = (BulletObject)car;
             testCollision(car.entity.body);
         }
 
-        for (BulletObject object : Planet.INSTANCE.level.bulletObjects) {
+        for (BulletObject object : Planet.EX.level.bulletObjects) {
             testing = object;
             testCollision(object.entity.body);
         }
@@ -57,12 +57,12 @@ public class Trigger extends BulletObject {
         if (paused)
             return;
         
-        Planet.INSTANCE.world.collisionWorld.contactPairTest(body, entity.body, triggerCallback);
+        Planet.EX.world.collisionWorld.contactPairTest(body, entity.body, triggerCallback);
     }
 
     public void dispose() {
         super.dispose();
-        Planet.INSTANCE.level.triggers.removeValue(this, true);
+        Planet.EX.level.triggers.removeValue(this, true);
     }
 
     public void triggered() {

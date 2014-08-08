@@ -41,7 +41,7 @@ public class Loader {
     }
 
     public void loadModel(String file) {
-        objects.get(name).model = Planet.INSTANCE.objLoader.loadModel(Gdx.files.internal(file));
+        objects.get(name).model = Planet.EX.objLoader.loadModel(Gdx.files.internal(file));
     }
 
     public void loadSound(String file) {

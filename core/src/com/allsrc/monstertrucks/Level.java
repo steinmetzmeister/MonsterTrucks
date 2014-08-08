@@ -16,6 +16,9 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.Disposable;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.Environment;
+import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
 public class Level {
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
@@ -25,6 +28,8 @@ public class Level {
     
     Terrain terrain;
     Track track;
+    public Environment environment;
+    public DirectionalLight light;
 
     public Level() {
         load();
@@ -65,6 +70,14 @@ public class Level {
 
         Terrain.load("data/terrain.obj");
         terrain = new Terrain(Color.GREEN);
+
+        environment = new Environment();
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
+        
+        light = new DirectionalLight();
+        light.set(0.8f, 0.8f, 0.8f, -0.5f, -1f, 0.7f);
+
+        environment.add(light);
 
         String word;
         for (String line : lines) {

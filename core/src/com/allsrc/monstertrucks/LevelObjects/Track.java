@@ -27,10 +27,10 @@ public class Track extends BulletObject {
     }
 
     public static void load(String modelFile, String textureFile) {
-        Planet.INSTANCE.loader.add("track");
-        Planet.INSTANCE.loader.loadModel(modelFile);
-        Planet.INSTANCE.loader.loadTexture(textureFile);
-        Planet.INSTANCE.loader.getModel().meshes.get(0).scale(4f, 4f, 4f);
+        Planet.EX.loader.add("track");
+        Planet.EX.loader.loadModel(modelFile);
+        Planet.EX.loader.loadTexture(textureFile);
+        Planet.EX.loader.getModel().meshes.get(0).scale(4f, 4f, 4f);
         addDefaultConstructor("track");
     }
 }

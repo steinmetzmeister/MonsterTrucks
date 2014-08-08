@@ -90,13 +90,13 @@ public class Car extends BulletObject implements ControllerListener {
     protected void loadAssets() {
         // chassis
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
-        Planet.INSTANCE.disposables.add(chassisModel);
+        Planet.EX.disposables.add(chassisModel);
         chassisModel.materials.get(0).clear();
         chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(Color.WHITE));
 
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
-        Planet.INSTANCE.disposables.add(wheelModel);
+        Planet.EX.disposables.add(wheelModel);
         wheelModel.materials.get(0).clear();
         wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.WHITE));
         wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
@@ -106,26 +106,26 @@ public class Car extends BulletObject implements ControllerListener {
         chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());
         wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
 
-        Planet.INSTANCE.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
-        Planet.INSTANCE.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
+        Planet.EX.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
+        Planet.EX.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
 
         chassisHalfExtents.scl(0.5f);
 
-        entity = Planet.INSTANCE.world.add("chassis", initPos.x, initPos.y, initPos.z);
-        wheels[0] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
-        wheels[1] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
-        wheels[2] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
-        wheels[3] = Planet.INSTANCE.world.add("wheel", 0, 0f, 0);
+        entity = Planet.EX.world.add("chassis", initPos.x, initPos.y, initPos.z);
+        wheels[0] = Planet.EX.world.add("wheel", 0, 0f, 0);
+        wheels[1] = Planet.EX.world.add("wheel", 0, 0f, 0);
+        wheels[2] = Planet.EX.world.add("wheel", 0, 0f, 0);
+        wheels[3] = Planet.EX.world.add("wheel", 0, 0f, 0);
     }
 
     protected void init() {
         loadAssets();
         
         setTuning();
-        raycaster = new btDefaultVehicleRaycaster((btDynamicsWorld)Planet.INSTANCE.world.collisionWorld);
+        raycaster = new btDefaultVehicleRaycaster((btDynamicsWorld)Planet.EX.world.collisionWorld);
         vehicle = new btRaycastVehicle(tuning, (btRigidBody)entity.body, raycaster);
 
-        ((btDynamicsWorld)Planet.INSTANCE.world.collisionWorld).addVehicle(vehicle);
+        ((btDynamicsWorld)Planet.EX.world.collisionWorld).addVehicle(vehicle);
 
         vehicle.setCoordinateSystem(0, 1, 2);
 

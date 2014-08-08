@@ -35,23 +35,23 @@ public class BulletObject {
     public static TextureAttribute textureAttribute;
 
     public static void addDefaultConstructor(String name) {
-        Planet.INSTANCE.loader.set(name);
+        Planet.EX.loader.set(name);
 
         addConstructor(name,
-            Planet.INSTANCE.loader.getModel(),
-            new btBvhTriangleMeshShape(Planet.INSTANCE.loader.getModel().meshParts));
+            Planet.EX.loader.getModel(),
+            new btBvhTriangleMeshShape(Planet.EX.loader.getModel().meshParts));
     }
 
     public static void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
-        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+        Planet.EX.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
     }
 
     public static void addConstructor(String name, Model model, btSphereShape meshShape) {
-        Planet.INSTANCE.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
+        Planet.EX.world.addConstructor(name, new BulletConstructor(model, 0f, meshShape));
     }
 
     public void entity() {
-        entity = Planet.INSTANCE.world.add(name, 0f, 0f, 0f);
+        entity = Planet.EX.world.add(name, 0f, 0f, 0f);
         addToBulletObjects(this);
     }
 
@@ -143,14 +143,14 @@ public class BulletObject {
     public void updateTexture() {
         TextureAttribute textureAttribute = new TextureAttribute(
             TextureAttribute.Diffuse,
-            Planet.INSTANCE.loader.objects.get(name).texture);
+            Planet.EX.loader.objects.get(name).texture);
 
         entity.modelInstance.materials.get(0).set(textureAttribute);
     }
 
     public void dispose() {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
+        Planet.EX.world.remove(entity);
+        Planet.EX.world.collisionWorld.removeCollisionObject(entity.body);
         entity.dispose();
 
         removeFromBulletObjects(this);
@@ -207,11 +207,11 @@ public class BulletObject {
     }
 
     public static void addToBulletObjects(BulletObject object) {
-        Planet.INSTANCE.level.bulletObjects.add(object);
+        Planet.EX.level.bulletObjects.add(object);
     }
 
     public static void removeFromBulletObjects(BulletObject object) {
-        Planet.INSTANCE.level.bulletObjects.removeValue(object, true);
+        Planet.EX.level.bulletObjects.removeValue(object, true);
     }
 
     public void noResponse() {

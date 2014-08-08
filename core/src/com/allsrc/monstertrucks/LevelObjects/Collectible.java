@@ -55,33 +55,33 @@ public class Collectible extends BulletObject {
     }
 
     public void addToCollectibles() {
-        Planet.INSTANCE.level.collectibles.add(this);
+        Planet.EX.level.collectibles.add(this);
     }
 
     public void removeFromCollectibles() {
-        Planet.INSTANCE.level.collectibles.removeValue(this, true);
+        Planet.EX.level.collectibles.removeValue(this, true);
     }
 
     public void update() {
         if (!touched)
         {
-            for (Car car : Planet.INSTANCE.cars) {
+            for (Car car : Planet.EX.cars) {
                 if (entity.body != null)
-                    Planet.INSTANCE.world.collisionWorld.contactPairTest(car.entity.body, entity.body, collectibleCallback);
+                    Planet.EX.world.collisionWorld.contactPairTest(car.entity.body, entity.body, collectibleCallback);
             }
         }
     }
 
     public void pickedUp() {
-        Planet.INSTANCE.loader.objects.get(name).sound.play();
+        Planet.EX.loader.objects.get(name).sound.play();
 
         touched = true;
         dispose();
     }
 
     public void dispose () {
-        Planet.INSTANCE.world.remove(entity);
-        Planet.INSTANCE.world.collisionWorld.removeCollisionObject(entity.body);
+        Planet.EX.world.remove(entity);
+        Planet.EX.world.collisionWorld.removeCollisionObject(entity.body);
 
         removeFromCollectibles();
         removeFromBulletObjects(this);
