@@ -80,6 +80,8 @@ public class Car extends BulletObject implements ControllerListener {
     protected boolean leftPressed;
     protected boolean rightPressed;
 
+    protected boolean paused = false;
+
     public Car(Vector3 pos, Color color) {
         setColor(color);
         setPos(pos);
@@ -132,6 +134,10 @@ public class Car extends BulletObject implements ControllerListener {
         addWheels();
 
         entity.body.setActivationState(Collision.DISABLE_DEACTIVATION);
+    }
+
+    public void pause() {
+        paused = !paused;
     }
 
     public void setTuning() {
@@ -233,6 +239,11 @@ public class Car extends BulletObject implements ControllerListener {
 
                 ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
             }
+        }
+
+        if (paused) {
+            vehicle.getRigidBody().setLinearVelocity(new Vector3(0,0,0));
+            vehicle.getRigidBody().setAngularVelocity(new Vector3(0,0,0));
         }
     }
 

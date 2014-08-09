@@ -46,11 +46,6 @@ public class Trigger extends BulletObject {
             testing = (BulletObject)car;
             testCollision(car.entity.body);
         }
-
-        // for (BulletObject object : Planet.EX.level.bulletObjects) {
-        //     testing = object;
-        //     testCollision(object.entity.body);
-        // }
     }
 
     public void testCollision(btCollisionObject body) {

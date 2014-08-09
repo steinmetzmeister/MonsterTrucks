@@ -57,8 +57,10 @@ public class Checkpoint extends Trigger {
     public void setPos(Vector3 pos) {
         super.setPos(pos);
 
-        gate.setPos(getPos());
-        gate.updatePos();
+        if (gate != null) {
+            gate.setPos(getPos());
+            gate.updatePos();
+        }
     }
 
     public void updateRot() {

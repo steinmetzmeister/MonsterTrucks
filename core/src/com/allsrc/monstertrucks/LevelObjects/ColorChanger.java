@@ -42,4 +42,13 @@ public class ColorChanger extends Trigger {
         color = testing.color;
         updateColor();
     }
+
+    public void update() {
+        super.update();
+
+        for (BulletObject object : Planet.EX.level.bulletObjects) {
+            testing = object;
+            testCollision(object.entity.body);
+        }
+    }
 }

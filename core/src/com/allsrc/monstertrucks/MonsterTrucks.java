@@ -67,13 +67,13 @@ public class MonsterTrucks implements ApplicationListener {
 		switch (Planet.EX.settings.playerCount) {
 			case 1:
 				Planet.EX.camera = new PerspectiveCamera(
-					67f,
+					70f,
 					3f * Planet.EX.settings.width / Planet.EX.settings.height,
 					3f);
 				break;
 			case 2:
 				Planet.EX.camera = new PerspectiveCamera(
-					67f,
+					70f,
 					3f * Planet.EX.settings.width / (Planet.EX.settings.height / 2),
 					3f);
 				break;

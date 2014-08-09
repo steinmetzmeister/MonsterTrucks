@@ -111,6 +111,7 @@ public class MonsterListener extends MonsterListenerBase {
             if (screenX < Planet.EX.settings.width / 2) {
                 Planet.EX.cars.get(0).reset();
             } else {
+                Planet.EX.main.editor.deselect();
                 Planet.EX.level.clearLevel();
                 Planet.EX.level.loadFromFile();
             }

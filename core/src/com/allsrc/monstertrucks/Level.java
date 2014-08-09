@@ -44,8 +44,17 @@ public class Level {
     }
 
     public void clearLevel() {
+        collectibles = new Array<Collectible>();
+        triggers = new Array<Trigger>();
+        checkpoints = new Checkpoints();
+
         for (int j = bulletObjects.size - 1; j >= 0; j--)
             bulletObjects.get(j).dispose();
+
+        bulletObjects = new Array<BulletObject>();
+
+        terrain.dispose();
+        terrain = null;
     }
 
     public void saveToFile() {

@@ -28,6 +28,8 @@ public class Editor {
     protected BulletObject selectedObj;
     protected Color selectedColor;
 
+    protected float rotSpeed = 3.9f;
+
     public Editor() {
         activeObjectLabel = new Label("Object", Planet.EX.main.skin);
 
@@ -93,7 +95,10 @@ public class Editor {
     }
 
     public void scroll(int amount) {
-        selectedObj.addRot(amount * 3.9f);
+        if (selectedObj == null)
+            return;
+
+        selectedObj.addRot(amount * rotSpeed);
         selectedObj.updateRot();
         selectedObj.updatePos();
     }
@@ -101,17 +106,46 @@ public class Editor {
     Vector3 vTemp;
 
     public void keyUp(int keycode) {
+        if (keycode == Keys.P)
+            Planet.EX.cars.get(0).pause();
+
         if (selectedObj == null)
             return;
 
         vTemp = selectedObj.getPos();
 
         switch (keycode) {
-            case Keys.NUMPAD_2:
-                vTemp.y -= 1;
-                break;
             case Keys.NUMPAD_8:
-                vTemp.y += 1;
+                vTemp.z += 0.5f;
+                break;
+            case Keys.NUMPAD_6:
+                vTemp.x -= 0.5f;
+                break;
+            case Keys.NUMPAD_2:
+                vTemp.z -= 0.5f;
+                break;
+            case Keys.NUMPAD_4:
+                vTemp.x += 0.5f;
+                break;
+
+            // height
+            case Keys.NUMPAD_1:
+                vTemp.y -= 0.5f;
+                break;
+            case Keys.NUMPAD_3:
+                vTemp.y += 0.5f;
+                break;
+
+            case Keys.NUMPAD_7:
+                selectedObj.addRot(-rotSpeed * 2);
+                selectedObj.updateRot();
+                selectedObj.updatePos();
+                break;
+            case Keys.NUMPAD_9:
+                selectedObj.addRot(rotSpeed * 2);
+                selectedObj.updateRot();
+                selectedObj.updatePos();
+                break;
         }
 
         selectedObj.setPos(vTemp);
