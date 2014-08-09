@@ -16,6 +16,10 @@ public class Gate extends BulletObject {
         construct();
     }
 
+    public Gate(Vector3 pos) {
+        this(MonsterColor.randomColor(), pos);
+    }
+
     public Gate(Color color, Vector3 pos) {
         init();
         setColor(color);

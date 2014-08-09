@@ -294,17 +294,22 @@ public class Car extends BulletObject implements ControllerListener {
 
     @Override
     public boolean buttonUp(Controller controller, int buttonCode) {
-        if (buttonCode == 3 || buttonCode == 12 || buttonCode == Ouya.BUTTON_Y)
+        if (buttonCode == 3 || buttonCode == 12 || 
+            buttonCode == Ouya.BUTTON_Y)
             reset();
 
-        if (buttonCode == 1 || buttonCode == 14 || buttonCode == Ouya.BUTTON_O)
+        if (buttonCode == 1 || buttonCode == 14 || 
+            buttonCode == Ouya.BUTTON_O)
             upPressed = false;
 
-        if (buttonCode == 0 || buttonCode == 15 || buttonCode == Ouya.BUTTON_U)
+        if (buttonCode == 0 || buttonCode == 15 || 
+            buttonCode == Ouya.BUTTON_U)
             downPressed = false;
 
         return false;
     }
+
+    //
 
     @Override
     public boolean povMoved(Controller controller, int povCode, PovDirection value) {

@@ -15,7 +15,9 @@ public class Loader {
         Texture texture;
     }
 
+    protected ObjLoader objLoader = new ObjLoader();
     public HashMap<String,Object> objects = new HashMap<String,Object>();
+
     String name;
 
     public void set(String name) {
@@ -41,7 +43,7 @@ public class Loader {
     }
 
     public void loadModel(String file) {
-        objects.get(name).model = Planet.EX.objLoader.loadModel(Gdx.files.internal(file));
+        objects.get(name).model = objLoader.loadModel(Gdx.files.internal(file));
     }
 
     public void loadSound(String file) {

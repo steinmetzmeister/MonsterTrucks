@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -31,17 +30,11 @@ import com.badlogic.gdx.physics.bullet.linearmath.*;
 
 public class MonsterTrucks implements ApplicationListener {
 
-	boolean initialized;
+	private boolean initialized;
 
-	int numPlayers = 1;
-	
-	public PerspectiveCamera camera;
-
-	public ModelBuilder modelBuilder = new ModelBuilder();
-
-	private Skin skin;
-	private Stage stage;
-	public Label activeObjectLabel;
+	public Editor editor;
+	public Skin skin;
+	public Stage stage;
 
     MonsterListener monsterListener;
 
@@ -67,12 +60,11 @@ public class MonsterTrucks implements ApplicationListener {
         Planet.EX.settings.height = Gdx.graphics.getHeight();
 
         monsterListener = new MonsterListener();
-        monsterListener.init();
 
 		stage = new Stage();
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
-		switch (numPlayers) {
+		switch (Planet.EX.settings.playerCount) {
 			case 1:
 				Planet.EX.camera = new PerspectiveCamera(
 					67f,
@@ -91,7 +83,7 @@ public class MonsterTrucks implements ApplicationListener {
 				break;
 		}
 
-		for (int i = 0; i < numPlayers; i++)
+		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
 			Color c = MonsterColor.randomColor();
 			Planet.EX.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
@@ -108,13 +100,7 @@ public class MonsterTrucks implements ApplicationListener {
 		Planet.EX.level = new Level();
 		Planet.EX.level.loadFromFile();
 
-		activeObjectLabel = new Label("Object", skin);
-
-		Table table = new Table();
-		table.left().bottom();
-    	table.setFillParent(true);
-	    stage.addActor(table);
-	    table.add(activeObjectLabel).width(100);
+		editor = new Editor();
 	}
 
 	@Override
@@ -124,7 +110,7 @@ public class MonsterTrucks implements ApplicationListener {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-		switch (numPlayers) {
+		switch (Planet.EX.settings.playerCount) {
 			case 1:
 				renderScreen();
 				break;

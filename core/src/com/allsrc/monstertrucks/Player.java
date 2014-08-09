@@ -7,28 +7,28 @@ public class Player {
     protected Color color;
     protected Car car;
 
-    public Player(Car _car) {
-        setCar(_car);
+    public Player(Car car) {
+        setCar(car);
     }
 
-    public void setPlayerNumber(int n) {
-        num = n;
+    public void setPlayerNumber(int num) {
+        this.num = num;
     }
 
     public int getPlayerNumber() {
         return num;
     }
 
-    public void setPlayerColor(Color c) {
-        color = c;
+    public void setPlayerColor(Color color) {
+        color = color;
     }
 
     public Color getPlayerColor() {
         return color;
     }
 
-    public void setCar(Car _car) {
-        car = _car;
+    public void setCar(Car car) {
+        this.car = car;
     }
 
     public Car getCar() {

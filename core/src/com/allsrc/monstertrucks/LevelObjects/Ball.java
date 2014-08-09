@@ -25,6 +25,10 @@ public class Ball extends BulletObject {
         construct();
     }
 
+    public Ball(Vector3 pos) {
+        this(MonsterColor.randomColor(), pos);
+    }
+
     public Ball(Color color, Vector3 pos) {
         init();
         setColor(color);

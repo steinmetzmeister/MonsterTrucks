@@ -30,6 +30,10 @@ public class Checkpoint extends Trigger {
         construct();
     }
 
+    public Checkpoint(Vector3 pos) {
+        this(MonsterColor.randomColor(), pos, new Vector3(10, 10, 10));
+    }
+
     public Checkpoint(Color color, Vector3 pos, Vector3 size) {
         super();
         init();

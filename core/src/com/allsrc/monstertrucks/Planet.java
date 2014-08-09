@@ -2,7 +2,6 @@ package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.graphics.PerspectiveCamera;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
-import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
@@ -13,8 +12,8 @@ public enum Planet {
     public MonsterTrucks main;
 
     public Loader loader = new Loader();
-
-    public ObjLoader objLoader = new ObjLoader();
+    public Level level;
+    public Settings settings = new Settings();
     
     public PerspectiveCamera camera;
 
@@ -27,6 +26,5 @@ public enum Planet {
     public Array<Player> players = new Array<Player>();
     public Array<Car> cars = new Array<Car>();
 
-    public Settings settings;
-    public Level level;
+    
 }
