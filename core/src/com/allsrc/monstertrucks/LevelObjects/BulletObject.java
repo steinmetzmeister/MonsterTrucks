@@ -107,13 +107,20 @@ public class BulletObject {
     }
 
     public void setRot(int angle) {
-        rot.y += angle;
+        rot.y = angle;
     }
 
     public void setRot(float angle) {
-        rot.y += (int)angle;
+        rot.y = (int)angle;
     }
 
+    public void addRot(int angle) {
+        rot.y += angle;
+    }
+
+    public void addRot(float angle) {
+        rot.y += (int)angle;
+    }
 
     public void setSize(String[] s) {
         size = new Vector3(Float.parseFloat(s[0]), Float.parseFloat(s[1]), Float.parseFloat(s[2]));

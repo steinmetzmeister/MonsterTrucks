@@ -27,6 +27,9 @@ public class ColorChanger extends Trigger {
         entity();
         updatePos();
         randomRot();
+
+        setColor(MonsterColor.randomColor());
+        updateColor();
     }
 
     public static void load() {

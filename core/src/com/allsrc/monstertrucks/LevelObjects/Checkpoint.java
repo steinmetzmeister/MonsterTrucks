@@ -54,6 +54,13 @@ public class Checkpoint extends Trigger {
         activeColor = getColor();
     }
 
+    public void setPos(Vector3 pos) {
+        super.setPos(pos);
+
+        gate.setPos(getPos());
+        gate.updatePos();
+    }
+
     public void updateRot() {
         gate.setRot(getRot());
         gate.updateRot();

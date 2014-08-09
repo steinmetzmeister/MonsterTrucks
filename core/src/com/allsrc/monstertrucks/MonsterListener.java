@@ -40,16 +40,27 @@ public class MonsterListener extends MonsterListenerBase {
                 //
                 break;
             case Keys.C:
+                Planet.EX.main.editor.deselect();
                 Planet.EX.level.clearLevel();
                 break;
             case Keys.L:
+                Planet.EX.main.editor.deselect();
                 Planet.EX.level.saveToFile();
                 break;
             case Keys.O:
+                Planet.EX.main.editor.deselect();
                 Planet.EX.level.loadFromFile();
                 break;
         }
 
+        Planet.EX.main.editor.keyUp(keycode);
+
+        return false;
+    }
+
+    @Override
+    public boolean scrolled (int amount) {
+        Planet.EX.main.editor.scroll(amount);
         return false;
     }
 

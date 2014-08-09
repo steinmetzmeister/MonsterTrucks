@@ -247,7 +247,7 @@ public class Car extends BulletObject implements ControllerListener {
         vertAxis = 0;
     }
 
-    // CONTROLLERS
+    // Controllers
     @Override
     public void connected(Controller controller) {
         // TODO Auto-generated method stub
@@ -265,8 +265,6 @@ public class Car extends BulletObject implements ControllerListener {
                 currentAngle = 0;
             else
                 currentAngle = MonsterUtils.map(value, 1f, -1f, -maxAngle, maxAngle);
-            // rightPressed = (value > 0.25) ? true : false;
-            // leftPressed = (value < -0.25) ? true : false;
         }
 
         if (axisCode == 0)

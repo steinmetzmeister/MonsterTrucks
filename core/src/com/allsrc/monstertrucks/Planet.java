@@ -25,6 +25,4 @@ public enum Planet {
 
     public Array<Player> players = new Array<Player>();
     public Array<Car> cars = new Array<Car>();
-
-    
 }
