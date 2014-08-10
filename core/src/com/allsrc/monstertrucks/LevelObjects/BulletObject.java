@@ -134,8 +134,7 @@ public class BulletObject {
 
     public void updateColor() {
         entity.modelInstance.materials.get(0).set(
-            ColorAttribute.createDiffuse(color),
-            ColorAttribute.createSpecular(Color.WHITE));
+            ColorAttribute.createDiffuse(color));
     }
 
     public void updatePos() {

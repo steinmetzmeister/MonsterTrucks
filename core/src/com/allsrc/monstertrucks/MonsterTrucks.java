@@ -28,6 +28,9 @@ import com.badlogic.gdx.controllers.Controller;
 
 import com.badlogic.gdx.physics.bullet.linearmath.*;
 
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+
 public class MonsterTrucks implements ApplicationListener {
 
 	private boolean initialized;
@@ -130,25 +133,45 @@ public class MonsterTrucks implements ApplicationListener {
 
 	public void renderScreen() {
 		updateCameraPosition(0);
-		Planet.EX.modelBatch.begin(Planet.EX.camera);
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		Planet.EX.camera.update();
-		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+
+		Planet.EX.modelBatch.begin(Planet.EX.camera);
+		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		// Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+		for (BulletObject obj : Planet.EX.level.bulletObjects) {
+			if (isVisible(Planet.EX.camera, obj.entity.modelInstance)) {
+				Planet.EX.modelBatch.render(obj.entity.modelInstance, Planet.EX.level.environment);
+			}
+		}
+
+		Planet.EX.modelBatch.render(Planet.EX.level.terrain.entity.modelInstance, Planet.EX.level.environment);
+		Planet.EX.modelBatch.render(Planet.EX.cars.get(0).entity.modelInstance, Planet.EX.level.environment);
+	
 		Planet.EX.modelBatch.end();
+	}
+
+	private Vector3 position = new Vector3();
+	protected boolean isVisible(final Camera cam, final ModelInstance instance) {
+    	instance.transform.getTranslation(position);
+    	return cam.frustum.pointInFrustum(position);
 	}
 
 	public void renderSplitScreen() {
 		updateCameraPosition(0);
+		Planet.EX.camera.update();
+
 		Planet.EX.modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.EX.camera.update();
+		
 		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
 		Planet.EX.modelBatch.end();
 		
 		updateCameraPosition(1);
+		Planet.EX.camera.update();
+
 		Planet.EX.modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		Planet.EX.camera.update();
+		
 		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
 		Planet.EX.modelBatch.end();
 	}

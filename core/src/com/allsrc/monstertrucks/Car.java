@@ -94,13 +94,13 @@ public class Car extends BulletObject implements ControllerListener {
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.EX.disposables.add(chassisModel);
         chassisModel.materials.get(0).clear();
-        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(color), ColorAttribute.createSpecular(Color.WHITE));
+        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(color));
 
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
         Planet.EX.disposables.add(wheelModel);
         wheelModel.materials.get(0).clear();
-        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE), ColorAttribute.createSpecular(Color.WHITE));
+        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE));
         wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
 
         BoundingBox bounds = new BoundingBox();
@@ -169,11 +169,18 @@ public class Car extends BulletObject implements ControllerListener {
         }
     }
 
-    public void update() {
-        final float delta = Gdx.graphics.getDeltaTime();
+    float angle = 0;
+    float force = 0;
+    float delta = 0;
+    float impulseScale = 3f;
+    Matrix4 m;
+    boolean isOnGround = false;
 
-        float angle = currentAngle;
-        float force = currentForce;
+    public void update() {
+        delta = Gdx.graphics.getDeltaTime();
+
+        angle = currentAngle;
+        force = currentForce;
 
         /*
         // turn
@@ -211,7 +218,7 @@ public class Car extends BulletObject implements ControllerListener {
             vehicle.applyEngineForce(force, 3);
         }
 
-        boolean isOnGround = false;
+        isOnGround = false;
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
@@ -222,10 +229,8 @@ public class Car extends BulletObject implements ControllerListener {
         }
 
         if (!isOnGround) {
-            float impulseScale = 3f;
-
             if (horzAxis != 0) {
-                Matrix4 m = new Matrix4();
+                m = new Matrix4();
                 m.rotate(((btRigidBody)(entity.body)).getOrientation());
                 m.translate(new Vector3(0, 0, horzAxis * impulseScale));
 
@@ -233,7 +238,7 @@ public class Car extends BulletObject implements ControllerListener {
             }
 
             if (vertAxis != 0) {
-                Matrix4 m = new Matrix4();
+                m = new Matrix4();
                 m.rotate(((btRigidBody)(entity.body)).getOrientation());
                 m.translate(new Vector3(-1 * vertAxis * impulseScale, 0, 0));
 
