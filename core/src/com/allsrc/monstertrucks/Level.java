@@ -78,13 +78,13 @@ public class Level {
         String[] lines = file.readString().split("\n");
 
         Terrain.load("data/terrain.obj");
-        terrain = new Terrain(Color.GREEN);
+        terrain = new Terrain(new Color(0, 0.65f, 0, 1));
 
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.3f, 0.3f, 0.3f, 1f));
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
         
         light = new DirectionalLight();
-        light.set(0.8f, 0.8f, 0.8f, -0.5f, -1f, 0.7f);
+        light.set(0.5f, 0.5f, 0.5f, 0f, -1f, 0.1f);
 
         environment.add(light);
 

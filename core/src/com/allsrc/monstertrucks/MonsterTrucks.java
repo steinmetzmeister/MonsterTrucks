@@ -31,6 +31,15 @@ import com.badlogic.gdx.physics.bullet.linearmath.*;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+
+import com.badlogic.gdx.graphics.VertexAttributes.Usage;
+import com.badlogic.gdx.graphics.VertexAttribute;
+import com.badlogic.gdx.graphics.Pixmap;
+
 public class MonsterTrucks implements ApplicationListener {
 
 	private boolean initialized;
@@ -43,6 +52,10 @@ public class MonsterTrucks implements ApplicationListener {
 
     protected ModelBatch modelBatch;
 
+    protected FrameBuffer buffer;
+    protected FrameBuffer dest;
+    protected FrameBuffer src;
+
 	public void init() {
 		if (initialized)
 			return;
@@ -51,9 +64,21 @@ public class MonsterTrucks implements ApplicationListener {
 		initialized = true;
 	}
 
+	private ShaderProgram celShader;
+	private Mesh fullScreenQuad;
+
 	@Override
 	public void create () {
 		init();
+
+		celShader = new ShaderProgram(
+    		Gdx.files.internal("data/shaders/cel.vertex.glsl"),
+    		Gdx.files.internal("data/shaders/cel.fragment.glsl"));
+		fullScreenQuad = createFullScreenQuad();
+
+		buffer = new FrameBuffer(Pixmap.Format.RGBA8888,
+			Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+		src = buffer;
 
         Planet.EX.main = this;
 
@@ -112,34 +137,106 @@ public class MonsterTrucks implements ApplicationListener {
 	public void render () {
 		update();
 
-		Gdx.gl.glClearColor(0, 0, 0, 0);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+		dest = buffer;
 
-		switch (Planet.EX.settings.playerCount) {
-			case 1:
-				renderScreen();
-				break;
-			case 2:
-				renderSplitScreen();
-				break;
+		dest.begin(); {
+			
+    		Gdx.gl.glCullFace(GL20.GL_BACK);
+    		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+    		Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
+    		Gdx.gl.glDepthMask(true);
 
-			case 3:
-			case 4:
-				break;
+    		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+
+			switch (Planet.EX.settings.playerCount) {
+				case 1:
+					renderScreen();
+					break;
+				case 2:
+					renderSplitScreen();
+					break;
+
+				case 3:
+				case 4:
+					break;
+			}
 		}
+		dest.end();
+
+		src = dest;
+		dest = buffer;
+
+		src.getColorBufferTexture().bind(); {
+    		celShader.begin();
+        	fullScreenQuad.render(celShader, GL20.GL_TRIANGLE_FAN, 0, 4);
+    		celShader.end();
+    	}
 
 		// UI
 		stage.act(Gdx.graphics.getDeltaTime());
 		stage.draw();
 	}
 
+	public Mesh createFullScreenQuad(){
+    	float[] verts = new float[16];
+    	int i = 0;
+
+    	verts[i++] = -1.f; // x1
+    	verts[i++] = -1.f; // y1
+    	verts[i++] =  0.f; // u1
+    	verts[i++] =  0.f; // v1
+
+    	verts[i++] =  1.f; // x2
+    	verts[i++] = -1.f; // y2
+    	verts[i++] =  1.f; // u2
+    	verts[i++] =  0.f; // v2
+
+    	verts[i++] =  1.f; // x3
+    	verts[i++] =  1.f; // y2
+    	verts[i++] =  1.f; // u3
+    	verts[i++] =  1.f; // v3
+
+    	verts[i++] = -1.f; // x4
+    	verts[i++] =  1.f; // y4
+    	verts[i++] =  0.f; // u4
+    	verts[i++] =  1.f; // v4
+
+    	Mesh mesh = new Mesh(true, 4, 0,
+        	new VertexAttribute(Usage.Position, 2, "a_position"),
+        	new VertexAttribute(Usage.TextureCoordinates,
+        	2, "a_texCoord0"));
+    	mesh.setVertices(verts);
+
+    	return mesh;
+	}
+
 	public void renderScreen() {
 		updateCameraPosition(0);
 		Planet.EX.camera.update();
-
 		modelBatch.begin(Planet.EX.camera);
-		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		// Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
+		renderObjects();
+		modelBatch.end();
+	}
+
+	public void renderSplitScreen() {
+		updateCameraPosition(0);
+		Planet.EX.camera.update();
+		modelBatch.begin(Planet.EX.camera);
+		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		renderObjects();
+		modelBatch.end();
+		
+		//
+
+		updateCameraPosition(1);
+		Planet.EX.camera.update();
+		modelBatch.begin(Planet.EX.camera);
+		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
+		renderObjects();
+		modelBatch.end();
+	}
+
+	public void renderObjects() {
 		for (BulletObject obj : Planet.EX.level.bulletObjects) {
 			if (isVisible(Planet.EX.camera, obj))
 				obj.render();
@@ -147,8 +244,6 @@ public class MonsterTrucks implements ApplicationListener {
 
 		Planet.EX.level.terrain.render();
 		Planet.EX.cars.get(0).render();
-	
-		modelBatch.end();
 	}
 
 	private Vector3 position = new Vector3();
@@ -157,29 +252,8 @@ public class MonsterTrucks implements ApplicationListener {
 
     	obj.entity.modelInstance.transform.getTranslation(position);
     	position.add(Planet.EX.loader.getCenter());
+
     	return cam.frustum.sphereInFrustum(position, Planet.EX.loader.getRadius());
-	}
-
-	public void renderSplitScreen() {
-		updateCameraPosition(0);
-		Planet.EX.camera.update();
-
-		modelBatch.begin(Planet.EX.camera);
-		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		
-		Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
-		modelBatch.end();
-		
-		//
-
-		updateCameraPosition(1);
-		Planet.EX.camera.update();
-
-		modelBatch.begin(Planet.EX.camera);
-		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
-		
-		Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
-		modelBatch.end();
 	}
 
 	// context of truck
