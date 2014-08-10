@@ -5,7 +5,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.graphics.Texture;
-
+import com.badlogic.gdx.math.collision.BoundingBox;
+import com.badlogic.gdx.math.Vector3;
 import java.util.HashMap;
 
 public class Loader {
@@ -13,8 +14,12 @@ public class Loader {
         Model model;
         Sound sound;
         Texture texture;
+
+        Vector3 center = new Vector3();
+        float radius;
     }
 
+    protected Object obj;
     protected ObjLoader objLoader = new ObjLoader();
     public HashMap<String,Object> objects = new HashMap<String,Object>();
 
@@ -22,6 +27,7 @@ public class Loader {
 
     public void set(String name) {
         this.name = name;
+        this.obj = objects.get(name);
     }
 
     public void add(String name) {
@@ -31,9 +37,9 @@ public class Loader {
     }
 
     public void remove(String name) {
-        objects.get(name).model = null;
-        objects.get(name).sound = null;
-        objects.get(name).texture = null;
+        obj.model = null;
+        obj.sound = null;
+        obj.texture = null;
 
         objects.remove(name);
 
@@ -42,27 +48,43 @@ public class Loader {
         }
     }
 
+    public Vector3 getCenter() {
+        return obj.center;
+    }
+
+    public float getRadius() {
+        return obj.radius;
+    }
+
+    private Vector3 dimensions = new Vector3();
+    private BoundingBox bounds = new BoundingBox();
+
     public void loadModel(String file) {
-        objects.get(name).model = objLoader.loadModel(Gdx.files.internal(file));
+        obj.model = objLoader.loadModel(Gdx.files.internal(file));
+        
+        obj.model.calculateBoundingBox(bounds);
+        obj.center.set(bounds.getCenter());
+        dimensions.set(bounds.getDimensions());
+        obj.radius = dimensions.len() / 2f;
     }
 
     public void loadSound(String file) {
-        objects.get(name).sound = Gdx.audio.newSound(Gdx.files.internal(file));
+        obj.sound = Gdx.audio.newSound(Gdx.files.internal(file));
     }
 
     public void loadTexture(String file) {
-        objects.get(name).texture = new Texture(Gdx.files.internal(file), true);
+        obj.texture = new Texture(Gdx.files.internal(file), true);
     }
 
     public Model getModel() {
-        return objects.get(name).model;
+        return obj.model;
     }
 
     public Sound getSound() {
-        return objects.get(name).sound;
+        return obj.sound;
     }
 
     public Texture getTexture() {
-        return objects.get(name).texture;
+        return obj.texture;
     }
 }

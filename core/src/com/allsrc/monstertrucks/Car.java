@@ -263,6 +263,12 @@ public class Car extends BulletObject implements ControllerListener {
         vertAxis = 0;
     }
 
+    public void render() {
+        Planet.EX.main.modelBatch.render(entity.modelInstance, Planet.EX.level.environment);
+        for (BulletEntity wheel : wheels)
+            Planet.EX.main.modelBatch.render(wheel.modelInstance, Planet.EX.level.environment);
+    }
+
     // Controllers
     @Override
     public void connected(Controller controller) {

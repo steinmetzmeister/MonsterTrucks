@@ -223,4 +223,8 @@ public class BulletObject {
     public void noResponse() {
         entity.body.setCollisionFlags(btCollisionObject.CollisionFlags.CF_NO_CONTACT_RESPONSE);
     }
+
+    public void render() {
+        Planet.EX.main.modelBatch.render(entity.modelInstance, Planet.EX.level.environment);
+    }
 }

@@ -139,4 +139,9 @@ public class Checkpoint extends Trigger {
     public String getSaveColor() {
         return activeColor.r + "," + activeColor.g + "," + activeColor.b + "," + activeColor.a;
     }
+
+    public void render() {
+        super.render();
+        gate.render();
+    }
 }

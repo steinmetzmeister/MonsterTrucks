@@ -18,7 +18,6 @@ public enum Planet {
     public PerspectiveCamera camera;
 
     public ModelBuilder modelBuilder = new ModelBuilder();
-    public ModelBatch modelBatch;
 
     public BulletWorld world;
     public Array<Disposable> disposables = new Array<Disposable>();

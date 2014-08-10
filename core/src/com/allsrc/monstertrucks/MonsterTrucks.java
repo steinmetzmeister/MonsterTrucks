@@ -41,6 +41,8 @@ public class MonsterTrucks implements ApplicationListener {
 
     MonsterListener monsterListener;
 
+    protected ModelBatch modelBatch;
+
 	public void init() {
 		if (initialized)
 			return;
@@ -55,7 +57,7 @@ public class MonsterTrucks implements ApplicationListener {
 
         Planet.EX.main = this;
 
-        Planet.EX.modelBatch = new ModelBatch();
+        modelBatch = new ModelBatch();
         Planet.EX.settings = new Settings();
         Planet.EX.world = new BulletWorld();
 
@@ -70,13 +72,13 @@ public class MonsterTrucks implements ApplicationListener {
 		switch (Planet.EX.settings.playerCount) {
 			case 1:
 				Planet.EX.camera = new PerspectiveCamera(
-					70f,
+					63f,
 					3f * Planet.EX.settings.width / Planet.EX.settings.height,
 					3f);
 				break;
 			case 2:
 				Planet.EX.camera = new PerspectiveCamera(
-					70f,
+					63f,
 					3f * Planet.EX.settings.width / (Planet.EX.settings.height / 2),
 					3f);
 				break;
@@ -135,45 +137,49 @@ public class MonsterTrucks implements ApplicationListener {
 		updateCameraPosition(0);
 		Planet.EX.camera.update();
 
-		Planet.EX.modelBatch.begin(Planet.EX.camera);
+		modelBatch.begin(Planet.EX.camera);
 		// Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		// Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
+		// Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
 		for (BulletObject obj : Planet.EX.level.bulletObjects) {
-			if (isVisible(Planet.EX.camera, obj.entity.modelInstance)) {
-				Planet.EX.modelBatch.render(obj.entity.modelInstance, Planet.EX.level.environment);
-			}
+			if (isVisible(Planet.EX.camera, obj))
+				obj.render();
 		}
 
-		Planet.EX.modelBatch.render(Planet.EX.level.terrain.entity.modelInstance, Planet.EX.level.environment);
-		Planet.EX.modelBatch.render(Planet.EX.cars.get(0).entity.modelInstance, Planet.EX.level.environment);
+		Planet.EX.level.terrain.render();
+		Planet.EX.cars.get(0).render();
 	
-		Planet.EX.modelBatch.end();
+		modelBatch.end();
 	}
 
 	private Vector3 position = new Vector3();
-	protected boolean isVisible(final Camera cam, final ModelInstance instance) {
-    	instance.transform.getTranslation(position);
-    	return cam.frustum.pointInFrustum(position);
+	protected boolean isVisible(final Camera cam, final BulletObject obj) {
+		Planet.EX.loader.set(obj.name); //
+
+    	obj.entity.modelInstance.transform.getTranslation(position);
+    	position.add(Planet.EX.loader.getCenter());
+    	return cam.frustum.sphereInFrustum(position, Planet.EX.loader.getRadius());
 	}
 
 	public void renderSplitScreen() {
 		updateCameraPosition(0);
 		Planet.EX.camera.update();
 
-		Planet.EX.modelBatch.begin(Planet.EX.camera);
+		modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		
-		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
-		Planet.EX.modelBatch.end();
+		Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
+		modelBatch.end();
 		
+		//
+
 		updateCameraPosition(1);
 		Planet.EX.camera.update();
 
-		Planet.EX.modelBatch.begin(Planet.EX.camera);
+		modelBatch.begin(Planet.EX.camera);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		
-		Planet.EX.world.render(Planet.EX.modelBatch, Planet.EX.level.environment);
-		Planet.EX.modelBatch.end();
+		Planet.EX.world.render(modelBatch, Planet.EX.level.environment);
+		modelBatch.end();
 	}
 
 	// context of truck
@@ -187,7 +193,7 @@ public class MonsterTrucks implements ApplicationListener {
 		worldTransform.getTranslation(carPosition);
 		cameraPosition.set(carPosition);
 
-		cameraPosition.set(cameraPosition.x - 10f, cameraPosition.y + 20f, cameraPosition.z - 15f);
+		cameraPosition.set(cameraPosition.x - 10f, cameraPosition.y + 15f, cameraPosition.z - 12.5f);
 
 		Planet.EX.camera.position.set(cameraPosition);
 		Planet.EX.camera.lookAt(carPosition);
@@ -217,8 +223,8 @@ public class MonsterTrucks implements ApplicationListener {
 
 		Planet.EX.disposables.clear();
 
-		Planet.EX.modelBatch.dispose();
-		Planet.EX.modelBatch = null;
+		modelBatch.dispose();
+		modelBatch = null;
 
 		Planet.EX.level.environment = null;
 		Planet.EX.level.light = null;
