@@ -43,6 +43,11 @@ public class Level {
         Gate.load();
     }
 
+    public void init() {
+        Terrain.load("data/terrain.obj");
+        terrain = new Terrain(new Color(0, 0.65f, 0, 1));
+    }
+
     public void clearLevel() {
         collectibles = new Array<Collectible>();
         triggers = new Array<Trigger>();
@@ -53,8 +58,8 @@ public class Level {
 
         bulletObjects = new Array<BulletObject>();
 
-        terrain.dispose();
-        terrain = null;
+        // terrain.dispose();
+        // terrain = null;
     }
 
     public void saveToFile() {
@@ -77,19 +82,22 @@ public class Level {
         FileHandle file = Gdx.files.internal("data/output.txt");
         String[] lines = file.readString().split("\n");
 
-        Terrain.load("data/terrain.obj");
-        terrain = new Terrain(new Color(0, 0.65f, 0, 1));
+        // Terrain.load("data/terrain.obj");
+        // terrain = new Terrain(new Color(0, 0.65f, 0, 1));
 
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 1f, 1f, 1f, 1f));
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
         
         light = new DirectionalLight();
-        light.set(0.5f, 0.5f, 0.5f, 0f, -1f, 0.1f);
+        light.set(1f, 1f, 1f, 0.65f, -0.9f, 0.65f);
 
         environment.add(light);
 
         String word;
         for (String line : lines) {
+            if (line.indexOf(' ') == -1)
+                continue;
+            
             word = line.substring(0, line.indexOf(' '));
 
             if (word.equals("ball"))

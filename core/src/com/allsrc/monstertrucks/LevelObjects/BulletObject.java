@@ -14,6 +14,8 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
 import com.badlogic.gdx.physics.bullet.collision.btSphereShape;
 
+import java.text.DecimalFormat;
+
 public class BulletObject {
     public BulletEntity entity;
 
@@ -162,6 +164,8 @@ public class BulletObject {
         removeFromBulletObjects(this);
     }
 
+    DecimalFormat df = new DecimalFormat("0.00");
+
     public String getSaveLine() {
         String line = name;
         for (String attr : attrs) {
@@ -177,7 +181,7 @@ public class BulletObject {
     }
 
     public String getSaveColor() {
-        return color.r + "," + color.g + "," + color.b + "," + color.a;
+        return df.format(color.r) + "," + df.format(color.g) + "," + df.format(color.b)+ "," + df.format(color.a);
     }
 
     public String getSaveModelFile() {
@@ -185,15 +189,15 @@ public class BulletObject {
     }
 
     public String getSavePos() {
-        return pos.x + "," + pos.y + "," + pos.z;
+        return df.format(pos.x) + "," + df.format(pos.y) + "," + df.format(pos.z);
     }
 
     public String getSaveRot() {
-        return rot.x + "," + rot.y + "," + rot.z;
+        return df.format(rot.x) + "," + df.format(rot.y) + "," + df.format(rot.z);
     }
 
     public String getSaveSize() {
-        return size.x + "," + size.y + "," + size.z;
+        return df.format(size.x) + "," + df.format(size.y) + "," + df.format(size.z);
     }
 
     public void loadFromLine(String line) {

@@ -16,9 +16,9 @@ float toonify(in float intensity) {
     else if (intensity > 0.5)
         return 0.8;
     else if (intensity > 0.25)
-        return 0.3;
+        return 0.8;
     else
-        return 0.1;
+        return 0.6;
 }
  
 void main(){

@@ -128,6 +128,7 @@ public class MonsterTrucks implements ApplicationListener {
 		inputMultiplexer.addProcessor(stage);
 
 		Planet.EX.level = new Level();
+		Planet.EX.level.init();
 		Planet.EX.level.loadFromFile();
 
 		editor = new Editor();
@@ -243,7 +244,8 @@ public class MonsterTrucks implements ApplicationListener {
 		}
 
 		Planet.EX.level.terrain.render();
-		Planet.EX.cars.get(0).render();
+		for (Car car : Planet.EX.cars)
+			car.render();
 	}
 
 	private Vector3 position = new Vector3();
