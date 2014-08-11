@@ -20,6 +20,9 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 public class Level {
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
     Array<Collectible> collectibles = new Array<Collectible>();
@@ -78,6 +81,8 @@ public class Level {
         }
     }
 
+    BulletObject obj = null;
+
     public void loadFromFile() {
         FileHandle file = Gdx.files.internal("data/output.txt");
         String[] lines = file.readString().split("\n");
@@ -97,23 +102,23 @@ public class Level {
         for (String line : lines) {
             if (line.indexOf(' ') == -1)
                 continue;
-            
+
             word = line.substring(0, line.indexOf(' '));
 
-            if (word.equals("ball"))
-                new Ball(line);
-
-            else if (word.equals("changer"))
-                new ColorChanger(line);
-
-            else if (word.equals("checkpoint"))
-                checkpoints.add(new Checkpoint(line));
-
-            else if (word.equals("coin"))
-                new Coin(line);
-
-            else if (word.equals("gate"))
-                new Gate(line);
+            try {
+                Class<?> clazz = Class.forName("com.allsrc.monstertrucks." + word);
+                Constructor<?> constructor = clazz.getConstructor(String.class);
+            
+                obj = (BulletObject)constructor.newInstance(line);
+                if (word == "Checkpoint") {
+                    checkpoints.add((Checkpoint)obj);
+                }
+            }
+            catch (ClassNotFoundException ie) {}
+            catch (NoSuchMethodException ie) {}
+            catch (IllegalAccessException ie) {}
+            catch (InstantiationException ie) {}
+            catch (InvocationTargetException ie) {}
         }
     }
 }

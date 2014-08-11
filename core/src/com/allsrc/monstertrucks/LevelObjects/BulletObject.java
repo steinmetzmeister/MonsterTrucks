@@ -167,7 +167,7 @@ public class BulletObject {
     DecimalFormat df = new DecimalFormat("0.00");
 
     public String getSaveLine() {
-        String line = name;
+        String line = this.getClass().getSimpleName();
         for (String attr : attrs) {
             line += " ";
 
