@@ -46,13 +46,27 @@ public class Level {
         Gate.load();
     }
 
+    public TrackBuilder tb = new TrackBuilder();    
+
     public void init() {
         Terrain.load("data/terrain2.obj");
         terrain = new Terrain(MonsterColor.randomColor());
 
-        Track.load("data/building.obj");
-        final Track track4 = new Track(new Vector3(21f, 0, 0));
-        final Track track5 = new Track(new Vector3(29f, 0, 0));
+        Track.load();
+
+        tb.straight();
+        tb.straight();
+        tb.turn(0);
+        tb.straight();
+        tb.straight();
+        tb.turn(0);
+        tb.straight();
+        tb.straight();
+        tb.turn(0);
+        tb.straight();
+        tb.straight();
+        tb.turn(0);
+  
     }
 
     public void clearLevel() {

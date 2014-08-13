@@ -10,7 +10,7 @@ public class MonsterTruck extends Car {
         maxForce = 50f;
         acceleration = 100f; // second
 
-        chassisModelFile = "data/car2.obj";
+        chassisModelFile = "data/car1.obj";
         wheelModelFile = "data/wheel.obj";
         wheelScale = new Vector3(1f, 0.75f, 0.75f);
 

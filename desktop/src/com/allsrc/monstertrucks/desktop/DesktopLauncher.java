@@ -10,7 +10,7 @@ public class DesktopLauncher {
 
         config.width = 640;
         config.height = 480;
-        config.fullscreen = false;
+        config.fullscreen = true;
 
 		new LwjglApplication(new MonsterTrucks(), config);
 	}

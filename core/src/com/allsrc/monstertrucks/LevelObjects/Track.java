@@ -1,7 +1,10 @@
 package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+
+import java.util.HashMap;
 
 public class Track extends BulletObject {
 
@@ -13,30 +16,49 @@ public class Track extends BulletObject {
     public Track(String line) {
         init();
         loadFromLine(line);
-        construct();
     }
 
-    public Track(Vector3 pos) {
+    public Track() {
         init();
-        setPos(pos);
-        construct();
     }
 
-    public void construct() {
-        entity();
-        // updateTexture();
-        updatePos();
+    public void construct(String type) {
+        name = type;
+        entity(type);
     }
 
-    public static void load(String modelFile) { // , String textureFile) {
-        Planet.EX.loader.add("track");
-        Planet.EX.loader.loadModel(modelFile);
-        // Planet.EX.loader.loadTexture(textureFile);
-        // Planet.EX.loader.getModel().meshes.get(0).scale(4f, 4f, 4f);
+    public void entity(String type) {
+        entity = Planet.EX.world.add(type, 0f, 0f, 0f);
+        addToBulletObjects(this);
+    }
+
+    public static void load() {
+        Planet.EX.loader.add("straight");
+        Planet.EX.loader.loadModel("data/road.obj");
+
+        HashMap<String,Color> colors = new HashMap<String,Color>();
+
+        colors.put("ground", MonsterColor.randomColor());
+        colors.put("border", MonsterColor.randomColor());
+        colors.put("road", MonsterColor.randomColor());
 
         for (int i = 0; i < Planet.EX.loader.getModel().meshes.size; i++)
-            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+        {
+            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(
+                colors.get(Planet.EX.loader.getModel().materials.get(i).id)));
+        }
 
-        addDefaultConstructor("track");
+        addDefaultConstructor("straight");
+
+        Planet.EX.loader.add("turn");
+        Planet.EX.loader.loadModel("data/roadbend.obj");
+
+        for (int i = 0; i < Planet.EX.loader.getModel().meshes.size; i++)
+        {
+            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(
+                colors.get(Planet.EX.loader.getModel().materials.get(i).id)));
+        }
+
+        addDefaultConstructor("turn");
     }
 }
