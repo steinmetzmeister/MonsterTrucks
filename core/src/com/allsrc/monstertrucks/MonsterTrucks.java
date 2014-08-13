@@ -127,11 +127,11 @@ public class MonsterTrucks implements ApplicationListener {
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
 
+		editor = new Editor();
+
 		Planet.EX.level = new Level();
 		Planet.EX.level.init();
 		Planet.EX.level.loadFromFile();
-
-		editor = new Editor();
 	}
 
 	@Override
@@ -269,7 +269,7 @@ public class MonsterTrucks implements ApplicationListener {
 		worldTransform.getTranslation(carPosition);
 		cameraPosition.set(carPosition);
 
-		cameraPosition.set(cameraPosition.x - 10f, cameraPosition.y + 15f, cameraPosition.z - 12.5f);
+		cameraPosition.set(cameraPosition.x - 4.5f, cameraPosition.y + 8f, cameraPosition.z - 6.5f);
 
 		Planet.EX.camera.position.set(cameraPosition);
 		Planet.EX.camera.lookAt(carPosition);

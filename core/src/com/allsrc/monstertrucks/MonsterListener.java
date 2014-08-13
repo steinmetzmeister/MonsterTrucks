@@ -22,6 +22,18 @@ public class MonsterListener extends MonsterListenerBase {
             case Keys.SPACE:
                 //
                 break;
+            case Keys.W:
+                Planet.EX.cars.get(0).upPressed = true;
+                break;
+            case Keys.D:
+                Planet.EX.cars.get(0).rightPressed = true;
+                break;
+            case Keys.S:
+                Planet.EX.cars.get(0).downPressed = true;
+                break;
+            case Keys.A:
+                Planet.EX.cars.get(0).leftPressed = true;
+                break;
         }
         return false;
     }
@@ -50,6 +62,18 @@ public class MonsterListener extends MonsterListenerBase {
             case Keys.O:
                 Planet.EX.main.editor.deselect();
                 Planet.EX.level.loadFromFile();
+                break;
+            case Keys.W:
+                Planet.EX.cars.get(0).upPressed = false;
+                break;
+            case Keys.D:
+                Planet.EX.cars.get(0).rightPressed = false;
+                break;
+            case Keys.S:
+                Planet.EX.cars.get(0).downPressed = false;
+                break;
+            case Keys.A:
+                Planet.EX.cars.get(0).leftPressed = false;
                 break;
         }
 

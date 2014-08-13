@@ -137,7 +137,7 @@ public class Checkpoint extends Trigger {
     }
 
     public String getSaveColor() {
-        return activeColor.r + "," + activeColor.g + "," + activeColor.b + "," + activeColor.a;
+        return df.format(activeColor.r) + "," + df.format(activeColor.g) + "," + df.format(activeColor.b) + "," + df.format(activeColor.a);
     }
 
     public void render() {

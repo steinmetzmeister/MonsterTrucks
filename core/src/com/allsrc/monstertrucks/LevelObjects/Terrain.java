@@ -24,7 +24,6 @@ public class Terrain extends BulletObject {
     public void construct() {
         entity();
         updateColor();
-        scale(2f);
         removeFromBulletObjects(this);
     }
 

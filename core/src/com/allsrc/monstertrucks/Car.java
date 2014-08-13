@@ -47,23 +47,25 @@ public class Car extends BulletObject implements ControllerListener {
     protected float currentForce = 0f;
     protected float currentAngle = 0f;
 
-    protected float maxForce = 150f;
-    protected float acceleration = 250f; // second
+    protected float maxForce = 50f;
+    protected float acceleration = 150f; // second
     protected float maxAngle = 25f;
-    // protected float steerSpeed = 65f; // second
+    protected float steerSpeed = 65f; // second
 
     protected float frictionSlip = 125f;
     protected float maxSuspensionForce = 8000f;
-    protected float maxSuspensionTravelCm = 30f;
+    protected float maxSuspensionTravelCm = 75f;
     protected float suspensionCompression = 2.4f;
     protected float suspensionDamping = 2.3f;
-    protected float suspensionStiffness = 40f;
+    protected float suspensionStiffness = 20f;
 
     protected Model chassisModel;
     protected Model wheelModel;
 
     protected String chassisModelFile = "data/car.obj";
     protected String wheelModelFile = "data/wheel.obj";
+
+    protected Vector3 chassisScale = new Vector3(1f, 1f, 1f);
     protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
 
     protected Vector3 chassisHalfExtents;
@@ -93,25 +95,25 @@ public class Car extends BulletObject implements ControllerListener {
         // chassis
         chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
         Planet.EX.disposables.add(chassisModel);
-        chassisModel.materials.get(0).clear();
-        chassisModel.materials.get(0).set(ColorAttribute.createDiffuse(color));
+        chassisModel.meshes.get(0).scale(chassisScale.x, chassisScale.y, chassisScale.z);
+        for (int i = 0; i < chassisModel.meshes.size; i++)
+            chassisModel.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+
 
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
         Planet.EX.disposables.add(wheelModel);
-        wheelModel.materials.get(0).clear();
-        wheelModel.materials.get(0).set(ColorAttribute.createDiffuse(Color.WHITE));
+        for (int i = 0; i < wheelModel.meshes.size; i++)
+            wheelModel.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
         wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
 
         BoundingBox bounds = new BoundingBox();
 
-        chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions());
+        chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
         wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
 
-        Planet.EX.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents.cpy().scl(1f, 0.5f, 0.5f))));
-        Planet.EX.world.addConstructor("wheel", new BulletConstructor(wheelModel, 7.5f, null));
-
-        chassisHalfExtents.scl(0.5f);
+        Planet.EX.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents)));
+        Planet.EX.world.addConstructor("wheel", new BulletConstructor(wheelModel, 0, null));
 
         entity = Planet.EX.world.add("chassis", initPos.x, initPos.y, initPos.z);
         wheels[0] = Planet.EX.world.add("wheel", 0, 0f, 0);
@@ -155,24 +157,24 @@ public class Car extends BulletObject implements ControllerListener {
         Vector3 direction = new Vector3(0, -1, 0);
         Vector3 axis = new Vector3(-1, 0, 0);
 
-        vehicle.addWheel(point.set(chassisHalfExtents).scl(1.75f, 0f, 0.9f), direction, axis, 0.5f, wheelHalfExtents.z, tuning, true);
-        vehicle.addWheel(point.set(chassisHalfExtents).scl(-1.75f, 0f, 0.9f), direction, axis, 0.5f, wheelHalfExtents.z, tuning, true);
-        vehicle.addWheel(point.set(chassisHalfExtents).scl(1.75f, 0f, -0.9f), direction, axis, 0.5f, wheelHalfExtents.z, tuning, false);
-        vehicle.addWheel(point.set(chassisHalfExtents).scl(-1.75f, 0f, -0.9f), direction, axis, 0.5f, wheelHalfExtents.z, tuning, false);
+        vehicle.addWheel(point.set(chassisHalfExtents).scl(0.95f, -1f, 0.7f), direction, axis, wheelHalfExtents.z * 0.2f, wheelHalfExtents.z, tuning, true);
+        vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.95f, -1f, 0.7f), direction, axis, wheelHalfExtents.z * 0.2f, wheelHalfExtents.z, tuning, true);
+        vehicle.addWheel(point.set(chassisHalfExtents).scl(0.95f, -1f, -0.475f), direction, axis, wheelHalfExtents.z * 0.2f, wheelHalfExtents.z, tuning, false);
+        vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.95f, -1f, -0.475f), direction, axis, wheelHalfExtents.z * 0.2f, wheelHalfExtents.z, tuning, false);
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.getWheelInfo(i).setRollInfluence(0f);
 
             // ?
-            vehicle.getWheelInfo(i).setWheelsDampingCompression(4f);
-            vehicle.getWheelInfo(i).setWheelsDampingRelaxation(6f);
+            vehicle.getWheelInfo(i).setWheelsDampingCompression(8f);
+            vehicle.getWheelInfo(i).setWheelsDampingRelaxation(12f);
         }
     }
 
     float angle = 0;
     float force = 0;
     float delta = 0;
-    float impulseScale = 3f;
+    float impulseScale = 1f;
     Matrix4 m;
     boolean isOnGround = false;
 
@@ -182,7 +184,6 @@ public class Car extends BulletObject implements ControllerListener {
         angle = currentAngle;
         force = currentForce;
 
-        /*
         // turn
         if (rightPressed) {
             if (angle > 0f) angle = 0f;
@@ -190,15 +191,15 @@ public class Car extends BulletObject implements ControllerListener {
         } else if (leftPressed) {
             if (angle < 0f) angle = 0f;
             angle = MathUtils.clamp(angle + steerSpeed * delta, 0f, maxAngle);
-        } else
+        } else if (Planet.EX.settings.keyboard)
             angle = 0f;
-        */
 
-        // if (angle != currentAngle) {
-        //     currentAngle = angle;
-            vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
-            vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
-        // }
+        vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
+        vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
+
+
+            currentAngle = angle;
+ 
 
         // de/accelerate
         if (upPressed) {
@@ -232,7 +233,7 @@ public class Car extends BulletObject implements ControllerListener {
             if (horzAxis != 0) {
                 m = new Matrix4();
                 m.rotate(((btRigidBody)(entity.body)).getOrientation());
-                m.translate(new Vector3(0, 0, horzAxis * impulseScale));
+                m.translate(new Vector3(0, 0, horzAxis * (impulseScale / 2)));
 
                 ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
             }
@@ -240,7 +241,7 @@ public class Car extends BulletObject implements ControllerListener {
             if (vertAxis != 0) {
                 m = new Matrix4();
                 m.rotate(((btRigidBody)(entity.body)).getOrientation());
-                m.translate(new Vector3(-1 * vertAxis * impulseScale, 0, 0));
+                m.translate(new Vector3(-1 * vertAxis * impulseScale * 2, 0, 0));
 
                 ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
             }

@@ -40,8 +40,4 @@ public class Gate extends BulletObject {
         Planet.EX.loader.loadModel("data/gate.obj");
         addDefaultConstructor("gate");
     }
-
-    public static String[] getEditableAttrs() {
-        return new String[]{ "color", "rot" };
-    }
 }

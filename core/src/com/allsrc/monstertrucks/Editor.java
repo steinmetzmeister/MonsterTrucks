@@ -175,6 +175,31 @@ public class Editor {
         return obj;
     }
 
+    public BulletObject createObject(String line) {
+        String word;
+        
+        if (line.indexOf(' ') == -1)
+            return null;
+
+        word = line.substring(0, line.indexOf(' '));
+
+        BulletObject obj = null;
+
+        try {
+            Class<?> clazz = Class.forName("com.allsrc.monstertrucks." + word);
+            Constructor<?> constructor = clazz.getConstructor(String.class);
+            
+            obj = (BulletObject)constructor.newInstance(line);
+        }
+        catch (ClassNotFoundException ie) {}
+        catch (NoSuchMethodException ie) {}
+        catch (IllegalAccessException ie) {}
+        catch (InstantiationException ie) {}
+        catch (InvocationTargetException ie) {}
+
+        return obj;
+    }
+
     public void removeObject(btCollisionObject obj) {
         for (BulletObject bulletObj : Planet.EX.level.bulletObjects)
         {

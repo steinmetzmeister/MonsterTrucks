@@ -47,8 +47,12 @@ public class Level {
     }
 
     public void init() {
-        Terrain.load("data/terrain.obj");
-        terrain = new Terrain(new Color(0, 0.65f, 0, 1));
+        Terrain.load("data/terrain2.obj");
+        terrain = new Terrain(MonsterColor.randomColor());
+
+        Track.load("data/building.obj");
+        final Track track4 = new Track(new Vector3(21f, 0, 0));
+        final Track track5 = new Track(new Vector3(29f, 0, 0));
     }
 
     public void clearLevel() {
@@ -81,8 +85,6 @@ public class Level {
         }
     }
 
-    BulletObject obj = null;
-
     public void loadFromFile() {
         FileHandle file = Gdx.files.internal("data/output.txt");
         String[] lines = file.readString().split("\n");
@@ -98,27 +100,14 @@ public class Level {
 
         environment.add(light);
 
-        String word;
+        BulletObject obj = null;
         for (String line : lines) {
-            if (line.indexOf(' ') == -1)
-                continue;
+            obj = Planet.EX.main.editor.createObject(line);
 
-            word = line.substring(0, line.indexOf(' '));
-
-            try {
-                Class<?> clazz = Class.forName("com.allsrc.monstertrucks." + word);
-                Constructor<?> constructor = clazz.getConstructor(String.class);
-            
-                obj = (BulletObject)constructor.newInstance(line);
-                if (word == "Checkpoint") {
+            if (obj != null) {
+                if (obj.name == "checkpoint")
                     checkpoints.add((Checkpoint)obj);
-                }
             }
-            catch (ClassNotFoundException ie) {}
-            catch (NoSuchMethodException ie) {}
-            catch (IllegalAccessException ie) {}
-            catch (InstantiationException ie) {}
-            catch (InvocationTargetException ie) {}
         }
     }
 }
