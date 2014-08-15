@@ -88,6 +88,8 @@ public class MonsterListener extends MonsterListenerBase {
         return false;
     }
 
+    Vector3 vTemp = new Vector3(0,0,0);
+
     public void touchDownDesktop (int screenX, int screenY, int pointer, int button) {
         if (Planet.EX.settings.playerCount == 2)
             screenY = splitScreenCorrection(screenY);
@@ -98,16 +100,17 @@ public class MonsterListener extends MonsterListenerBase {
 
         rayTestCB.setCollisionObject(null);
         rayTestCB.setClosestHitFraction(1f);
-        rayTestCB.getRayFromWorld().setValue(rayFrom.x, rayFrom.y, rayFrom.z);
-        rayTestCB.getRayToWorld().setValue(rayTo.x, rayTo.y, rayTo.z);
+        rayTestCB.setRayFromWorld(rayFrom);
+        rayTestCB.setRayToWorld(rayTo);
 
         Planet.EX.world.collisionWorld.rayTest(rayFrom, rayTo, rayTestCB);
 
         if (rayTestCB.hasHit()) {
-            btVector3 p = rayTestCB.getHitPointWorld();
+            Vector3 p = new Vector3(0,0,0);
+            rayTestCB.getHitPointWorld(p);
 
             if (button == 0)
-                Planet.EX.main.editor.leftClick(rayTestCB.getCollisionObject(), new Vector3(p.getX(), p.getY(), p.getZ()));
+                Planet.EX.main.editor.leftClick(rayTestCB.getCollisionObject(), new Vector3(p.x, p.y, p.z));
             else
                 Planet.EX.main.editor.rightClick(rayTestCB.getCollisionObject());
         }

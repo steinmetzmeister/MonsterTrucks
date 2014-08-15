@@ -32,6 +32,9 @@ import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+
 public class Car extends BulletObject implements ControllerListener {
     Vector3 tmpV = new Vector3();
 
@@ -54,7 +57,7 @@ public class Car extends BulletObject implements ControllerListener {
 
     protected float frictionSlip = 125f;
     protected float maxSuspensionForce = 8000f;
-    protected float maxSuspensionTravelCm = 75f;
+    protected float maxSuspensionTravelCm = 50f;
     protected float suspensionCompression = 2.4f;
     protected float suspensionDamping = 2.3f;
     protected float suspensionStiffness = 20f;

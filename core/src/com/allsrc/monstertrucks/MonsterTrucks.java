@@ -40,6 +40,9 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.Pixmap;
 
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+
 public class MonsterTrucks implements ApplicationListener {
 
 	private boolean initialized;
@@ -121,6 +124,8 @@ public class MonsterTrucks implements ApplicationListener {
 			if (i < Controllers.getControllers().size)
 				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
 		}
+
+		Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), Color.RED));
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
@@ -269,7 +274,7 @@ public class MonsterTrucks implements ApplicationListener {
 		worldTransform.getTranslation(carPosition);
 		cameraPosition.set(carPosition);
 
-		cameraPosition.set(cameraPosition.x - 4.5f, cameraPosition.y + 8f, cameraPosition.z - 6.5f);
+		cameraPosition.set(cameraPosition.x - 4.5f, cameraPosition.y + 10f, cameraPosition.z - 6.5f);
 
 		Planet.EX.camera.position.set(cameraPosition);
 		Planet.EX.camera.lookAt(carPosition);

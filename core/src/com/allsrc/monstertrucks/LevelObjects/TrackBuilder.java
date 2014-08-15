@@ -34,8 +34,6 @@ public class TrackBuilder {
         temp.updatePos();
 
         parts.add(temp);
-
-        System.out.println(next);
     }
 
     // 0 left, 1 right
@@ -104,7 +102,5 @@ public class TrackBuilder {
         temp.updatePos();
 
         parts.add(temp);
-
-        System.out.println(next);
     }
 }

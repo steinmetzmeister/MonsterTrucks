@@ -66,7 +66,6 @@ public class Level {
         tb.straight();
         tb.straight();
         tb.turn(0);
-  
     }
 
     public void clearLevel() {
