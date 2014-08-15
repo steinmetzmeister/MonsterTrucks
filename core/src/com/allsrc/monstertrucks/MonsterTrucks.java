@@ -116,6 +116,12 @@ public class MonsterTrucks implements ApplicationListener {
 				break;
 		}
 
+		editor = new Editor();
+
+		Planet.EX.level = new Level();
+		Planet.EX.level.init();
+		Planet.EX.level.loadFromFile();
+
 		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
 			Color c = MonsterColor.randomColor();
@@ -131,12 +137,6 @@ public class MonsterTrucks implements ApplicationListener {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
-
-		editor = new Editor();
-
-		Planet.EX.level = new Level();
-		Planet.EX.level.init();
-		Planet.EX.level.loadFromFile();
 	}
 
 	@Override

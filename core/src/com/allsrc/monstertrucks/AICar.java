@@ -21,11 +21,6 @@ public class AICar extends Car {
         wheelScale = new Vector3(1f, 0.75f, 0.75f);
 
         init();
-
-        path.add(new Vector2(0, 16));
-        path.add(new Vector2(24, 16));
-        path.add(new Vector2(24, -8));
-        path.add(new Vector2(0, -8));
     }
 
     public void update() {
@@ -60,10 +55,9 @@ public class AICar extends Car {
     Vector2 p2 = new Vector2();
 
     int currNode = 0;
-    Array<Vector2> path = new Array<Vector2>();
     
     public int seek() {
-        t2 = path.get(currNode).cpy();
+        t2 = Planet.EX.level.path.get(currNode).cpy();
 
         f = vehicle.getForwardVector().cpy();
         entity.transform.getTranslation(p);
@@ -76,9 +70,9 @@ public class AICar extends Car {
         float dot = f2.dot(t2);
         double angle = Math.acos(dot / (f2.len() * t2.len()));
 
-        if (p2.dst(path.get(currNode)) < 5) {
+        if (p2.dst(Planet.EX.level.path.get(currNode)) < 5) {
             currNode++;
-            if (currNode >= path.size)
+            if (currNode >= Planet.EX.level.path.size)
                 currNode = 0;
         }
 

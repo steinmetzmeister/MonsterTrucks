@@ -2,6 +2,7 @@ package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
@@ -28,6 +29,7 @@ public class Level {
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
     Checkpoints checkpoints = new Checkpoints();
+    Array<Vector2> path = new Array<Vector2>();
     
     Terrain terrain;
     Track track;
@@ -56,16 +58,26 @@ public class Level {
 
         tb.straight();
         tb.straight();
-        tb.turn(0);
+        Planet.EX.level.path.add(tb.turn(0));
         tb.straight();
         tb.straight();
-        tb.turn(0);
+        Planet.EX.level.path.add(tb.turn(0));
         tb.straight();
         tb.straight();
-        tb.turn(0);
+        Planet.EX.level.path.add(tb.turn(1));
+        Planet.EX.level.path.add(tb.turn(0));
         tb.straight();
         tb.straight();
-        tb.turn(0);
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(1));
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        tb.straight();
+        tb.straight();
     }
 
     public void clearLevel() {
