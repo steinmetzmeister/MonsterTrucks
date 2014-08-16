@@ -19,7 +19,9 @@ public class Editor {
         "ColorChanger",
         "Checkpoint",
         "Coin",
-        "Gate"
+        "Gate",
+        "SmallRamp",
+        "LargeRamp"
     };
 
     protected int activeObject = 0;
@@ -52,7 +54,7 @@ public class Editor {
 
     public void leftClick(btCollisionObject obj, Vector3 pos) {
         if (obj == Planet.EX.level.terrain.entity.body) {
-            Planet.EX.main.editor.createObject(pos);
+            createObject(pos);
         } else {
             select(obj);
         }
@@ -162,7 +164,6 @@ public class Editor {
         try {
             Class<?> clazz = Class.forName("com.allsrc.monstertrucks." + levelObjects[activeObject]);
             Constructor<?> constructor = clazz.getConstructor(Vector3.class);
-            
             obj = (BulletObject)constructor.newInstance(pos);
             obj.randomRot();
         }

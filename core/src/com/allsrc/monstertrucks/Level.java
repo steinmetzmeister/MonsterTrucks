@@ -46,6 +46,8 @@ public class Level {
         ColorChanger.load();
         Coin.load();
         Gate.load();
+        SmallRamp.load();
+        LargeRamp.load();
     }
 
     public TrackBuilder tb = new TrackBuilder();    

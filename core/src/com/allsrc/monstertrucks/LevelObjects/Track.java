@@ -39,13 +39,19 @@ public class Track extends BulletObject {
         HashMap<String,Color> colors = new HashMap<String,Color>();
 
         colors.put("ground", MonsterColor.randomColor());
-        colors.put("border", MonsterColor.randomColor());
+        colors.put("border1", MonsterColor.randomColor());
+        colors.put("border2", MonsterColor.randomColor());
         colors.put("road", MonsterColor.randomColor());
 
         for (int i = 0; i < Planet.EX.loader.getModel().meshes.size; i++)
         {
-            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(
-                colors.get(Planet.EX.loader.getModel().materials.get(i).id)));
+            String id = Planet.EX.loader.getModel().materials.get(i).id;
+
+            int j = id.indexOf(".");
+            if (j != -1)
+                id = id.substring(0, j);
+
+            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(colors.get(id)));
         }
 
         addDefaultConstructor("straight");
@@ -55,8 +61,13 @@ public class Track extends BulletObject {
 
         for (int i = 0; i < Planet.EX.loader.getModel().meshes.size; i++)
         {
-            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(
-                colors.get(Planet.EX.loader.getModel().materials.get(i).id)));
+            String id = Planet.EX.loader.getModel().materials.get(i).id;
+
+            int j = id.indexOf(".");
+            if (j != -1)
+                id = id.substring(0, j);
+
+            Planet.EX.loader.getModel().materials.get(i).set(ColorAttribute.createDiffuse(colors.get(id)));
         }
 
         addDefaultConstructor("turn");

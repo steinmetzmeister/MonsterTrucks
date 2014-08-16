@@ -132,6 +132,7 @@ public class MonsterTrucks implements ApplicationListener {
 		}
 
 		Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), Color.RED));
+		Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), Color.RED));
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);

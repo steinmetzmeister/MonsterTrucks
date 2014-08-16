@@ -41,7 +41,7 @@ public class MonsterListener extends MonsterListenerBase {
     @Override
     public boolean keyUp (int keycode) {
 
-        if (keycode >= 8 && keycode <= 12) {
+        if (keycode >= 8 && keycode <= 14) {
             Planet.EX.main.editor.setActiveObject(keycode - 8);
 
             return false;
