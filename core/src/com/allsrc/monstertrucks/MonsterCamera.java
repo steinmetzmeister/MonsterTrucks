@@ -60,6 +60,6 @@ public class MonsterCamera {
         obj.entity.modelInstance.transform.getTranslation(tempV2);
         tempV2.add(Planet.EX.loader.getCenter(obj.name));
 
-        return camera.frustum.sphereInFrustum(tempV2, Planet.EX.loader.getRadius());
+        return camera.frustum.sphereInFrustum(tempV2, Planet.EX.loader.getRadius(obj.name));
     }
 }

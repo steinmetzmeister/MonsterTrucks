@@ -122,7 +122,7 @@ public class MonsterTrucks implements ApplicationListener {
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
 
-        inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
+        // inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public class MonsterTrucks implements ApplicationListener {
 	}
 
 	public void renderScreen() {
-		Planet.EX.camera.focus(Planet.EX.cars.get(0));
+        Planet.EX.camera.focus(Planet.EX.cars.get(0));
 		
 		modelBatch.begin(Planet.EX.camera.get());
 		renderObjects();
@@ -212,7 +212,6 @@ public class MonsterTrucks implements ApplicationListener {
 
 	public void renderSplitScreen() {
 		Planet.EX.camera.focus(Planet.EX.cars.get(0));
-
 		modelBatch.begin(Planet.EX.camera.get());
 		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		renderObjects();
@@ -221,7 +220,6 @@ public class MonsterTrucks implements ApplicationListener {
 		//
 
 		Planet.EX.camera.focus(Planet.EX.cars.get(1));
-
 		modelBatch.begin(Planet.EX.camera.get());
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		renderObjects();
@@ -230,14 +228,15 @@ public class MonsterTrucks implements ApplicationListener {
 
 	public void renderObjects() {
         Planet.EX.level.terrain.render();
-        
+
 		for (BulletObject obj : Planet.EX.level.bulletObjects) {
 			if (Planet.EX.camera.isVisible(obj))
 				obj.render();
 		}
 
-		for (Car car : Planet.EX.cars)
+		for (Car car : Planet.EX.cars) {
 			car.render();
+        }
 	}
 
 	public void update () {

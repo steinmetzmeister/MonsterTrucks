@@ -35,6 +35,11 @@ import com.badlogic.gdx.controllers.mappings.Ouya;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+
 public class Car extends BulletObject implements ControllerListener {
     Vector3 tmpV = new Vector3();
 
@@ -92,6 +97,24 @@ public class Car extends BulletObject implements ControllerListener {
         setPos(pos);
 
         initPos = pos;
+    }
+
+    public void randomizeColors() {
+        ModelInstance mi = entity.modelInstance;
+
+        for (int i = 0; i < mi.materials.size; i++)
+            mi.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+
+        Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+
+        Color c = MonsterColor.randomColor();
+
+        for (BulletEntity wheel : wheels) {
+            mi = wheel.modelInstance;
+
+            for (int i = 0; i < mi.materials.size; i++)
+                mi.materials.get(i).set(ColorAttribute.createDiffuse(c));
+        }
     }
 
     protected void loadAssets() {
@@ -199,9 +222,7 @@ public class Car extends BulletObject implements ControllerListener {
         vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
         vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
 
-
-            currentAngle = angle;
- 
+        currentAngle = angle;
 
         // de/accelerate
         if (upPressed) {

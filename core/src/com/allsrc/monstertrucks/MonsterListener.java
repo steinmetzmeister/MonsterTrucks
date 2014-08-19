@@ -5,12 +5,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-
-import java.util.HashMap;
-
 import com.badlogic.gdx.Input.Keys;
 
 public class MonsterListener extends MonsterListenerBase {
@@ -64,51 +58,9 @@ public class MonsterListener extends MonsterListenerBase {
                 break;
 
             case Keys.Q:
-                HashMap<String,Color> colors = new HashMap<String,Color>();
-
-                colors.put("ground", MonsterColor.randomColor());
-                colors.put("border1", MonsterColor.randomColor());
-                colors.put("border2", MonsterColor.randomColor());
-                colors.put("road", MonsterColor.randomColor());
-
-                for (Track part : Planet.EX.level.tb.parts) {
-                    ModelInstance mi = part.entity.modelInstance;
-
-                    for (int i = 0; i < mi.materials.size; i++)
-                    {
-                        String id = mi.materials.get(i).id;
-
-                        int j = id.indexOf(".");
-                        if (j != -1)
-                            id = id.substring(0, j);
-
-                        mi.materials.get(i).set(ColorAttribute.createDiffuse(colors.get(id)));
-                    }
-
-                    Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-                }
-
-                for (Car car : Planet.EX.cars) {
-                    ModelInstance mi = car.entity.modelInstance;
-
-                    for (int i = 0; i < mi.materials.size; i++)
-                    {
-                        mi.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-                    }
-
-                    Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-
-                    Color c = MonsterColor.randomColor();
-
-                    for (BulletEntity wheel : car.wheels) {
-                        mi = wheel.modelInstance;
-
-                        for (int i = 0; i < mi.materials.size; i++)
-                        {
-                            mi.materials.get(i).set(ColorAttribute.createDiffuse(c));
-                        }
-                    }
-                }
+                Planet.EX.level.tb.randomizeColors();
+                for (Car car : Planet.EX.cars)
+                    car.randomizeColors();
                 break;
         }
 

@@ -25,6 +25,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class Level {
+    public TrackBuilder tb = new TrackBuilder();    
+
     Array<BulletObject> bulletObjects = new Array<BulletObject>();
     Array<Collectible> collectibles = new Array<Collectible>();
     Array<Trigger> triggers = new Array<Trigger>();
@@ -49,8 +51,6 @@ public class Level {
         SmallRamp.load();
         LargeRamp.load();
     }
-
-    public TrackBuilder tb = new TrackBuilder();    
 
     public void init() {
         Terrain.load("data/terrain2.obj");

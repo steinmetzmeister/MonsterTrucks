@@ -34,7 +34,7 @@ public class Editor {
     protected int activeObject = 0;
 
     protected Label activeObjectLabel;
-    protected BulletObject selectedObj;
+    public BulletObject selectedObj;
     protected Color selectedColor;
 
     protected float rotSpeed = 3.9f;
@@ -66,10 +66,21 @@ public class Editor {
     }
 
     public void leftClick(btCollisionObject obj, Vector3 pos) {
-        if (obj == Planet.EX.level.terrain.entity.body) {
+        if (selectedObj != null) {
+            deselect();
+            return;
+        }
+
+        if (obj == Planet.EX.level.terrain.entity.body)
             createObject(pos);
-        } else {
+        else
             select(obj);
+    }
+
+    public void rightClick(btCollisionObject obj) {
+        if (obj != Planet.EX.level.terrain.entity.body) {
+            removeObject(obj);
+            selectedObj = null;
         }
     }
 
@@ -100,12 +111,6 @@ public class Editor {
             selectedObj.updateColor();
 
             selectedObj = null;
-        }
-    }
-
-    public void rightClick(btCollisionObject obj) {
-        if (obj != Planet.EX.level.terrain.entity.body) {
-            removeObject(obj);
         }
     }
 
