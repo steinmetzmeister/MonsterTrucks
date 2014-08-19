@@ -48,8 +48,16 @@ public class Loader {
         }
     }
 
+    public Vector3 getCenter(String name) {
+        return objects.get(name).center;
+    }
+
     public Vector3 getCenter() {
         return obj.center;
+    }
+
+    public float getRadius(String name) {
+        return objects.get(name).radius;
     }
 
     public float getRadius() {
@@ -74,6 +82,10 @@ public class Loader {
 
     public void loadTexture(String file) {
         obj.texture = new Texture(Gdx.files.internal(file), true);
+    }
+
+    public Model getModel(String name) {
+        return objects.get(name).model;
     }
 
     public Model getModel() {

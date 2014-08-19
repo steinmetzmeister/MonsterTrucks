@@ -11,11 +11,12 @@ public enum Planet {
 
     public MonsterTrucks main;
 
+    public Editor editor;
     public Loader loader = new Loader();
     public Level level;
     public Settings settings = new Settings();
     
-    public PerspectiveCamera camera;
+    public MonsterCamera camera;
 
     public ModelBuilder modelBuilder = new ModelBuilder();
 

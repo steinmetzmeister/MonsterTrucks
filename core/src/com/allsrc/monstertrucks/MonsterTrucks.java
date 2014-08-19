@@ -45,9 +45,10 @@ import com.badlogic.gdx.math.Vector2;
 
 public class MonsterTrucks implements ApplicationListener {
 
+    private Vector3 tempV = new Vector3();
+
 	private boolean initialized;
 
-	public Editor editor;
 	public Skin skin;
 	public Stage stage;
 
@@ -74,6 +75,9 @@ public class MonsterTrucks implements ApplicationListener {
 	public void create () {
 		init();
 
+        stage = new Stage();
+        skin = new Skin(Gdx.files.internal("data/uiskin.json"));
+
 		celShader = new ShaderProgram(
     		Gdx.files.internal("data/shaders/cel.vertex.glsl"),
     		Gdx.files.internal("data/shaders/cel.fragment.glsl"));
@@ -93,30 +97,9 @@ public class MonsterTrucks implements ApplicationListener {
         Planet.EX.settings.height = Gdx.graphics.getHeight();
 
         monsterListener = new MonsterListener();
+		Planet.EX.camera = new MonsterCamera(Planet.EX.settings.playerCount);
 
-		stage = new Stage();
-		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-
-		switch (Planet.EX.settings.playerCount) {
-			case 1:
-				Planet.EX.camera = new PerspectiveCamera(
-					63f,
-					3f * Planet.EX.settings.width / Planet.EX.settings.height,
-					3f);
-				break;
-			case 2:
-				Planet.EX.camera = new PerspectiveCamera(
-					63f,
-					3f * Planet.EX.settings.width / (Planet.EX.settings.height / 2),
-					3f);
-				break;
-
-			case 3:
-			case 4:
-				break;
-		}
-
-		editor = new Editor();
+		Planet.EX.editor = new Editor();
 
 		Planet.EX.level = new Level();
 		Planet.EX.level.init();
@@ -125,7 +108,7 @@ public class MonsterTrucks implements ApplicationListener {
 		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
 			Color c = MonsterColor.randomColor();
-			Planet.EX.cars.add((Car)new MonsterTruck(new Vector3(i * 5f, 3f, 0f), c));
+			Planet.EX.cars.add((Car)new RallyCar(new Vector3(i * 5f, 3f, 0f), c));
 
 			if (i < Controllers.getControllers().size)
 				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
@@ -138,6 +121,8 @@ public class MonsterTrucks implements ApplicationListener {
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
 		inputMultiplexer.addProcessor(stage);
+
+        inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
 	}
 
 	@Override
@@ -218,68 +203,41 @@ public class MonsterTrucks implements ApplicationListener {
 	}
 
 	public void renderScreen() {
-		updateCameraPosition(0);
-		Planet.EX.camera.update();
-		modelBatch.begin(Planet.EX.camera);
+		Planet.EX.camera.focus(Planet.EX.cars.get(0));
+		
+		modelBatch.begin(Planet.EX.camera.get());
 		renderObjects();
 		modelBatch.end();
 	}
 
 	public void renderSplitScreen() {
-		updateCameraPosition(0);
-		Planet.EX.camera.update();
-		modelBatch.begin(Planet.EX.camera);
+		Planet.EX.camera.focus(Planet.EX.cars.get(0));
+
+		modelBatch.begin(Planet.EX.camera.get());
 		Gdx.gl.glViewport(0, Gdx.graphics.getHeight() / 2, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		renderObjects();
 		modelBatch.end();
 		
 		//
 
-		updateCameraPosition(1);
-		Planet.EX.camera.update();
-		modelBatch.begin(Planet.EX.camera);
+		Planet.EX.camera.focus(Planet.EX.cars.get(1));
+
+		modelBatch.begin(Planet.EX.camera.get());
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight() / 2);
 		renderObjects();
 		modelBatch.end();
 	}
 
 	public void renderObjects() {
+        Planet.EX.level.terrain.render();
+        
 		for (BulletObject obj : Planet.EX.level.bulletObjects) {
-			if (isVisible(Planet.EX.camera, obj))
+			if (Planet.EX.camera.isVisible(obj))
 				obj.render();
 		}
 
-		Planet.EX.level.terrain.render();
 		for (Car car : Planet.EX.cars)
 			car.render();
-	}
-
-	private Vector3 position = new Vector3();
-	protected boolean isVisible(final Camera cam, final BulletObject obj) {
-		Planet.EX.loader.set(obj.name); //
-
-    	obj.entity.modelInstance.transform.getTranslation(position);
-    	position.add(Planet.EX.loader.getCenter());
-
-    	return cam.frustum.sphereInFrustum(position, Planet.EX.loader.getRadius());
-	}
-
-	// context of truck
-	Matrix4 worldTransform = new Matrix4();
-	Vector3 carPosition = new Vector3();
-	Vector3 cameraPosition = new Vector3();
-
-	public void updateCameraPosition(int playerNum) {
-		Planet.EX.cars.get(playerNum).entity.motionState.getWorldTransform(worldTransform);
-
-		worldTransform.getTranslation(carPosition);
-		cameraPosition.set(carPosition);
-
-		cameraPosition.set(cameraPosition.x - 4.5f, cameraPosition.y + 10f, cameraPosition.z - 6.5f);
-
-		Planet.EX.camera.position.set(cameraPosition);
-		Planet.EX.camera.lookAt(carPosition);
-        Planet.EX.camera.up.set(Vector3.Y);
 	}
 
 	public void update () {

@@ -3,16 +3,18 @@ package com.allsrc.monstertrucks;
 import com.badlogic.gdx.math.Vector3;
 
 import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
+
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
+
+import java.util.HashMap;
 
 import com.badlogic.gdx.Input.Keys;
 
 public class MonsterListener extends MonsterListenerBase {
-    ClosestRayResultCallback rayTestCB = new ClosestRayResultCallback(Vector3.Zero, Vector3.Z);
-    Vector3 rayFrom = new Vector3();
-    Vector3 rayTo = new Vector3();
-
+    
     int startedX = 0;
     int startedY = 0;
 
@@ -34,6 +36,9 @@ public class MonsterListener extends MonsterListenerBase {
             case Keys.A:
                 Planet.EX.cars.get(0).leftPressed = true;
                 break;
+            case Keys.P:
+                Planet.EX.cars.get(0).pause();
+                break;
         }
         return false;
     }
@@ -41,27 +46,9 @@ public class MonsterListener extends MonsterListenerBase {
     @Override
     public boolean keyUp (int keycode) {
 
-        if (keycode >= 8 && keycode <= 14) {
-            Planet.EX.main.editor.setActiveObject(keycode - 8);
-
-            return false;
-        }
-
         switch (keycode) {
             case Keys.R:
                 //
-                break;
-            case Keys.C:
-                Planet.EX.main.editor.deselect();
-                Planet.EX.level.clearLevel();
-                break;
-            case Keys.L:
-                Planet.EX.main.editor.deselect();
-                Planet.EX.level.saveToFile();
-                break;
-            case Keys.O:
-                Planet.EX.main.editor.deselect();
-                Planet.EX.level.loadFromFile();
                 break;
             case Keys.W:
                 Planet.EX.cars.get(0).upPressed = false;
@@ -75,89 +62,82 @@ public class MonsterListener extends MonsterListenerBase {
             case Keys.A:
                 Planet.EX.cars.get(0).leftPressed = false;
                 break;
-        }
 
-        Planet.EX.main.editor.keyUp(keycode);
+            case Keys.Q:
+                HashMap<String,Color> colors = new HashMap<String,Color>();
+
+                colors.put("ground", MonsterColor.randomColor());
+                colors.put("border1", MonsterColor.randomColor());
+                colors.put("border2", MonsterColor.randomColor());
+                colors.put("road", MonsterColor.randomColor());
+
+                for (Track part : Planet.EX.level.tb.parts) {
+                    ModelInstance mi = part.entity.modelInstance;
+
+                    for (int i = 0; i < mi.materials.size; i++)
+                    {
+                        String id = mi.materials.get(i).id;
+
+                        int j = id.indexOf(".");
+                        if (j != -1)
+                            id = id.substring(0, j);
+
+                        mi.materials.get(i).set(ColorAttribute.createDiffuse(colors.get(id)));
+                    }
+
+                    Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+                }
+
+                for (Car car : Planet.EX.cars) {
+                    ModelInstance mi = car.entity.modelInstance;
+
+                    for (int i = 0; i < mi.materials.size; i++)
+                    {
+                        mi.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+                    }
+
+                    Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
+
+                    Color c = MonsterColor.randomColor();
+
+                    for (BulletEntity wheel : car.wheels) {
+                        mi = wheel.modelInstance;
+
+                        for (int i = 0; i < mi.materials.size; i++)
+                        {
+                            mi.materials.get(i).set(ColorAttribute.createDiffuse(c));
+                        }
+                    }
+                }
+                break;
+        }
 
         return false;
-    }
-
-    @Override
-    public boolean scrolled (int amount) {
-        Planet.EX.main.editor.scroll(amount);
-        return false;
-    }
-
-    Vector3 vTemp = new Vector3(0,0,0);
-
-    public void touchDownDesktop (int screenX, int screenY, int pointer, int button) {
-        if (Planet.EX.settings.playerCount == 2)
-            screenY = splitScreenCorrection(screenY);
-
-        Ray ray = Planet.EX.camera.getPickRay(screenX, screenY);
-        rayFrom.set(ray.origin);
-        rayTo.set(ray.direction).scl(50f).add(rayFrom);
-
-        rayTestCB.setCollisionObject(null);
-        rayTestCB.setClosestHitFraction(1f);
-        rayTestCB.setRayFromWorld(rayFrom);
-        rayTestCB.setRayToWorld(rayTo);
-
-        Planet.EX.world.collisionWorld.rayTest(rayFrom, rayTo, rayTestCB);
-
-        if (rayTestCB.hasHit()) {
-            Vector3 p = new Vector3(0,0,0);
-            rayTestCB.getHitPointWorld(p);
-
-            if (button == 0)
-                Planet.EX.main.editor.leftClick(rayTestCB.getCollisionObject(), new Vector3(p.x, p.y, p.z));
-            else
-                Planet.EX.main.editor.rightClick(rayTestCB.getCollisionObject());
-        }
-    }
-
-    private int splitScreenCorrection(float screenY) {
-        if (screenY < Planet.EX.settings.height / 2) {
-            Planet.EX.main.updateCameraPosition(0);
-            Planet.EX.camera.update();
-            screenY = MonsterUtils.map(screenY, 0, Planet.EX.settings.height / 2, 0, Planet.EX.settings.height);
-        } else {
-            Planet.EX.main.updateCameraPosition(1);
-            Planet.EX.camera.update();
-            screenY = MonsterUtils.map(screenY, Planet.EX.settings.height / 2, Planet.EX.settings.height, 0, Planet.EX.settings.height);
-        }
-
-        return Math.round(screenY);
-    }
-
-    public void touchDownMobile (int screenX, int screenY, int pointer, int button) {
-        startedX = screenX;
-        startedY = screenY;
-
-        if (screenY < 200) {
-            if (screenX < Planet.EX.settings.width / 2) {
-                Planet.EX.cars.get(0).reset();
-            } else {
-                Planet.EX.main.editor.deselect();
-                Planet.EX.level.clearLevel();
-                Planet.EX.level.loadFromFile();
-            }
-
-            return;
-        }
-
-        if (screenX > Planet.EX.settings.width / 2)
-            Planet.EX.cars.get(0).downPressed = true;
-        else
-            Planet.EX.cars.get(0).upPressed = true;
     }
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        if (MonsterUtils.isMobile())
-            touchDownMobile(screenX, screenY, pointer, button);
-        else
-            touchDownDesktop(screenX, screenY, pointer, button);
+        if (MonsterUtils.isMobile()) {
+            startedX = screenX;
+            startedY = screenY;
+
+            if (screenY < 200) {
+                if (screenX < Planet.EX.settings.width / 2) {
+                    Planet.EX.cars.get(0).reset();
+                } else {
+                    Planet.EX.editor.deselect();
+                    Planet.EX.level.clearLevel();
+                    Planet.EX.level.loadFromFile();
+                }
+
+                return false;
+            }
+
+            if (screenX > Planet.EX.settings.width / 2)
+                Planet.EX.cars.get(0).downPressed = true;
+            else
+                Planet.EX.cars.get(0).upPressed = true;
+        }
 
         return false;
     }
@@ -180,7 +160,6 @@ public class MonsterListener extends MonsterListenerBase {
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
         if (MonsterUtils.isMobile()) {
-
             if (startedX != 0) {
                 int x = (screenX - startedX) * -1;
 

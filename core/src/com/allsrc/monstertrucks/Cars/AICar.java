@@ -16,7 +16,7 @@ public class AICar extends Car {
         maxForce = 50f;
         acceleration = 100f; // second
 
-        chassisModelFile = "data/car1.obj";
+        chassisModelFile = "data/cars/rally.obj";
         wheelModelFile = "data/wheel.obj";
         wheelScale = new Vector3(1f, 0.75f, 0.75f);
 

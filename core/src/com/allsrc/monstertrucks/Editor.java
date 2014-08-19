@@ -3,6 +3,8 @@ package com.allsrc.monstertrucks;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
+import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.Color;
 
@@ -14,6 +16,10 @@ import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
 import com.badlogic.gdx.Input.Keys;
 
 public class Editor {
+    public EditorListener editorListener;
+
+    Vector3 tempV = new Vector3(0,0,0);
+
     protected String[] levelObjects = new String[]{ 
         "Ball",
         "ColorChanger",
@@ -24,6 +30,7 @@ public class Editor {
         "LargeRamp"
     };
 
+    public boolean active = false;
     protected int activeObject = 0;
 
     protected Label activeObjectLabel;
@@ -41,6 +48,12 @@ public class Editor {
         table.add(activeObjectLabel).width(100);
         
         Planet.EX.main.stage.addActor(table);
+
+        editorListener = new EditorListener();
+    }
+
+    public void setActive(boolean to) {
+        active = to;
     }
 
     public void setActiveObject(int i) {
@@ -102,55 +115,32 @@ public class Editor {
 
         selectedObj.addRot(amount * rotSpeed);
         selectedObj.updateRot();
-        selectedObj.updatePos();
     }
 
-    Vector3 vTemp;
-
     public void keyUp(int keycode) {
-        if (keycode == Keys.P)
-            Planet.EX.cars.get(0).pause();
-
         if (selectedObj == null)
             return;
 
-        vTemp = selectedObj.getPos();
+        tempV = selectedObj.getPos();
 
-        switch (keycode) {
-            case Keys.NUMPAD_8:
-                vTemp.z += 0.5f;
-                break;
-            case Keys.NUMPAD_6:
-                vTemp.x -= 0.5f;
-                break;
-            case Keys.NUMPAD_2:
-                vTemp.z -= 0.5f;
-                break;
-            case Keys.NUMPAD_4:
-                vTemp.x += 0.5f;
-                break;
 
-            // height
-            case Keys.NUMPAD_1:
-                vTemp.y -= 0.5f;
-                break;
-            case Keys.NUMPAD_3:
-                vTemp.y += 0.5f;
-                break;
+        selectedObj.setPos(tempV);
+        selectedObj.updatePos();
+    }
 
-            case Keys.NUMPAD_7:
-                selectedObj.addRot(-rotSpeed * 2);
-                selectedObj.updateRot();
-                selectedObj.updatePos();
-                break;
-            case Keys.NUMPAD_9:
-                selectedObj.addRot(rotSpeed * 2);
-                selectedObj.updateRot();
-                selectedObj.updatePos();
-                break;
-        }
+    public void moveY(float amt) {
+        if (selectedObj == null)
+            return;
 
-        selectedObj.setPos(vTemp);
+        selectedObj.pos.y += amt;
+        selectedObj.updatePos();
+    }
+
+    public void mouseMoved(Vector3 atPos) {
+        if (selectedObj == null)
+            return;
+
+        selectedObj.setPos(atPos.cpy());
         selectedObj.updatePos();
     }
 

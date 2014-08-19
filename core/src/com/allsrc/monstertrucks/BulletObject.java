@@ -146,6 +146,7 @@ public class BulletObject {
 
     public void updateRot() {
         entity.transform.setToRotation(Vector3.Y, rot.y);
+        updatePos();
     }
 
     public void updateTexture() {

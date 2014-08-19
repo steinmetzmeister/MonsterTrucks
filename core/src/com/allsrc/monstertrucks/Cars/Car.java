@@ -102,7 +102,6 @@ public class Car extends BulletObject implements ControllerListener {
         for (int i = 0; i < chassisModel.meshes.size; i++)
             chassisModel.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
 
-
         // wheel
         wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
         Planet.EX.disposables.add(wheelModel);

@@ -129,7 +129,7 @@ public class Level {
 
         BulletObject obj = null;
         for (String line : lines) {
-            obj = Planet.EX.main.editor.createObject(line);
+            obj = Planet.EX.editor.createObject(line);
 
             if (obj != null) {
                 if (obj.name == "checkpoint")
