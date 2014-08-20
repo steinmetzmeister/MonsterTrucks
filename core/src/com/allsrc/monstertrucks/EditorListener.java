@@ -1,17 +1,12 @@
 package com.allsrc.monstertrucks;
 
+import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.math.Vector3;
 
 import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.physics.bullet.collision.ClosestRayResultCallback;
 import com.badlogic.gdx.physics.bullet.collision.AllHitsRayResultCallback;
-import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-
-import java.util.HashMap;
 
 import com.badlogic.gdx.Input.Keys;
 
@@ -77,7 +72,7 @@ public class EditorListener extends MonsterListenerBase {
         if (Planet.EX.settings.playerCount == 2)
             screenY = splitScreenCorrection(screenY);
 
-        Ray ray = Planet.EX.camera.get().getPickRay(screenX, screenY);
+        Ray ray = Planet.EX.main.camera.get().getPickRay(screenX, screenY);
         rayFrom.set(ray.origin);
         rayTo.set(ray.direction).scl(50f).add(rayFrom);
 
@@ -111,7 +106,7 @@ public class EditorListener extends MonsterListenerBase {
         if (Planet.EX.settings.playerCount == 2)
             screenY = splitScreenCorrection(screenY);
 
-        Ray ray = Planet.EX.camera.get().getPickRay(screenX, screenY);
+        Ray ray = Planet.EX.main.camera.get().getPickRay(screenX, screenY);
         rayFrom.set(ray.origin);
         rayTo.set(ray.direction).scl(50f).add(rayFrom);
 
@@ -136,12 +131,12 @@ public class EditorListener extends MonsterListenerBase {
     }
 
     private int splitScreenCorrection(float screenY) {
-        if (screenY < Planet.EX.settings.height / 2) {
-            Planet.EX.camera.focus(Planet.EX.cars.get(0));
-            screenY = MonsterUtils.map(screenY, 0, Planet.EX.settings.height / 2, 0, Planet.EX.settings.height);
+        if (screenY < Gdx.graphics.getHeight() / 2) {
+            Planet.EX.main.camera.focus(Planet.EX.cars.get(0));
+            screenY = MonsterUtils.map(screenY, 0, Gdx.graphics.getHeight() / 2, 0, Gdx.graphics.getHeight());
         } else {
-            Planet.EX.camera.focus(Planet.EX.cars.get(1));
-            screenY = MonsterUtils.map(screenY, Planet.EX.settings.height / 2, Planet.EX.settings.height, 0, Planet.EX.settings.height);
+            Planet.EX.main.camera.focus(Planet.EX.cars.get(1));
+            screenY = MonsterUtils.map(screenY, Gdx.graphics.getHeight() / 2, Gdx.graphics.getHeight(), 0, Gdx.graphics.getHeight());
         }
 
         return Math.round(screenY);

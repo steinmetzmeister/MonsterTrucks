@@ -29,19 +29,21 @@ public class BulletObject {
     public Vector3 size = new Vector3(1f, 1f, 1f);
     public float scale = 1f;
 
-    public static Model model;
-    public btBvhTriangleMeshShape meshShape;
-
-    public String textureFile;
-    public static Texture texture;
-    public static TextureAttribute textureAttribute;
-
     public static void addDefaultConstructor(String name) {
         Planet.EX.loader.set(name);
 
-        addConstructor(name,
-            Planet.EX.loader.getModel(),
-            new btBvhTriangleMeshShape(Planet.EX.loader.getModel().meshParts));
+        if (Planet.EX.loader.getMeshShape() != null) {
+            addConstructor(name,
+                Planet.EX.loader.getModel(),
+                Planet.EX.loader.getMeshShape());
+        }
+        else {
+
+            addConstructor(name,
+                Planet.EX.loader.getModel(),
+                new btBvhTriangleMeshShape(Planet.EX.loader.getModel().meshParts));
+        }
+
     }
 
     public static void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
@@ -93,7 +95,6 @@ public class BulletObject {
 
     public void setPos(Vector3 pos) {
         this.pos = pos;
-        
     }
 
     public void setPos(float x, float y, float z) {
@@ -133,6 +134,10 @@ public class BulletObject {
     }
 
     //
+
+    public void update() {
+        //
+    }
 
     public void updateColor() {
         entity.modelInstance.materials.get(0).set(

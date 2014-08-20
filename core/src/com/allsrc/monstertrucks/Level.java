@@ -21,20 +21,17 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 public class Level {
-    public TrackBuilder tb = new TrackBuilder();    
+    public TrackBuilder tb = new TrackBuilder();   
 
-    Array<BulletObject> bulletObjects = new Array<BulletObject>();
-    Array<Collectible> collectibles = new Array<Collectible>();
-    Array<Trigger> triggers = new Array<Trigger>();
-    Checkpoints checkpoints = new Checkpoints();
-    Array<Vector2> path = new Array<Vector2>();
+    public Array<BulletObject> bulletObjects = new Array<BulletObject>();
+    public Array<Collectible> collectibles = new Array<Collectible>();
+    public Array<Trigger> triggers = new Array<Trigger>();
+    public Checkpoints checkpoints = new Checkpoints();
+    public Array<Vector2> path = new Array<Vector2>();
     
-    Terrain terrain;
-    Track track;
+    public Terrain terrain;
+
     public Environment environment;
     public DirectionalLight light;
 
@@ -50,36 +47,38 @@ public class Level {
         Gate.load();
         SmallRamp.load();
         LargeRamp.load();
+        Track.load();
     }
 
     public void init() {
-        Terrain.load("data/terrain2.obj");
+        Terrain.load("data/terrain.obj");
         terrain = new Terrain(MonsterColor.randomColor());
 
-        Track.load();
+        tb.straight();
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(1));
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(1));
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        tb.straight();
+        tb.straight();
 
-        tb.straight();
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(1));
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(1));
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
-        tb.straight();
-        tb.straight();
-        tb.straight();
-        tb.straight();
+        tb.randomizeColors();
+        tb.clean();
     }
 
     public void clearLevel() {

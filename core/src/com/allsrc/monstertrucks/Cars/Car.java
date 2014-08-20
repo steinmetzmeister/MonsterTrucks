@@ -3,45 +3,33 @@ package com.allsrc.monstertrucks;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.VertexAttributes.Usage;
-import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
+import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.FloatAttribute;
-import com.badlogic.gdx.graphics.g3d.attributes.TextureAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.math.Quaternion;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.physics.bullet.collision.Collision;
 import com.badlogic.gdx.physics.bullet.collision.btBoxShape;
 import com.badlogic.gdx.physics.bullet.dynamics.btDefaultVehicleRaycaster;
-import com.badlogic.gdx.physics.bullet.dynamics.btDiscreteDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btDynamicsWorld;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle.btVehicleTuning;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
-import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
 
-import com.badlogic.gdx.controllers.Controller;;
+import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
-
-import com.badlogic.gdx.graphics.g3d.ModelInstance;
-
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
+import com.badlogic.gdx.physics.bullet.linearmath.btTransform;
 
 public class Car extends BulletObject implements ControllerListener {
-    Vector3 tmpV = new Vector3();
+    private Vector3 tmpV = new Vector3();
 
     protected ObjLoader objLoader = new ObjLoader();
 
@@ -82,8 +70,8 @@ public class Car extends BulletObject implements ControllerListener {
     protected Vector3 initPos;
 
     // left axii of any controller
-    float horzAxis = 0;
-    float vertAxis = 0;
+    public float horzAxis = 0;
+    public float vertAxis = 0;
 
     protected boolean upPressed;
     protected boolean downPressed;
@@ -91,6 +79,8 @@ public class Car extends BulletObject implements ControllerListener {
     protected boolean rightPressed;
 
     protected boolean paused = false;
+
+    btTransform[] wheelInfo = new btTransform[4];
 
     public Car(Vector3 pos, Color color) {
         setColor(color);
@@ -161,6 +151,11 @@ public class Car extends BulletObject implements ControllerListener {
         addWheels();
 
         entity.body.setActivationState(Collision.DISABLE_DEACTIVATION);
+
+        wheelInfo[0] = vehicle.getWheelInfo(0).getWorldTransform();
+        wheelInfo[1] = vehicle.getWheelInfo(1).getWorldTransform();
+        wheelInfo[2] = vehicle.getWheelInfo(2).getWorldTransform();
+        wheelInfo[3] = vehicle.getWheelInfo(3).getWorldTransform();
     }
 
     public void pause() {
@@ -209,16 +204,6 @@ public class Car extends BulletObject implements ControllerListener {
         angle = currentAngle;
         force = currentForce;
 
-        // turn
-        if (rightPressed) {
-            if (angle > 0f) angle = 0f;
-            angle = MathUtils.clamp(angle - steerSpeed * delta, -maxAngle, 0f);
-        } else if (leftPressed) {
-            if (angle < 0f) angle = 0f;
-            angle = MathUtils.clamp(angle + steerSpeed * delta, 0f, maxAngle);
-        } else if (Planet.EX.settings.keyboard)
-            angle = 0f;
-
         vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
         vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
 
@@ -226,30 +211,27 @@ public class Car extends BulletObject implements ControllerListener {
 
         // de/accelerate
         if (upPressed) {
-            if (force < 0f) force = 0f;
-            force = MathUtils.clamp(force + acceleration * delta, 0f, maxForce);
+            if (force < 0) force = 0;
+            force = MathUtils.clamp(force + acceleration * delta, 0, maxForce);
         } else if (downPressed) {
-            if (force > 0f) force = 0f;
-            force = MathUtils.clamp(force - acceleration * delta, -maxForce, 0f);
+            if (force > 0) force = 0;
+            force = MathUtils.clamp(force - acceleration * delta, -maxForce, 0);
         } else
-            force = 0f;
+            force = 0;
 
         if (force != currentForce) {
             currentForce = force;
             vehicle.applyEngineForce(force, 0);
             vehicle.applyEngineForce(force, 1);
-            vehicle.applyEngineForce(force, 2);
-            vehicle.applyEngineForce(force, 3);
+            // vehicle.applyEngineForce(force, 2);
+            // vehicle.applyEngineForce(force, 3);
         }
 
-        isOnGround = false;
+        isOnGround = true;
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
-            vehicle.getWheelInfo(i).getWorldTransform().getOpenGLMatrix(wheels[i].transform.val);
-
-            if (vehicle.getWheelInfo(i).getRaycastInfo().getGroundObject() != 0)
-                isOnGround = true;
+            wheelInfo[i].getOpenGLMatrix(wheels[i].transform.val);
         }
 
         if (!isOnGround) {

@@ -9,18 +9,21 @@ import com.badlogic.gdx.math.collision.BoundingBox;
 import com.badlogic.gdx.math.Vector3;
 import java.util.HashMap;
 
+import com.badlogic.gdx.physics.bullet.collision.btBvhTriangleMeshShape;
+
 public class Loader {
     public class Object {
         Model model;
         Sound sound;
         Texture texture;
+        btBvhTriangleMeshShape meshShape;
 
         Vector3 center = new Vector3();
         float radius;
     }
 
-    protected Object obj;
-    protected ObjLoader objLoader = new ObjLoader();
+    private Object obj;
+    private ObjLoader objLoader = new ObjLoader();
     public HashMap<String,Object> objects = new HashMap<String,Object>();
 
     String name;
@@ -74,6 +77,23 @@ public class Loader {
         obj.center.set(bounds.getCenter());
         dimensions.set(bounds.getDimensions());
         obj.radius = dimensions.len() / 2f;
+    }
+
+    public void setModel(Model model) {
+        obj.model = model;
+        
+        obj.model.calculateBoundingBox(bounds);
+        obj.center.set(bounds.getCenter());
+        dimensions.set(bounds.getDimensions());
+        obj.radius = dimensions.len() / 2f;
+    }
+
+    public void loadMeshShape() {
+        obj.meshShape = new btBvhTriangleMeshShape(getModel().meshParts);
+    }
+
+    public btBvhTriangleMeshShape getMeshShape() {
+        return obj.meshShape;
     }
 
     public void loadSound(String file) {

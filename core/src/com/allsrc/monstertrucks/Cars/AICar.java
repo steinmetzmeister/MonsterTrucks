@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 
 public class AICar extends Car {
+
     public AICar(Vector3 pos, Color color) {
         super(pos, color);
 
@@ -23,28 +24,27 @@ public class AICar extends Car {
         init();
     }
 
+    int seek = 0;
+
     public void update() {
         delta = Gdx.graphics.getDeltaTime();
 
-        vehicle.setSteeringValue(seek() * 15f * MathUtils.degreesToRadians, 0);
-        vehicle.setSteeringValue(seek() * 15f * MathUtils.degreesToRadians, 1);
+        seek = seek();
+
+        vehicle.setSteeringValue(seek * 15 * MathUtils.degreesToRadians, 0);
+        vehicle.setSteeringValue(seek * 15 * MathUtils.degreesToRadians, 1);
         force = MathUtils.clamp(force + acceleration * delta, 0f, maxForce);
         vehicle.applyEngineForce(force, 0);
         vehicle.applyEngineForce(force, 1);
-        vehicle.applyEngineForce(force, 2);
-        vehicle.applyEngineForce(force, 3);
+        // vehicle.applyEngineForce(force, 2);
+        // vehicle.applyEngineForce(force, 3);
 
-        isOnGround = false;
+        isOnGround = true;
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
-            vehicle.getWheelInfo(i).getWorldTransform().getOpenGLMatrix(wheels[i].transform.val);
-
-            if (vehicle.getWheelInfo(i).getRaycastInfo().getGroundObject() != 0)
-                isOnGround = true;
+            wheelInfo[i].getOpenGLMatrix(wheels[i].transform.val);
         }
-
-        // seek();
     }
 
     Vector3 f = new Vector3(0,0,0);
@@ -54,21 +54,27 @@ public class AICar extends Car {
     Vector2 f2 = new Vector2();
     Vector2 p2 = new Vector2();
 
+    float dot = 0;
+    double angle = 0;
+
     int currNode = 0;
     
     public int seek() {
-        t2 = Planet.EX.level.path.get(currNode).cpy();
+        t2.set(Planet.EX.level.path.get(currNode));
 
-        f = vehicle.getForwardVector().cpy();
+        f = vehicle.getForwardVector();
         entity.transform.getTranslation(p);
 
-        f2 = new Vector2(f.x, f.z);
-        p2 = new Vector2(p.x, p.z);
+        f2.x = f.x;
+        f2.y = f.z;
+
+        p2.x = p.x;
+        p2.y = p.z;
 
         t2 = t2.sub(p2);
 
-        float dot = f2.dot(t2);
-        double angle = Math.acos(dot / (f2.len() * t2.len()));
+        dot = f2.dot(t2);
+        angle = Math.acos(dot / (f2.len() * t2.len()));
 
         if (p2.dst(Planet.EX.level.path.get(currNode)) < 5) {
             currNode++;

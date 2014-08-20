@@ -4,23 +4,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
 import com.badlogic.gdx.Gdx;
-
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
+import com.badlogic.gdx.Input.Keys;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import com.badlogic.gdx.physics.bullet.collision.btCollisionObject;
-
-import com.badlogic.gdx.Input.Keys;
-
 public class Editor {
-    public EditorListener editorListener;
+    private EditorListener editorListener;
 
-    Vector3 tempV = new Vector3(0,0,0);
-
-    protected String[] levelObjects = new String[]{ 
+    private String[] levelObjects = new String[]{ 
         "Ball",
         "ColorChanger",
         "Checkpoint",
@@ -31,13 +26,13 @@ public class Editor {
     };
 
     public boolean active = false;
-    protected int activeObject = 0;
-
-    protected Label activeObjectLabel;
     public BulletObject selectedObj;
-    protected Color selectedColor;
 
-    protected float rotSpeed = 3.9f;
+    private int activeObject = 0;
+    private Label activeObjectLabel;
+    private Color selectedColor;
+    private float rotSpeed = 3.9f;
+    private Vector3 tempV = new Vector3(0,0,0);
 
     public Editor() {
         activeObjectLabel = new Label("Object", Planet.EX.main.skin);

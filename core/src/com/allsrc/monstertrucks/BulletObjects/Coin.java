@@ -1,6 +1,5 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 
 public class Coin extends Collectible {
@@ -28,7 +27,7 @@ public class Coin extends Collectible {
         entity();
         noResponse();
         randomRot();
-        updateTexture();
+        // updateTexture();
     }
 
     public void update() {
@@ -40,7 +39,7 @@ public class Coin extends Collectible {
         Planet.EX.loader.add("coin");
         Planet.EX.loader.loadModel("data/coin.obj");
         Planet.EX.loader.loadSound("data/coins.wav");
-        Planet.EX.loader.loadTexture("data/coin.png");
+        // Planet.EX.loader.loadTexture("data/coin.png");
         addDefaultConstructor("coin");
     }
 }

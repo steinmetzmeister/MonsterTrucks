@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 public class Ball extends BulletObject {
 
     public Model model;
-    public static float size = 3f;
+    public static float size = 1f;
 
     public void init() {
         name = "ball";

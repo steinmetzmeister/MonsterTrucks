@@ -10,22 +10,16 @@ import com.badlogic.gdx.audio.Sound;
 public class Collectible extends BulletObject {
 
     public class CollectibleCallback extends ContactResultCallback {
-        public Collectible collectible;
-
-        public CollectibleCallback(Collectible _collectible) {
-            collectible = _collectible;
-        }
         
         @Override
         public float addSingleResult (btManifoldPoint cp,
             btCollisionObjectWrapper colObj0Wrap, int partId0, int index0,
             btCollisionObjectWrapper colObj1Wrap, int partId1, int index1) {
-                if (collectible.touched)
-                    return 0f;
+                if (touched)
+                    return 0;
 
-                collectible.pickedUp();
-                
-                return 0f;
+                pickedUp();
+                return 0;
         }
     }
 
@@ -37,7 +31,7 @@ public class Collectible extends BulletObject {
     public Sound pickupSound;
 
     public Collectible() {
-        collectibleCallback = new CollectibleCallback(this);
+        collectibleCallback = new CollectibleCallback();
     }
 
     public void entity() {

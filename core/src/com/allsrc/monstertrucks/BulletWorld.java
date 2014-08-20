@@ -82,6 +82,7 @@ public class BulletWorld extends BaseWorld<BulletEntity> {
 
     public BulletWorld () {
         this(new Vector3(0, -10, 0));
+        // performanceCounter = new PerformanceCounter("Bullet World");
     }
 
     @Override
@@ -105,7 +106,10 @@ public class BulletWorld extends BaseWorld<BulletEntity> {
         }
         if (collisionWorld instanceof btDynamicsWorld)
             ((btDynamicsWorld)collisionWorld).stepSimulation(Gdx.graphics.getDeltaTime(), maxSubSteps, fixedTimeStep);
-        if (performanceCounter != null) performanceCounter.stop();
+        if (performanceCounter != null) {
+            performanceCounter.stop();
+            System.out.println(performanceCounter.toString());
+        }
     }
 
     @Override

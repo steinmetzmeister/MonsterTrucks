@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
 public class Gate extends BulletObject {
-
     public void init() {
         name = "gate";
         attrs = new String[]{ "color", "pos", "rot" };

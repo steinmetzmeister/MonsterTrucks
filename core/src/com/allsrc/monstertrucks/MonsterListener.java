@@ -1,62 +1,27 @@
 package com.allsrc.monstertrucks;
 
-import com.badlogic.gdx.math.Vector3;
-
-import com.badlogic.gdx.math.collision.Ray;
-import com.badlogic.gdx.physics.bullet.linearmath.btVector3;
-
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 
 public class MonsterListener extends MonsterListenerBase {
     
-    int startedX = 0;
-    int startedY = 0;
+    private int startedX = 0;
+    private int startedY = 0;
 
-    @Override
-    public boolean keyDown (int keycode) {
-        switch (keycode) {
-            case Keys.SPACE:
-                //
-                break;
-            case Keys.W:
-                Planet.EX.cars.get(0).upPressed = true;
-                break;
-            case Keys.D:
-                Planet.EX.cars.get(0).rightPressed = true;
-                break;
-            case Keys.S:
-                Planet.EX.cars.get(0).downPressed = true;
-                break;
-            case Keys.A:
-                Planet.EX.cars.get(0).leftPressed = true;
-                break;
-            case Keys.P:
-                Planet.EX.cars.get(0).pause();
-                break;
-        }
-        return false;
+    private Car car;
+    private boolean isMobile;
+
+    public MonsterListener() {
+        car = Planet.EX.cars.get(0);
+        isMobile = MonsterUtils.isMobile();
     }
 
     @Override
     public boolean keyUp (int keycode) {
-
         switch (keycode) {
-            case Keys.R:
-                //
+             case Keys.P:
+                car.pause();
                 break;
-            case Keys.W:
-                Planet.EX.cars.get(0).upPressed = false;
-                break;
-            case Keys.D:
-                Planet.EX.cars.get(0).rightPressed = false;
-                break;
-            case Keys.S:
-                Planet.EX.cars.get(0).downPressed = false;
-                break;
-            case Keys.A:
-                Planet.EX.cars.get(0).leftPressed = false;
-                break;
-
             case Keys.Q:
                 Planet.EX.level.tb.randomizeColors();
                 for (Car car : Planet.EX.cars)
@@ -69,13 +34,13 @@ public class MonsterListener extends MonsterListenerBase {
 
     @Override
     public boolean touchDown (int screenX, int screenY, int pointer, int button) {
-        if (MonsterUtils.isMobile()) {
+        if (isMobile) {
             startedX = screenX;
             startedY = screenY;
 
             if (screenY < 200) {
-                if (screenX < Planet.EX.settings.width / 2) {
-                    Planet.EX.cars.get(0).reset();
+                if (screenX < Gdx.graphics.getWidth() / 2) {
+                    car.reset();
                 } else {
                     Planet.EX.editor.deselect();
                     Planet.EX.level.clearLevel();
@@ -85,10 +50,10 @@ public class MonsterListener extends MonsterListenerBase {
                 return false;
             }
 
-            if (screenX > Planet.EX.settings.width / 2)
-                Planet.EX.cars.get(0).downPressed = true;
+            if (screenX > Gdx.graphics.getWidth() / 2)
+                car.downPressed = true;
             else
-                Planet.EX.cars.get(0).upPressed = true;
+                car.upPressed = true;
         }
 
         return false;
@@ -96,41 +61,48 @@ public class MonsterListener extends MonsterListenerBase {
 
     @Override
     public boolean touchUp (int screenX, int screenY, int pointer, int button) {
-        if (MonsterUtils.isMobile()) {
+        if (isMobile) {
 
             startedX = 0;
             startedY = 0;
+
+            // car = Planet.EX.cars.get(0);
         
-            Planet.EX.cars.get(0).currentAngle = 0f;
-            Planet.EX.cars.get(0).upPressed = false;
-            Planet.EX.cars.get(0).downPressed = false;
+            car.currentAngle = 0f;
+            car.upPressed = false;
+            car.downPressed = false;
         }
 
         return false;
     }
 
+    private int x = 0;
+    private int y = 0;
+
     @Override
     public boolean touchDragged (int screenX, int screenY, int pointer) {
-        if (MonsterUtils.isMobile()) {
+        if (isMobile) {
+            // car = Planet.EX.cars.get(0);
+
             if (startedX != 0) {
-                int x = (screenX - startedX) * -1;
+                x = (screenX - startedX) * -1;
 
                 // off terrain rotation
-                Planet.EX.cars.get(0).horzAxis = MonsterUtils.map(x, -300, 300, 1, -1);
+                car.horzAxis = MonsterUtils.map(x, -300, 300, 1, -1);
 
                 if (x > 200) x = 200;
                 if (x < -200) x = -200;
 
                 // steering
-                Planet.EX.cars.get(0).currentAngle = MonsterUtils.map(x, -200f, 200f,
-                    -Planet.EX.cars.get(0).maxAngle,
-                    Planet.EX.cars.get(0).maxAngle);
+                car.currentAngle = MonsterUtils.map(x, -200f, 200f,
+                    -car.maxAngle,
+                    car.maxAngle);
             }
 
             // covers off terrain rotation
             if (startedY != 0) {
-                int y = (screenY - startedY) * -1;
-                Planet.EX.cars.get(0).vertAxis = MonsterUtils.map(y, -300, 300, 1, -1);
+                y = (screenY - startedY) * -1;
+                car.vertAxis = MonsterUtils.map(y, -300, 300, 1, -1);
             }
         }
 
