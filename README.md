@@ -1,3 +1,4 @@
-./gradlew desktop:run || ./gradlew android:installDebug android:run
+Running the project:
+https://github.com/libgdx/libgdx/wiki/Gradle-on-the-Commandline#running-the-project
 
-https://www.youtube.com/watch?v=HC2Lx7UlHwE
+https://www.youtube.com/watch?v=DFWeBlEe_qQ
