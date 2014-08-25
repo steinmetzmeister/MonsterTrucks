@@ -27,7 +27,7 @@ public class Coin extends Collectible {
         entity();
         noResponse();
         randomRot();
-        // updateTexture();
+        updateTexture();
     }
 
     public void update() {
@@ -36,10 +36,9 @@ public class Coin extends Collectible {
     }
 
     public static void load() {
-        Planet.EX.loader.add("coin");
-        Planet.EX.loader.loadModel("data/coin.obj");
-        Planet.EX.loader.loadSound("data/coins.wav");
-        // Planet.EX.loader.loadTexture("data/coin.png");
+        Planet.EX.loader.loadModel("coin", "data/coin.obj");
+        Planet.EX.loader.loadSound("coin", "data/coins.wav");
+        Planet.EX.loader.loadTexture("coin", "data/coin.png");
         addDefaultConstructor("coin");
     }
 }

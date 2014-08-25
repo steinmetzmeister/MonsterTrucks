@@ -15,7 +15,7 @@ public class Checkpoint extends Trigger {
     public Gate gate;
     public static float size = 10f;
     protected Color activeColor;
-    protected static Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 0.5f);
+    protected static Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 0f);
 
     public void init() {
         name = "checkpoint";
@@ -72,7 +72,7 @@ public class Checkpoint extends Trigger {
     }
 
     public void adjustColor() {
-        color.a = 0.5f;
+        color.a = 0f;
         updateColor();
     }
 
@@ -100,16 +100,14 @@ public class Checkpoint extends Trigger {
     public static void load() {
         Gate.load();
 
-        Planet.EX.loader.add("checkpoint");
-        Planet.EX.loader.objects.get("checkpoint").model = createSphere();
+        Planet.EX.loader.addModel("checkpoint", createSphere());
 
         addDefaultConstructor("checkpoint");
     }
 
     public static Model createSphere() {
         return Planet.EX.modelBuilder.createSphere(size, size, size, 16, 16,
-            new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.RED),
-            new BlendingAttribute(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)),
+            new Material(new ColorAttribute(ColorAttribute.Diffuse, Color.RED)),
             Usage.Position | Usage.Normal);
     }
 
@@ -140,7 +138,7 @@ public class Checkpoint extends Trigger {
     }
 
     public void render() {
-        super.render();
+        // super.render();
         gate.render();
     }
 }

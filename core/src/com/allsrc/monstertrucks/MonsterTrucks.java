@@ -9,6 +9,8 @@ import com.badlogic.gdx.math.Vector3;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.ModelBatch;
 
 import com.badlogic.gdx.physics.bullet.Bullet;
@@ -29,11 +31,10 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 
-import com.badlogic.gdx.graphics.Mesh;
-
 import com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import com.badlogic.gdx.graphics.VertexAttribute;
 import com.badlogic.gdx.graphics.Pixmap;
+
 
 public class MonsterTrucks implements ApplicationListener {
 
@@ -47,6 +48,7 @@ public class MonsterTrucks implements ApplicationListener {
     private MonsterListener monsterListener;
 
     public ModelBatch modelBatch;
+    public SpriteBatch spriteBatch;
 
     private FrameBuffer buffer;
     private FrameBuffer dest;
@@ -68,6 +70,7 @@ public class MonsterTrucks implements ApplicationListener {
 		init();
 
         Planet.EX.settings = new Settings();
+        Planet.EX.loader = new Loader();
 
         stage = new Stage();
         skin = new Skin(Gdx.files.internal("data/uiskin.json"));
@@ -82,14 +85,11 @@ public class MonsterTrucks implements ApplicationListener {
 		src = buffer;
 
         Planet.EX.main = this;
-
-        modelBatch = new ModelBatch();
-
         Planet.EX.world = new BulletWorld();
 
-        
+        modelBatch = new ModelBatch();
+        spriteBatch = new SpriteBatch();
 
-        
 		camera = new MonsterCamera(Planet.EX.settings.playerCount);
 
 		Planet.EX.editor = new Editor();
@@ -98,43 +98,73 @@ public class MonsterTrucks implements ApplicationListener {
 		Planet.EX.level.init();
 		Planet.EX.level.loadFromFile();
 
-		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
+        ParscheCar.load();
+
+		/*for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
-			Color c = MonsterColor.randomColor();
-			Planet.EX.cars.add((Car)new RallyCar(new Vector3(i * 5f, 3f, 0f), c));
+			Planet.EX.cars.add((Car)new ParscheCar(new Vector3(5f, 3f, 0f), "blue"));
 
 			if (i < Controllers.getControllers().size)
 				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
-		}
+		}*/
 
-        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), Color.RED));
-        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), Color.RED));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(0, 3f, 0f), "blue"));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), "red"));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), "green"));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -10f), "yellow"));
 
         monsterListener = new MonsterListener();
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
-		// inputMultiplexer.addProcessor(stage);
-        // inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
+		inputMultiplexer.addProcessor(stage);
+        inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
+
+        fpsLabel = new Label("FPS", Planet.EX.main.skin);
+
+        Table table = new Table();
+        table.left().top();
+        table.setFillParent(true);
+        table.add(fpsLabel).width(100);
+
+        stage.addActor(table);
 	}
+
+    private Label fpsLabel;
+
+    boolean t = false;
+    int ii = 64;
 
 	@Override
 	public void render () {
+        if (t)
+            ii++;
+        t = !t;
+        if (ii > 64)
+            ii = 0;
+
+        fpsLabel.setText("" + Gdx.graphics.getFramesPerSecond());
+
 		update();
 
-		dest = buffer;
-
-		dest.begin(); {
+		// dest = buffer;
+		// dest.begin(); {
 			
-            Gdx.gl.glEnable(GL20.GL_CULL_FACE);
-    		Gdx.gl.glCullFace(GL20.GL_BACK);
-    		// Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
-    		// Gdx.gl.glDepthFunc(GL20.GL_LEQUAL);
-    		// Gdx.gl.glDepthMask(true);
+            Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-    		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
+            spriteBatch.begin();
+            spriteBatch.draw(Planet.EX.level.background, 0f, 0f, 0f, 0f,
+                (Gdx.graphics.getWidth() / 64) + 1,
+                (Gdx.graphics.getHeight() / 64) + 1,
+                64, 64,
+                0f, // r
+                ii, -ii,
+                Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+                false, false);
+            spriteBatch.end();
 
+        
 			switch (Planet.EX.settings.playerCount) {
 				case 1:
 					renderScreen();
@@ -142,11 +172,11 @@ public class MonsterTrucks implements ApplicationListener {
 				case 2:
 					renderSplitScreen();
 					break;
-
 				case 3:
 				case 4:
 					break;
 			}
+/*
 		}
 		dest.end();
 
@@ -158,10 +188,11 @@ public class MonsterTrucks implements ApplicationListener {
         	fullScreenQuad.render(celShader, GL20.GL_TRIANGLE_FAN, 0, 4);
     		celShader.end();
     	}
+*/
 
 		// UI
-		// stage.act(Gdx.graphics.getDeltaTime());
-		// stage.draw();
+        stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
 	}
 
 	public Mesh createFullScreenQuad(){
@@ -222,33 +253,31 @@ public class MonsterTrucks implements ApplicationListener {
 	}
 
 	public void renderObjects() {
-        // performanceStart();
-
-        modelBatch.render(Planet.EX.level.terrain.entity.modelInstance);
+        // modelBatch.render(Planet.EX.level.terrain.entity.modelInstance, Planet.EX.level.environment);
 
 		for (BulletObject obj : Planet.EX.level.bulletObjects) {
 			if (camera.isVisible(obj))
-				modelBatch.render(obj.entity.modelInstance, Planet.EX.level.environment);
+				obj.render();
 		}
 
-        for (Track track : Planet.EX.level.tb.parts) {
+        for (Track track : Planet.EX.level.getTrackParts()) {
             if (camera.isVisible(track))
-                modelBatch.render(track.entity.modelInstance);
+                modelBatch.render(track.entity.modelInstance, Planet.EX.level.environment);
         }
 
 		for (Car car : Planet.EX.cars) {
             car.update();
 
-			modelBatch.render(car.entity.modelInstance, Planet.EX.level.environment);
-            for (BulletEntity wheel : car.wheels)
-                modelBatch.render(wheel.modelInstance, Planet.EX.level.environment);
-        }
+            if (camera.isVisible(car)) {
+                modelBatch.render(car.entity.modelInstance, Planet.EX.level.environment);
 
-        // performanceStop();
+                for (BulletEntity wheel : car.wheels)
+                    modelBatch.render(wheel.modelInstance, Planet.EX.level.environment);
+            }
+        }
 	}
 
 	public void update () {
-        // performanceStart();
 		Planet.EX.world.update();
 
        	for (Collectible collectible : Planet.EX.level.collectibles)
@@ -256,8 +285,6 @@ public class MonsterTrucks implements ApplicationListener {
 
        	for (Trigger trigger : Planet.EX.level.triggers)
        		trigger.update();
-
-        // performanceStop();
 	}
 
 	@Override

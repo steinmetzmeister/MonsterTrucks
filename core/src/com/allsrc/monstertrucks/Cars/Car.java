@@ -19,14 +19,13 @@ import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle;
 import com.badlogic.gdx.physics.bullet.dynamics.btRaycastVehicle.btVehicleTuning;
 import com.badlogic.gdx.physics.bullet.dynamics.btRigidBody;
 import com.badlogic.gdx.physics.bullet.dynamics.btVehicleRaycaster;
+import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
+import com.badlogic.gdx.physics.bullet.linearmath.btTransform;
 
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.mappings.Ouya;
-
-import com.badlogic.gdx.physics.bullet.dynamics.btWheelInfo;
-import com.badlogic.gdx.physics.bullet.linearmath.btTransform;
 
 public class Car extends BulletObject implements ControllerListener {
     private Vector3 tmpV = new Vector3();
@@ -58,9 +57,6 @@ public class Car extends BulletObject implements ControllerListener {
     protected Model chassisModel;
     protected Model wheelModel;
 
-    protected String chassisModelFile = "data/car.obj";
-    protected String wheelModelFile = "data/wheel.obj";
-
     protected Vector3 chassisScale = new Vector3(1f, 1f, 1f);
     protected Vector3 wheelScale = new Vector3(1f, 1f, 1f);
 
@@ -80,61 +76,39 @@ public class Car extends BulletObject implements ControllerListener {
 
     protected boolean paused = false;
 
-    btTransform[] wheelInfo = new btTransform[4];
+    btTransform[] wheelTransform = new btTransform[4];
+    btWheelInfo[] wheelInfo = new btWheelInfo[4];
 
-    public Car(Vector3 pos, Color color) {
-        setColor(color);
+    String color;
+    String chassisName;
+    String wheelName;
+
+    public Car(Vector3 pos, String color) {
         setPos(pos);
-
         initPos = pos;
-    }
 
-    public void randomizeColors() {
-        ModelInstance mi = entity.modelInstance;
-
-        for (int i = 0; i < mi.materials.size; i++)
-            mi.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-
-        Planet.EX.level.terrain.entity.modelInstance.materials.get(0).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-
-        Color c = MonsterColor.randomColor();
-
-        for (BulletEntity wheel : wheels) {
-            mi = wheel.modelInstance;
-
-            for (int i = 0; i < mi.materials.size; i++)
-                mi.materials.get(i).set(ColorAttribute.createDiffuse(c));
-        }
+        this.color = color;
     }
 
     protected void loadAssets() {
-        // chassis
-        chassisModel = objLoader.loadModel(Gdx.files.internal(chassisModelFile));
-        Planet.EX.disposables.add(chassisModel);
-        chassisModel.meshes.get(0).scale(chassisScale.x, chassisScale.y, chassisScale.z);
-        for (int i = 0; i < chassisModel.meshes.size; i++)
-            chassisModel.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-
-        // wheel
-        wheelModel = objLoader.loadModel(Gdx.files.internal(wheelModelFile));
-        Planet.EX.disposables.add(wheelModel);
-        for (int i = 0; i < wheelModel.meshes.size; i++)
-            wheelModel.materials.get(i).set(ColorAttribute.createDiffuse(MonsterColor.randomColor()));
-        wheelModel.meshes.get(0).scale(wheelScale.x, wheelScale.y, wheelScale.z);
+        Model cModel = Planet.EX.loader.getModel(chassisName);
+        Model wModel = Planet.EX.loader.getModel(wheelName);
 
         BoundingBox bounds = new BoundingBox();
 
-        chassisHalfExtents = new Vector3(chassisModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
-        wheelHalfExtents = new Vector3(wheelModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
+        chassisHalfExtents = new Vector3(cModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
+        wheelHalfExtents = new Vector3(wModel.calculateBoundingBox(bounds).getDimensions()).scl(0.5f);
 
-        Planet.EX.world.addConstructor("chassis", new BulletConstructor(chassisModel, 100f, new btBoxShape(chassisHalfExtents)));
-        Planet.EX.world.addConstructor("wheel", new BulletConstructor(wheelModel, 0, null));
+        Planet.EX.world.addConstructor(chassisName, new BulletConstructor(cModel, 100f, new btBoxShape(chassisHalfExtents)));
+        Planet.EX.world.addConstructor(wheelName, new BulletConstructor(wModel, 0, null));
 
-        entity = Planet.EX.world.add("chassis", initPos.x, initPos.y, initPos.z);
-        wheels[0] = Planet.EX.world.add("wheel", 0, 0f, 0);
-        wheels[1] = Planet.EX.world.add("wheel", 0, 0f, 0);
-        wheels[2] = Planet.EX.world.add("wheel", 0, 0f, 0);
-        wheels[3] = Planet.EX.world.add("wheel", 0, 0f, 0);
+        entity = Planet.EX.world.add(chassisName, initPos.x, initPos.y, initPos.z);
+        wheels[0] = Planet.EX.world.add(wheelName, 0, 0f, 0);
+        wheels[1] = Planet.EX.world.add(wheelName, 0, 0f, 0);
+        wheels[2] = Planet.EX.world.add(wheelName, 0, 0f, 0);
+        wheels[3] = Planet.EX.world.add(wheelName, 0, 0f, 0);
+        
+        entity.modelInstance.materials.get(0).set(Planet.EX.loader.getTextureAttribute(chassisName + "_" + color));
     }
 
     protected void init() {
@@ -151,11 +125,6 @@ public class Car extends BulletObject implements ControllerListener {
         addWheels();
 
         entity.body.setActivationState(Collision.DISABLE_DEACTIVATION);
-
-        wheelInfo[0] = vehicle.getWheelInfo(0).getWorldTransform();
-        wheelInfo[1] = vehicle.getWheelInfo(1).getWorldTransform();
-        wheelInfo[2] = vehicle.getWheelInfo(2).getWorldTransform();
-        wheelInfo[3] = vehicle.getWheelInfo(3).getWorldTransform();
     }
 
     public void pause() {
@@ -183,11 +152,12 @@ public class Car extends BulletObject implements ControllerListener {
         vehicle.addWheel(point.set(chassisHalfExtents).scl(-0.95f, -1f, -0.475f), direction, axis, wheelHalfExtents.z * 0.2f, wheelHalfExtents.z, tuning, false);
 
         for (int i = 0; i < wheels.length; i++) {
-            vehicle.getWheelInfo(i).setRollInfluence(0f);
+            wheelInfo[i] = vehicle.getWheelInfo(i);
+            wheelTransform[i] = wheelInfo[i].getWorldTransform();
 
-            // ?
-            vehicle.getWheelInfo(i).setWheelsDampingCompression(8f);
-            vehicle.getWheelInfo(i).setWheelsDampingRelaxation(12f);
+            wheelInfo[i].setRollInfluence(0f);
+            wheelInfo[i].setWheelsDampingCompression(8f);
+            wheelInfo[i].setWheelsDampingRelaxation(12f);
         }
     }
 
@@ -195,7 +165,8 @@ public class Car extends BulletObject implements ControllerListener {
     float force = 0;
     float delta = 0;
     float impulseScale = 1f;
-    Matrix4 m;
+    Matrix4 m1 = new Matrix4();
+    Matrix4 m2 = new Matrix4();
     boolean isOnGround = false;
 
     public void update() {
@@ -227,28 +198,32 @@ public class Car extends BulletObject implements ControllerListener {
             // vehicle.applyEngineForce(force, 3);
         }
 
-        isOnGround = true;
+        isOnGround = false; // override
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
-            wheelInfo[i].getOpenGLMatrix(wheels[i].transform.val);
+            wheelTransform[i].getOpenGLMatrix(wheels[i].transform.val);
+
+            // allocation problem
+            // if (wheelInfo[i].getRaycastInfo().getGroundObject() != 0)
+            //     isOnGround = true;
         }
 
         if (!isOnGround) {
-            if (horzAxis != 0) {
-                m = new Matrix4();
-                m.rotate(((btRigidBody)(entity.body)).getOrientation());
-                m.translate(new Vector3(0, 0, horzAxis * (impulseScale / 2)));
+            m2.set(m1);
 
-                ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+            if (horzAxis != 0) {
+                m2.rotate(((btRigidBody)(entity.body)).getOrientation());
+                m2.translate(new Vector3(0, 0, horzAxis * (impulseScale / 2)));
+
+                ((btRigidBody)(entity.body)).applyTorqueImpulse(m2.getTranslation(tmpV));
             }
 
             if (vertAxis != 0) {
-                m = new Matrix4();
-                m.rotate(((btRigidBody)(entity.body)).getOrientation());
-                m.translate(new Vector3(-1 * vertAxis * impulseScale * 2, 0, 0));
+                m2.rotate(((btRigidBody)(entity.body)).getOrientation());
+                m2.translate(new Vector3(-1 * vertAxis * impulseScale * 2, 0, 0));
 
-                ((btRigidBody)(entity.body)).applyTorqueImpulse(m.getTranslation(tmpV));
+                ((btRigidBody)(entity.body)).applyTorqueImpulse(m2.getTranslation(tmpV));
             }
         }
 

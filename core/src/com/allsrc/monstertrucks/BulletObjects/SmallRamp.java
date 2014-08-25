@@ -35,8 +35,7 @@ public class SmallRamp extends BulletObject {
     }
 
     public static void load() {
-        Planet.EX.loader.add("smallramp");
-        Planet.EX.loader.loadModel("data/smallramp.obj");
+        Planet.EX.loader.loadModel("smallramp", "data/smallramp.obj");
         addDefaultConstructor("smallramp");
     }
 }

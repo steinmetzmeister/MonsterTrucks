@@ -30,20 +30,9 @@ public class BulletObject {
     public float scale = 1f;
 
     public static void addDefaultConstructor(String name) {
-        Planet.EX.loader.set(name);
-
-        if (Planet.EX.loader.getMeshShape() != null) {
-            addConstructor(name,
-                Planet.EX.loader.getModel(),
-                Planet.EX.loader.getMeshShape());
-        }
-        else {
-
-            addConstructor(name,
-                Planet.EX.loader.getModel(),
-                new btBvhTriangleMeshShape(Planet.EX.loader.getModel().meshParts));
-        }
-
+        addConstructor(name,
+            Planet.EX.loader.getModel(name),
+            new btBvhTriangleMeshShape(Planet.EX.loader.getModel(name).meshParts));
     }
 
     public static void addConstructor(String name, Model model, btBvhTriangleMeshShape meshShape) {
@@ -155,11 +144,7 @@ public class BulletObject {
     }
 
     public void updateTexture() {
-        TextureAttribute textureAttribute = new TextureAttribute(
-            TextureAttribute.Diffuse,
-            Planet.EX.loader.objects.get(name).texture);
-
-        entity.modelInstance.materials.get(0).set(textureAttribute);
+        entity.modelInstance.materials.get(0).set(Planet.EX.loader.getTextureAttribute(name));
     }
 
     public void dispose() {

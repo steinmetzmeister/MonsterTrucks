@@ -1,65 +1,66 @@
 package com.allsrc.monstertrucks;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
-
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-import com.badlogic.gdx.utils.Array;
-
 public class AICar extends Car {
 
-    public AICar(Vector3 pos, Color color) {
+    public AICar(Vector3 pos, String color) {
         super(pos, color);
 
         maxForce = 50f;
         acceleration = 100f; // second
 
-        chassisModelFile = "data/cars/rally.obj";
-        wheelModelFile = "data/wheel.obj";
+        name = "parsche";
+        chassisName = "parsche";
+        wheelName = "parsche_wheel";
+
         wheelScale = new Vector3(1f, 0.75f, 0.75f);
 
         init();
     }
 
-    int seek = 0;
+    private int seekValue = 0;
 
     public void update() {
         delta = Gdx.graphics.getDeltaTime();
 
-        seek = seek();
+        seekValue = seek();
 
-        vehicle.setSteeringValue(seek * 15 * MathUtils.degreesToRadians, 0);
-        vehicle.setSteeringValue(seek * 15 * MathUtils.degreesToRadians, 1);
+        vehicle.setSteeringValue(seekValue * 15 * MathUtils.degreesToRadians, 0);
+        vehicle.setSteeringValue(seekValue * 15 * MathUtils.degreesToRadians, 1);
         force = MathUtils.clamp(force + acceleration * delta, 0f, maxForce);
         vehicle.applyEngineForce(force, 0);
         vehicle.applyEngineForce(force, 1);
         // vehicle.applyEngineForce(force, 2);
         // vehicle.applyEngineForce(force, 3);
 
-        isOnGround = true;
+        isOnGround = false;
 
         for (int i = 0; i < wheels.length; i++) {
             vehicle.updateWheelTransform(i, true);
-            wheelInfo[i].getOpenGLMatrix(wheels[i].transform.val);
+            wheelTransform[i].getOpenGLMatrix(wheels[i].transform.val);
+            // allocation problem
+            // if (wheelInfo[i].getRaycastInfo().getGroundObject() != 0)
+            //     isOnGround = true;
         }
     }
 
-    Vector3 f = new Vector3(0,0,0);
-    Vector3 p = new Vector3(0,0,0);
+    private Vector3 f = new Vector3(0,0,0);
+    private Vector3 p = new Vector3(0,0,0);
 
-    Vector2 t2 = new Vector2();
-    Vector2 f2 = new Vector2();
-    Vector2 p2 = new Vector2();
+    private Vector2 t2 = new Vector2();
+    private Vector2 f2 = new Vector2();
+    private Vector2 p2 = new Vector2();
 
-    float dot = 0;
-    double angle = 0;
+    private float dot = 0;
+    private double angle = 0;
 
-    int currNode = 0;
+    private int currNode = 0;
     
-    public int seek() {
+    private int seek() {
         t2.set(Planet.EX.level.path.get(currNode));
 
         f = vehicle.getForwardVector();

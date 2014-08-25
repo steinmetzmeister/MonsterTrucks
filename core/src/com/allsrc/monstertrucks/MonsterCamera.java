@@ -18,7 +18,7 @@ public class MonsterCamera {
     private Vector3 tempV1 = new Vector3(0,0,0);
     private Vector3 tempV2 = new Vector3(0,0,0);
 
-    private Vector3 camOffset = new Vector3(-4.5f, 10, -6.5f);
+    private Vector3 camOffset = new Vector3(-4.5f, 13, -6.5f);
     private Vector3 editorCamOffset = new Vector3(-4.5f, 20, -6.5f);
 
     public MonsterCamera(int playerCount) {

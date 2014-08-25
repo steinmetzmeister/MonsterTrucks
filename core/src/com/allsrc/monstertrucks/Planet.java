@@ -10,23 +10,16 @@ import com.badlogic.gdx.assets.AssetManager;
 public enum Planet {
     EX;
 
-    public BulletWorld world;
-
-    public Editor editor;
+    public Settings settings = new Settings();
 
     public MonsterTrucks main;
-
-    
+    public BulletWorld world;
+    public Loader loader;
     public Level level;
-    public Settings settings = new Settings();
-    
-    public ModelBuilder modelBuilder = new ModelBuilder();
+    public Editor editor;
 
+    public ModelBuilder modelBuilder = new ModelBuilder();
     
     public Array<Disposable> disposables = new Array<Disposable>();
-
     public Array<Car> cars = new Array<Car>();
-
-    public Loader loader = new Loader();
-    // public AssetManager assets = new AssetManager();
 }

@@ -13,7 +13,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class Editor {
-    private EditorListener editorListener;
+    public EditorListener editorListener;
 
     private String[] levelObjects = new String[]{ 
         "Ball",

@@ -22,11 +22,6 @@ public class MonsterListener extends MonsterListenerBase {
              case Keys.P:
                 car.pause();
                 break;
-            case Keys.Q:
-                Planet.EX.level.tb.randomizeColors();
-                for (Car car : Planet.EX.cars)
-                    car.randomizeColors();
-                break;
         }
 
         return false;

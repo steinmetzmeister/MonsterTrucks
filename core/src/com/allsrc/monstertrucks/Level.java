@@ -21,8 +21,12 @@ import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.g3d.environment.DirectionalLight;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureWrap;
+
 public class Level {
-    public TrackBuilder tb = new TrackBuilder();   
+    private TrackArchitect ta = new TrackArchitect();
+    private TrackBuilder tb = new TrackBuilder();   
 
     public Array<BulletObject> bulletObjects = new Array<BulletObject>();
     public Array<Collectible> collectibles = new Array<Collectible>();
@@ -30,6 +34,8 @@ public class Level {
     public Checkpoints checkpoints = new Checkpoints();
     public Array<Vector2> path = new Array<Vector2>();
     
+    public Texture background;
+
     public Terrain terrain;
 
     public Environment environment;
@@ -52,7 +58,10 @@ public class Level {
 
     public void init() {
         Terrain.load("data/terrain.obj");
-        terrain = new Terrain(MonsterColor.randomColor());
+        terrain = new Terrain(Color.GREEN);
+
+        background = new Texture(Gdx.files.internal("data/tiles.png"));
+        background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
 
         tb.straight();
         tb.straight();
@@ -69,15 +78,17 @@ public class Level {
         Planet.EX.level.path.add(tb.turn(0));
         tb.straight();
         Planet.EX.level.path.add(tb.turn(1));
+        tb.straight();
         Planet.EX.level.path.add(tb.turn(0));
         tb.straight();
         Planet.EX.level.path.add(tb.turn(0));
+        tb.straight();
         tb.straight();
         tb.straight();
         tb.straight();
         tb.straight();
 
-        tb.randomizeColors();
+        // tb.randomizeColors();
         tb.clean();
     }
 
@@ -90,9 +101,6 @@ public class Level {
             bulletObjects.get(j).dispose();
 
         bulletObjects = new Array<BulletObject>();
-
-        // terrain.dispose();
-        // terrain = null;
     }
 
     public void saveToFile() {
@@ -115,14 +123,11 @@ public class Level {
         FileHandle file = Gdx.files.internal("data/output.txt");
         String[] lines = file.readString().split("\n");
 
-        // Terrain.load("data/terrain.obj");
-        // terrain = new Terrain(new Color(0, 0.65f, 0, 1));
-
         environment = new Environment();
-        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.6f, 0.6f, 0.6f, 1f));
+        environment.set(new ColorAttribute(ColorAttribute.AmbientLight, 0.25f, 0.25f, 0.25f, 1f));
         
         light = new DirectionalLight();
-        light.set(1f, 1f, 1f, 0.65f, -0.9f, 0.65f);
+        light.set(1f, 1f, 1f,0.65f, -0.9f,0);
 
         environment.add(light);
 
@@ -135,5 +140,9 @@ public class Level {
                     checkpoints.add((Checkpoint)obj);
             }
         }
+    }
+
+    public Array<Track> getTrackParts() {
+        return tb.parts;
     }
 }

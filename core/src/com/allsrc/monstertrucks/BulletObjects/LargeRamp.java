@@ -35,8 +35,7 @@ public class LargeRamp extends BulletObject {
     }
 
     public static void load() {
-        Planet.EX.loader.add("largeramp");
-        Planet.EX.loader.loadModel("data/largeramp.obj");
+        Planet.EX.loader.loadModel("largeramp", "data/largeramp.obj");
         addDefaultConstructor("largeramp");
     }
 }

@@ -26,9 +26,6 @@ public class Collectible extends BulletObject {
     public CollectibleCallback collectibleCallback;;
 
     public boolean touched = false;
-    
-    public String soundFile;
-    public Sound pickupSound;
 
     public Collectible() {
         collectibleCallback = new CollectibleCallback();
@@ -58,7 +55,7 @@ public class Collectible extends BulletObject {
     }
 
     public void pickedUp() {
-        Planet.EX.loader.objects.get(name).sound.play();
+        Planet.EX.loader.getSound(name).play();
 
         touched = true;
         dispose();

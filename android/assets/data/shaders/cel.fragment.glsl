@@ -13,10 +13,12 @@ varying MED vec2 v_texCoord0;
 float toonify(in float intensity) {
     if (intensity > 0.8)
         return 1.0;
-    else if (intensity > 0.5)
-        return 0.5;
+    else if (intensity > 0.6)
+        return 0.6;
+    else if (intensity > 0.4)
+        return 0.4;
     else
-        return 0.3;
+        return 0.2;
 }
  
 void main(){

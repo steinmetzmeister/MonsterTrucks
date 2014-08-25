@@ -35,8 +35,7 @@ public class Gate extends BulletObject {
     }
 
     public static void load() {
-        Planet.EX.loader.add("gate");
-        Planet.EX.loader.loadModel("data/gate.obj");
+        Planet.EX.loader.loadModel("gate", "data/gate.obj");
         addDefaultConstructor("gate");
     }
 }

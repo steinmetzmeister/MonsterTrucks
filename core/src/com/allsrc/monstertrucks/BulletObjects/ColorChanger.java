@@ -33,8 +33,7 @@ public class ColorChanger extends Trigger {
     }
 
     public static void load() {
-        Planet.EX.loader.add("changer");
-        Planet.EX.loader.loadModel("data/block.obj");
+        Planet.EX.loader.loadModel("changer", "data/block.obj");
         addDefaultConstructor("changer");
     }
 

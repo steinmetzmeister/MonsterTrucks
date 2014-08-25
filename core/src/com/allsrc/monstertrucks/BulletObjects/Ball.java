@@ -43,15 +43,12 @@ public class Ball extends BulletObject {
     }
 
     public static void load() {
-        Planet.EX.loader.add("ball");
-        Planet.EX.loader.objects.get("ball").model = createSphere();
+        Planet.EX.loader.addModel("ball", createSphere());
 
         btSphereShape meshShape = new btSphereShape(size / 2f);
 
         BulletConstructor ballConstructor = new BulletConstructor(
-            Planet.EX.loader.getModel(), 
-            5f,
-            meshShape);
+            Planet.EX.loader.getModel("ball"), 5f, meshShape);
 
         ballConstructor.bodyInfo.setRestitution(1f);
 
