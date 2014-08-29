@@ -22,4 +22,6 @@ public enum Planet {
     
     public Array<Disposable> disposables = new Array<Disposable>();
     public Array<Car> cars = new Array<Car>();
+
+    public Race race;
 }

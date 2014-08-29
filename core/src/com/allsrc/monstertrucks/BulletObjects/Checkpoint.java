@@ -10,12 +10,13 @@ import com.badlogic.gdx.graphics.g3d.attributes.BlendingAttribute;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 
 public class Checkpoint extends Trigger {
-    protected Checkpoints manager;
-
+    public int id;
     public Gate gate;
     public static float size = 10f;
     protected Color activeColor;
-    protected static Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 0f);
+    protected static Color inactiveColor = new Color(0.5f, 0.5f, 0.5f, 1f);
+
+    int testing;
 
     public void init() {
         name = "checkpoint";
@@ -44,7 +45,7 @@ public class Checkpoint extends Trigger {
 
     public void construct() {
         entity();
-        addGate();
+        // addGate();
         adjustColor();
         updateColor();
         updateRot();
@@ -63,9 +64,9 @@ public class Checkpoint extends Trigger {
     }
 
     public void updateRot() {
-        gate.setRot(getRot());
-        gate.updateRot();
-        gate.updatePos();
+        // gate.setRot(getRot());
+        // gate.updateRot();
+        // gate.updatePos();
 
         super.updateRot();
         super.updatePos();
@@ -84,21 +85,25 @@ public class Checkpoint extends Trigger {
     }
 
     public void dispose() {
-        gate.dispose();
+        // gate.dispose();
         super.dispose();
     }
 
     public void triggered() {
-        if (this.manager == null)
-            return;
+        Planet.EX.race.reachedCheckpoint(id, testing);
+    }
 
-        if (this.manager.test(this)) {
-            // 
+    public void update() {
+        int i = 0;
+        for (Car car : Planet.EX.cars) {
+            testing = i;
+            testCollision(car.entity.body);
+            i++;
         }
-    } 
+    }
 
     public static void load() {
-        Gate.load();
+        // Gate.load();
 
         Planet.EX.loader.addModel("checkpoint", createSphere());
 
@@ -111,17 +116,13 @@ public class Checkpoint extends Trigger {
             Usage.Position | Usage.Normal);
     }
 
-    public void setManager(Checkpoints manager) {
-        this.manager = manager;
-    }
-
     public void setInactive() {
         pause();
         color = inactiveColor;
         updateColor();
 
-        gate.setColor(inactiveColor);
-        gate.updateColor();
+        // gate.setColor(inactiveColor);
+        // gate.updateColor();
     }
 
     public void setActive() {
@@ -129,8 +130,8 @@ public class Checkpoint extends Trigger {
         color = activeColor;
         updateColor();
 
-        gate.setColor(activeColor);
-        gate.updateColor();
+        // gate.setColor(activeColor);
+        // gate.updateColor();
     }
 
     public String getSaveColor() {
@@ -139,6 +140,6 @@ public class Checkpoint extends Trigger {
 
     public void render() {
         // super.render();
-        gate.render();
+        // gate.render();
     }
 }

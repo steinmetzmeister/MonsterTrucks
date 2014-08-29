@@ -31,7 +31,6 @@ public class Level {
     public Array<BulletObject> bulletObjects = new Array<BulletObject>();
     public Array<Collectible> collectibles = new Array<Collectible>();
     public Array<Trigger> triggers = new Array<Trigger>();
-    public Checkpoints checkpoints = new Checkpoints();
     public Array<Vector2> path = new Array<Vector2>();
     
     public Texture background;
@@ -56,6 +55,13 @@ public class Level {
         Track.load();
     }
 
+    public void addPath(int dir) {
+        Vector2 pos2 = tb.turn(dir);
+        path.add(pos2);
+        
+        Planet.EX.race.addCheckpoint(pos2);
+    }
+
     public void init() {
         Terrain.load("data/terrain.obj");
         terrain = new Terrain(Color.GREEN);
@@ -65,23 +71,23 @@ public class Level {
 
         tb.straight();
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(0);
         tb.straight();
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(0);
         tb.straight();
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(1));
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(1);
+        addPath(0);
         tb.straight();
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(0);
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(1));
+        addPath(1);
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(0);
         tb.straight();
-        Planet.EX.level.path.add(tb.turn(0));
+        addPath(0);
         tb.straight();
         tb.straight();
         tb.straight();
@@ -95,7 +101,6 @@ public class Level {
     public void clearLevel() {
         collectibles = new Array<Collectible>();
         triggers = new Array<Trigger>();
-        checkpoints = new Checkpoints();
 
         for (int j = bulletObjects.size - 1; j >= 0; j--)
             bulletObjects.get(j).dispose();
@@ -132,14 +137,8 @@ public class Level {
         environment.add(light);
 
         BulletObject obj = null;
-        for (String line : lines) {
+        for (String line : lines)
             obj = Planet.EX.editor.createObject(line);
-
-            if (obj != null) {
-                if (obj.name == "checkpoint")
-                    checkpoints.add((Checkpoint)obj);
-            }
-        }
     }
 
     public Array<Track> getTrackParts() {

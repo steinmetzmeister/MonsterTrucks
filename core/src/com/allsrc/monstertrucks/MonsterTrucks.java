@@ -94,21 +94,23 @@ public class MonsterTrucks implements ApplicationListener {
 
 		Planet.EX.editor = new Editor();
 
+        Planet.EX.race = new Race(4);
+
 		Planet.EX.level = new Level();
 		Planet.EX.level.init();
 		Planet.EX.level.loadFromFile();
 
         ParscheCar.load();
 
-		/*for (int i = 0; i < Planet.EX.settings.playerCount; i++)
+		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
 			Planet.EX.cars.add((Car)new ParscheCar(new Vector3(5f, 3f, 0f), "blue"));
 
 			if (i < Controllers.getControllers().size)
 				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
-		}*/
+		}
 
-        Planet.EX.cars.add((Car)new AICar(new Vector3(0, 3f, 0f), "blue"));
+        // Planet.EX.cars.add((Car)new AICar(new Vector3(0, 3f, 0f), "blue"));
         Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), "red"));
         Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), "green"));
         Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -10f), "yellow"));
@@ -144,7 +146,14 @@ public class MonsterTrucks implements ApplicationListener {
         if (ii > 64)
             ii = 0;
 
-        fpsLabel.setText("" + Gdx.graphics.getFramesPerSecond());
+        fpsLabel.setText(Gdx.graphics.getFramesPerSecond() + 
+            " / Places: " + 
+            Planet.EX.race.placed[0] + " " +
+            Planet.EX.race.placed[1] + " " +
+            Planet.EX.race.placed[2] + " " +
+            Planet.EX.race.placed[3] +
+            " / LAP: " + Planet.EX.race.racers[0].lap +
+            " / CP: " + Planet.EX.race.racers[0].checkpoint);
 
 		update();
 
@@ -279,6 +288,7 @@ public class MonsterTrucks implements ApplicationListener {
 
 	public void update () {
 		Planet.EX.world.update();
+        Planet.EX.race.update();
 
        	for (Collectible collectible : Planet.EX.level.collectibles)
        		collectible.update();
