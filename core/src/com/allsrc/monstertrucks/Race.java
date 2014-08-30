@@ -7,7 +7,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Vector2;
 
-public class Race { // extends level
+public class Race extends LevelMode {
     public class Racer {
         public String color;
         public int carNumber;
@@ -23,12 +23,17 @@ public class Race { // extends level
         }
     }
 
+    private TrackArchitect ta = new TrackArchitect();
+    private TrackBuilder tb = new TrackBuilder();
+
     public Array<Checkpoint> checkpoints = new Array<Checkpoint>();
     public Racer[] racers;
     public int[] placed;
 
     public float startTime;
     public float finishTime;
+
+    Path path = new Path("track");
 
     public Race(int numRacers) {
         racers = new Racer[numRacers];
@@ -38,6 +43,47 @@ public class Race { // extends level
             addRacer(i);
             placed[i] = i;
         }
+
+        init();
+    }
+
+    public void init() {
+        tb.straight();
+        tb.straight();
+        path.addNode(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        path.addNode(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        path.addNode(tb.turn(1));
+        path.addNode(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        path.addNode(tb.turn(0));
+        tb.straight();
+        path.addNode(tb.turn(1));
+        tb.straight();
+        path.addNode(tb.turn(0));
+        tb.straight();
+        path.addNode(tb.turn(0));
+        tb.straight();
+        tb.straight();
+        tb.straight();
+        tb.straight();
+        tb.straight();
+
+        tb.clean();
+
+        for (Vector2 node : path.nodes)
+            addCheckpoint(node);
+
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), "red"));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), "green"));
+        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -10f), "yellow"));
+
+        for (Car car : Planet.EX.cars)
+            car.setTarget(path.getNode(0));
     }
 
     public void start() {
@@ -70,6 +116,8 @@ public class Race { // extends level
             racers[racer].checkpoint = 0;
             racers[racer].lap++;
         }
+
+        Planet.EX.cars.get(racer).setTarget(path.getNode(racers[racer].checkpoint));
     }
 
     int tempInt;
@@ -98,7 +146,6 @@ public class Race { // extends level
         placed[racer] = tempInt;
     }
 
-    private Matrix4 worldTransform = new Matrix4();
     private Vector3 racerPosition = new Vector3();
 
     private Vector2 tempV2 = new Vector2();
@@ -106,8 +153,7 @@ public class Race { // extends level
 
     // distance between racer and their last checkpoint
     public float distanceToCheckpoint(int racerNum) {
-        Planet.EX.cars.get(racerNum).entity.motionState.getWorldTransform(worldTransform);
-        worldTransform.getTranslation(racerPosition);
+        racerPosition = Planet.EX.cars.get(racerNum).worldTranslation;
 
         tempV2.x = racerPosition.x;
         tempV2.y = racerPosition.z;
@@ -115,5 +161,14 @@ public class Race { // extends level
         tempV3 = checkpoints.get(racers[racerNum].checkpoint).getPos();
 
         return tempV2.dst(tempV3.x, tempV3.z);
+    }
+
+    public void render() {
+        for (Track track : tb.parts)
+           track.render();
+    }
+
+    public Array<Track> getTrackParts() {
+        return tb.parts;
     }
 }

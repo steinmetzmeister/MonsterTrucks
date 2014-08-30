@@ -45,7 +45,6 @@ public class MonsterCamera {
 
     public void focus(BulletObject obj) {
         obj.entity.motionState.getWorldTransform(worldTransform);
-
         worldTransform.getTranslation(objPosition);
 
         if (!Planet.EX.editor.active)

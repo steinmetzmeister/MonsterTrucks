@@ -25,13 +25,9 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureWrap;
 
 public class Level {
-    private TrackArchitect ta = new TrackArchitect();
-    private TrackBuilder tb = new TrackBuilder();   
-
     public Array<BulletObject> bulletObjects = new Array<BulletObject>();
     public Array<Collectible> collectibles = new Array<Collectible>();
     public Array<Trigger> triggers = new Array<Trigger>();
-    public Array<Vector2> path = new Array<Vector2>();
     
     public Texture background;
 
@@ -39,6 +35,8 @@ public class Level {
 
     public Environment environment;
     public DirectionalLight light;
+
+    public LevelMode mode;
 
     public Level() {
         load();
@@ -55,47 +53,36 @@ public class Level {
         Track.load();
     }
 
-    public void addPath(int dir) {
-        Vector2 pos2 = tb.turn(dir);
-        path.add(pos2);
-        
-        Planet.EX.race.addCheckpoint(pos2);
-    }
-
     public void init() {
         Terrain.load("data/terrain.obj");
         terrain = new Terrain(Color.GREEN);
 
         background = new Texture(Gdx.files.internal("data/tiles.png"));
         background.setWrap(Texture.TextureWrap.Repeat, Texture.TextureWrap.Repeat);
+    }
 
-        tb.straight();
-        tb.straight();
-        addPath(0);
-        tb.straight();
-        tb.straight();
-        addPath(0);
-        tb.straight();
-        tb.straight();
-        addPath(1);
-        addPath(0);
-        tb.straight();
-        tb.straight();
-        addPath(0);
-        tb.straight();
-        addPath(1);
-        tb.straight();
-        addPath(0);
-        tb.straight();
-        addPath(0);
-        tb.straight();
-        tb.straight();
-        tb.straight();
-        tb.straight();
-        tb.straight();
+    public void update() {
+        mode.update();
 
-        // tb.randomizeColors();
-        tb.clean();
+        for (Collectible collectible : Planet.EX.level.collectibles)
+            collectible.update();
+
+        for (Trigger trigger : Planet.EX.level.triggers)
+            trigger.update();
+    }
+
+    public void dispose() {
+        Planet.EX.level.environment = null;
+        Planet.EX.level.light = null;
+    }
+
+    public void render() {
+        // modelBatch.render(Planet.EX.level.terrain.entity.modelInstance, Planet.EX.level.environment);
+
+        for (BulletObject obj : bulletObjects)
+            obj.render();
+
+        mode.render();
     }
 
     public void clearLevel() {
@@ -139,9 +126,5 @@ public class Level {
         BulletObject obj = null;
         for (String line : lines)
             obj = Planet.EX.editor.createObject(line);
-    }
-
-    public Array<Track> getTrackParts() {
-        return tb.parts;
     }
 }

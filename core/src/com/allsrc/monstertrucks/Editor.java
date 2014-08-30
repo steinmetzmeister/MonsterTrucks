@@ -29,21 +29,12 @@ public class Editor {
     public BulletObject selectedObj;
 
     private int activeObject = 0;
-    private Label activeObjectLabel;
+    
     private Color selectedColor;
     private float rotSpeed = 3.9f;
     private Vector3 tempV = new Vector3(0,0,0);
 
     public Editor() {
-        activeObjectLabel = new Label("Object", Planet.EX.main.skin);
-
-        Table table = new Table();
-        table.left().bottom();
-        table.setFillParent(true);
-        table.add(activeObjectLabel).width(100);
-        
-        Planet.EX.main.stage.addActor(table);
-
         editorListener = new EditorListener();
     }
 
@@ -53,7 +44,7 @@ public class Editor {
 
     public void setActiveObject(int i) {
         activeObject = i;
-        activeObjectLabel.setText(levelObjects[activeObject]);
+        Planet.EX.gui.activeObjectLabel.setText(levelObjects[activeObject]);
     }
 
     public String getActiveObject() {

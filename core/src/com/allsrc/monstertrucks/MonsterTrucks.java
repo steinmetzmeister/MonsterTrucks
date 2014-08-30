@@ -16,15 +16,6 @@ import com.badlogic.gdx.graphics.g3d.ModelBatch;
 import com.badlogic.gdx.physics.bullet.Bullet;
 import com.badlogic.gdx.utils.Disposable;
 
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider;
-import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
 import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.Controller;
 
@@ -41,9 +32,6 @@ public class MonsterTrucks implements ApplicationListener {
     public MonsterCamera camera;
 
 	private boolean initialized;
-
-	public Skin skin;
-	public Stage stage;
 
     private MonsterListener monsterListener;
 
@@ -67,40 +55,29 @@ public class MonsterTrucks implements ApplicationListener {
 
 	@Override
 	public void create () {
+        /*
+        celShader = new ShaderProgram(
+            Gdx.files.internal("data/shaders/cel.vertex.glsl"),
+            Gdx.files.internal("data/shaders/cel.fragment.glsl"));
+        fullScreenQuad = createFullScreenQuad();
+
+        buffer = new FrameBuffer(Pixmap.Format.RGBA8888,
+            Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
+        src = buffer;
+        */
 		init();
 
+        Planet.EX.main = this;
         Planet.EX.settings = new Settings();
         Planet.EX.loader = new Loader();
-
-        stage = new Stage();
-        skin = new Skin(Gdx.files.internal("data/uiskin.json"));
-
-		celShader = new ShaderProgram(
-    		Gdx.files.internal("data/shaders/cel.vertex.glsl"),
-    		Gdx.files.internal("data/shaders/cel.fragment.glsl"));
-		fullScreenQuad = createFullScreenQuad();
-
-		buffer = new FrameBuffer(Pixmap.Format.RGBA8888,
-			Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
-		src = buffer;
-
-        Planet.EX.main = this;
         Planet.EX.world = new BulletWorld();
 
+        loadAssets();
+
         modelBatch = new ModelBatch();
-        spriteBatch = new SpriteBatch();
+        spriteBatch = new SpriteBatch();        
 
 		camera = new MonsterCamera(Planet.EX.settings.playerCount);
-
-		Planet.EX.editor = new Editor();
-
-        Planet.EX.race = new Race(4);
-
-		Planet.EX.level = new Level();
-		Planet.EX.level.init();
-		Planet.EX.level.loadFromFile();
-
-        ParscheCar.load();
 
 		for (int i = 0; i < Planet.EX.settings.playerCount; i++)
 		{
@@ -110,51 +87,29 @@ public class MonsterTrucks implements ApplicationListener {
 				Controllers.getControllers().get(i).addListener(Planet.EX.cars.get(i));
 		}
 
-        // Planet.EX.cars.add((Car)new AICar(new Vector3(0, 3f, 0f), "blue"));
-        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, 0f), "red"));
-        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -5f), "green"));
-        Planet.EX.cars.add((Car)new AICar(new Vector3(-5f, 3f, -10f), "yellow"));
+        Planet.EX.editor = new Editor();
+
+        Planet.EX.level = new Level();
+        Planet.EX.level.init();
+        Planet.EX.level.loadFromFile();
+        Planet.EX.level.mode = new Race(4);    
 
         monsterListener = new MonsterListener();
 
 		InputMultiplexer inputMultiplexer = new InputMultiplexer();
 		Gdx.input.setInputProcessor(inputMultiplexer);
 		inputMultiplexer.addProcessor(monsterListener);
-		inputMultiplexer.addProcessor(stage);
+		inputMultiplexer.addProcessor(Planet.EX.gui.stage);
         inputMultiplexer.addProcessor(Planet.EX.editor.editorListener);
-
-        fpsLabel = new Label("FPS", Planet.EX.main.skin);
-
-        Table table = new Table();
-        table.left().top();
-        table.setFillParent(true);
-        table.add(fpsLabel).width(100);
-
-        stage.addActor(table);
 	}
 
-    private Label fpsLabel;
-
-    boolean t = false;
-    int ii = 64;
+    public void loadAssets() {
+        ParscheCar.load();
+    }
 
 	@Override
 	public void render () {
-        if (t)
-            ii++;
-        t = !t;
-        if (ii > 64)
-            ii = 0;
-
-        fpsLabel.setText(Gdx.graphics.getFramesPerSecond() + 
-            " / Places: " + 
-            Planet.EX.race.placed[0] + " " +
-            Planet.EX.race.placed[1] + " " +
-            Planet.EX.race.placed[2] + " " +
-            Planet.EX.race.placed[3] +
-            " / LAP: " + Planet.EX.race.racers[0].lap +
-            " / CP: " + Planet.EX.race.racers[0].checkpoint);
-
+        
 		update();
 
 		// dest = buffer;
@@ -162,17 +117,7 @@ public class MonsterTrucks implements ApplicationListener {
 			
             Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-            spriteBatch.begin();
-            spriteBatch.draw(Planet.EX.level.background, 0f, 0f, 0f, 0f,
-                (Gdx.graphics.getWidth() / 64) + 1,
-                (Gdx.graphics.getHeight() / 64) + 1,
-                64, 64,
-                0f, // r
-                ii, -ii,
-                Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
-                false, false);
-            spriteBatch.end();
-
+            renderBackground();
         
 			switch (Planet.EX.settings.playerCount) {
 				case 1:
@@ -185,7 +130,7 @@ public class MonsterTrucks implements ApplicationListener {
 				case 4:
 					break;
 			}
-/*
+        /*
 		}
 		dest.end();
 
@@ -197,12 +142,32 @@ public class MonsterTrucks implements ApplicationListener {
         	fullScreenQuad.render(celShader, GL20.GL_TRIANGLE_FAN, 0, 4);
     		celShader.end();
     	}
-*/
+        */
 
-		// UI
-        stage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
+        Planet.EX.gui.render();
 	}
+
+    boolean t = false;
+    int ii = 64;
+
+    public void renderBackground() {
+        if (t)
+            ii++;
+        t = !t;
+        if (ii > 64)
+            ii = 0;
+
+        spriteBatch.begin();
+        spriteBatch.draw(Planet.EX.level.background, 0f, 0f, 0f, 0f,
+            (Gdx.graphics.getWidth() / 64) + 1,
+            (Gdx.graphics.getHeight() / 64) + 1,
+            64, 64,
+            0f, // r
+            ii, -ii,
+            Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+            false, false);
+        spriteBatch.end();
+    }
 
 	public Mesh createFullScreenQuad(){
     	float[] verts = new float[16];
@@ -262,17 +227,7 @@ public class MonsterTrucks implements ApplicationListener {
 	}
 
 	public void renderObjects() {
-        // modelBatch.render(Planet.EX.level.terrain.entity.modelInstance, Planet.EX.level.environment);
-
-		for (BulletObject obj : Planet.EX.level.bulletObjects) {
-			if (camera.isVisible(obj))
-				obj.render();
-		}
-
-        for (Track track : Planet.EX.level.getTrackParts()) {
-            if (camera.isVisible(track))
-                modelBatch.render(track.entity.modelInstance, Planet.EX.level.environment);
-        }
+        Planet.EX.level.render();
 
 		for (Car car : Planet.EX.cars) {
             car.update();
@@ -287,34 +242,15 @@ public class MonsterTrucks implements ApplicationListener {
 	}
 
 	public void update () {
-		Planet.EX.world.update();
-        Planet.EX.race.update();
-
-       	for (Collectible collectible : Planet.EX.level.collectibles)
-       		collectible.update();
-
-       	for (Trigger trigger : Planet.EX.level.triggers)
-       		trigger.update();
+        Planet.EX.update();
 	}
 
 	@Override
 	public void dispose () {
-		Planet.EX.world.dispose();
-		Planet.EX.world = null;
-
-		for (Disposable disposable : Planet.EX.disposables)
-			disposable.dispose();
-
-		Planet.EX.disposables.clear();
+		Planet.EX.dispose();
 
 		modelBatch.dispose();
 		modelBatch = null;
-
-		Planet.EX.level.environment = null;
-		Planet.EX.level.light = null;
-
-		// UI
-		stage.dispose();
 	}
 
     @Override

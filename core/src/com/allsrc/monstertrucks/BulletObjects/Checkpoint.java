@@ -90,7 +90,7 @@ public class Checkpoint extends Trigger {
     }
 
     public void triggered() {
-        Planet.EX.race.reachedCheckpoint(id, testing);
+        Planet.EX.level.mode.reachedCheckpoint(id, testing);
     }
 
     public void update() {

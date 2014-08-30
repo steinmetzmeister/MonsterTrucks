@@ -11,6 +11,7 @@ public enum Planet {
     EX;
 
     public Settings settings = new Settings();
+    public GUI gui = new GUI();
 
     public MonsterTrucks main;
     public BulletWorld world;
@@ -24,4 +25,23 @@ public enum Planet {
     public Array<Car> cars = new Array<Car>();
 
     public Race race;
+
+    public void update() {
+        world.update();
+        level.update();
+        gui.update();
+    }
+
+    public void dispose() {
+        world.dispose();
+        level.dispose();
+        gui.dispose();
+
+        for (Disposable disposable : disposables)
+            disposable.dispose();
+
+        disposables.clear();
+
+        world = null;
+    }
 }

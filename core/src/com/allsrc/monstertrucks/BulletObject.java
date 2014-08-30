@@ -220,6 +220,7 @@ public class BulletObject {
     }
 
     public void render() {
-        Planet.EX.main.modelBatch.render(entity.modelInstance, Planet.EX.level.environment);
+        if (Planet.EX.main.camera.isVisible(this))
+            Planet.EX.main.modelBatch.render(entity.modelInstance, Planet.EX.level.environment);
     }
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
 import com.badlogic.gdx.graphics.g3d.loader.ObjLoader;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.collision.BoundingBox;
@@ -28,6 +29,9 @@ import com.badlogic.gdx.controllers.ControllerListener;
 import com.badlogic.gdx.controllers.mappings.Ouya;
 
 public class Car extends BulletObject implements ControllerListener {
+    public Matrix4 worldTransform = new Matrix4();
+    public Vector3 worldTranslation = new Vector3();
+
     private Vector3 tmpV = new Vector3();
 
     protected ObjLoader objLoader = new ObjLoader();
@@ -82,6 +86,12 @@ public class Car extends BulletObject implements ControllerListener {
     String color;
     String chassisName;
     String wheelName;
+
+    Vector2 target = new Vector2();
+
+    public void setTarget(Vector2 target) {
+        this.target = target;
+    }
 
     public Car(Vector3 pos, String color) {
         setPos(pos);
@@ -170,45 +180,15 @@ public class Car extends BulletObject implements ControllerListener {
     boolean isOnGround = false;
 
     public void update() {
-        delta = Gdx.graphics.getDeltaTime();
+        entity.motionState.getWorldTransform(worldTransform);
+        worldTransform.getTranslation(worldTranslation);
+        
+        applyEngineForce();
+        setSteeringValue();
 
-        angle = currentAngle;
-        force = currentForce;
+        isOnGround = checkIfOnGround();
 
-        vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 0);
-        vehicle.setSteeringValue(angle * MathUtils.degreesToRadians, 1);
-
-        currentAngle = angle;
-
-        // de/accelerate
-        if (upPressed) {
-            if (force < 0) force = 0;
-            force = MathUtils.clamp(force + acceleration * delta, 0, maxForce);
-        } else if (downPressed) {
-            if (force > 0) force = 0;
-            force = MathUtils.clamp(force - acceleration * delta, -maxForce, 0);
-        } else
-            force = 0;
-
-        if (force != currentForce) {
-            currentForce = force;
-            vehicle.applyEngineForce(force, 0);
-            vehicle.applyEngineForce(force, 1);
-            // vehicle.applyEngineForce(force, 2);
-            // vehicle.applyEngineForce(force, 3);
-        }
-
-        isOnGround = false; // override
-
-        for (int i = 0; i < wheels.length; i++) {
-            vehicle.updateWheelTransform(i, true);
-            wheelTransform[i].getOpenGLMatrix(wheels[i].transform.val);
-
-            // allocation problem
-            // if (wheelInfo[i].getRaycastInfo().getGroundObject() != 0)
-            //     isOnGround = true;
-        }
-
+        /*
         if (!isOnGround) {
             m2.set(m1);
 
@@ -226,11 +206,48 @@ public class Car extends BulletObject implements ControllerListener {
                 ((btRigidBody)(entity.body)).applyTorqueImpulse(m2.getTranslation(tmpV));
             }
         }
+        */
+    }
 
-        if (paused) {
-            vehicle.getRigidBody().setLinearVelocity(new Vector3(0,0,0));
-            vehicle.getRigidBody().setAngularVelocity(new Vector3(0,0,0));
+    public void updateForce() {
+        delta = Gdx.graphics.getDeltaTime();
+
+        if (upPressed) {
+            if (force < 0) force = 0;
+            force = MathUtils.clamp(force + acceleration * delta, 0, maxForce);
+        } else if (downPressed) {
+            if (force > 0) force = 0;
+            force = MathUtils.clamp(force - acceleration * delta, -maxForce, 0);
+        } else
+            force = 0;
+    }
+
+    public void applyEngineForce() {
+        updateForce();
+
+        vehicle.applyEngineForce(force, 0);
+        vehicle.applyEngineForce(force, 1);
+        // vehicle.applyEngineForce(force, 2);
+        // vehicle.applyEngineForce(force, 3);
+    }
+
+    public void setSteeringValue() {
+        vehicle.setSteeringValue(currentAngle * MathUtils.degreesToRadians, 0);
+        vehicle.setSteeringValue(currentAngle * MathUtils.degreesToRadians, 1);
+    }
+
+    public boolean checkIfOnGround() {
+        boolean onGround = false;
+
+        for (int i = 0; i < wheels.length; i++) {
+            vehicle.updateWheelTransform(i, true);
+            wheelTransform[i].getOpenGLMatrix(wheels[i].transform.val);
+            // allocation problem
+            // if (wheelInfo[i].getRaycastInfo().getGroundObject() != 0)
+            //     isOnGround = true;
         }
+
+        return onGround;
     }
 
     public void reset() {
@@ -286,9 +303,6 @@ public class Car extends BulletObject implements ControllerListener {
 
         if (buttonCode == 0 || buttonCode == 15 || buttonCode == Ouya.BUTTON_U)
             downPressed = true;
-
-        if (buttonCode == 2) {}
-            // vehicle.getRigidBody().applyCentralImpulse(new Vector3(0, 1000f, 0));
 
         return false;
     }

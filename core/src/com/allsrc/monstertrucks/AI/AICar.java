@@ -22,30 +22,22 @@ public class AICar extends Car {
         init();
     }
 
+    public void update() {
+        super.update();    
+    }
+
     private int seekValue = 0;
 
-    public void update() {
+    public void updateForce() {
         delta = Gdx.graphics.getDeltaTime();
+        
+        force = MathUtils.clamp(force + acceleration * delta, 0f, maxForce);
+    }
 
+    public void setSteeringValue() {
         seekValue = seek();
-
         vehicle.setSteeringValue(seekValue * 15 * MathUtils.degreesToRadians, 0);
         vehicle.setSteeringValue(seekValue * 15 * MathUtils.degreesToRadians, 1);
-        force = MathUtils.clamp(force + acceleration * delta, 0f, maxForce);
-        vehicle.applyEngineForce(force, 0);
-        vehicle.applyEngineForce(force, 1);
-        // vehicle.applyEngineForce(force, 2);
-        // vehicle.applyEngineForce(force, 3);
-
-        isOnGround = false;
-
-        for (int i = 0; i < wheels.length; i++) {
-            vehicle.updateWheelTransform(i, true);
-            wheelTransform[i].getOpenGLMatrix(wheels[i].transform.val);
-            // allocation problem
-            // if (wheelInfo[i].getRaycastInfo().getGroundObject() != 0)
-            //     isOnGround = true;
-        }
     }
 
     private Vector3 f = new Vector3(0,0,0);
@@ -57,11 +49,9 @@ public class AICar extends Car {
 
     private float dot = 0;
     private double angle = 0;
-
-    private int currNode = 0;
     
     private int seek() {
-        t2.set(Planet.EX.level.path.get(currNode));
+        t2.set(target);
 
         f = vehicle.getForwardVector();
         entity.transform.getTranslation(p);
@@ -76,12 +66,6 @@ public class AICar extends Car {
 
         dot = f2.dot(t2);
         angle = Math.acos(dot / (f2.len() * t2.len()));
-
-        if (p2.dst(Planet.EX.level.path.get(currNode)) < 5) {
-            currNode++;
-            if (currNode >= Planet.EX.level.path.size)
-                currNode = 0;
-        }
 
         if (angle * MathUtils.radiansToDegrees <= 5)
             return 0;
